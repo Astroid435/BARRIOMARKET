@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <script src="js/jQuery1.9.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style/estilos_dashboard.css">
+    <link rel="stylesheet" type="text/css" href="style/estilo_dashboard.css">
     <meta charset="utf-8">
 </head>
     <body>
@@ -74,11 +74,10 @@
             </div>
         </header>
         <form action="agregar_productos.php" method="post">
-            <center>
-                <h3>Registrate</h3>
-                <h6>Llena todos los campos para continuar</h6>
-                <br>
                 <div class="container">
+                    <h1 style="font-size: 57px; font-weight: bold;">Registro de producto</h1>
+                    <h6 style="color: #828282;">Llena todos los campos para continuar</h6>
+                    <br>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="container-fluid">
@@ -116,85 +115,211 @@
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <label for="exampleInputEmail1">Observaciones</label>
+                                        <label for="exampleInputEmail1">Descripcion</label>
                                         <div class="col">
-                                            <input type="text" class="form-control" placeholder="Ej: Papel grueso especializado en pliegues para origami*" name="Observaciones" required>
+                                            <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150"></textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <center>
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div id="btnAñadirFabricante">Añadir fabricante</div>
+                                        <div id="btnAñadirFabricante" class="btn btn-fcs button col-12">Añadir fabricante</div>
                                     </div>
                                 </div>
                             </div>
+                            </center>
+                            <center>
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div id="btnAñadirCategoria">Añadir Categoria-Subcategoria</div>
+                                        <div id="btnAñadirCategoria" class="btn button btn-fcs col-12">Añadir Categoria-Subcategoria</div>
                                     </div>
                                 </div>
                             </div>
+                            </center>
+                             <center>
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                    <button type="submit" class="btn button btn-fcs col-12" id="btn_registro" name="btn_producto">Registrar</button>            
+                                </div>
+                            </div>
+                            </center>
+
                         </div>
                         <div class="col-md-6">
+                            <label class="upload-container" for="imagen" id="upload-label">
+                                <div class="upload-icon" id="upload-icon">+</div>
+                                <div class="upload-text" id="upload-text">Agregar imagen de producto</div>
+                                <input type="file" id="imagen" name="imagen" accept="image/*">
+                            </label>
                         </div>
                     </div>
                 </div>
-                <br>
-                <button type="submit" class="btn_crear" name="btn_producto">Registrar</button>
-                <br><br>
-            </center>
         </form>   
-    <button id="btnAñadirFabricante">Añadir Fabricante</button>
-    <button id="btnCrearFabricante">Crear Fabricante</button>
-    <button id="btnAñadirCategoria">Añadir Categoría</button>
-    <button id="btnCrearCategoria">Crear Categoría</button>
-    <button id="btnAñadirSubcategoria">Añadir Subcategoría</button>
     <button id="btnCrearSubcategoria">Crear Subcategoría</button>
 
     <div id="VentanaFabricante" class="modal">
         <div class="modal-content">
-            <span class="close closeAF">&times;</span>
-            <p>Contenido de Añadir Fabricante</p>
+            <div class="container-fluid">
+                <div class="row">
+                    <span class="close closeAF col-1" style="position: fixed;">&times;</span>
+                    <center>
+                    <h1 class="titulo">Fabricantes</h1>
+                    </center>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <?php
+                            include "conexion.php";
+                              $consulta=mysqli_query($conexion,"SELECT * FROM fabricante") or die ($conexion."Error en la consulta");
+                              $cantidad = mysqli_num_rows($consulta);
+                              if($cantidad > 0){
+                              while($fila=mysqli_fetch_array($consulta)){
+                                ?>
+                                <form method="post"action="agregar_productos.php" class="col-md-4">
+                                    <input type="text" class="form-control" name="nombre_receta" value="<?php echo $fila['idFabricante'];?>" hidden>
+                                    <div class="btn btn_consulta col-md-12 btn-fcsm button" name="btn_receta"><?php echo $fila['Nombre'];?></div>
+                                </form>
+                                <?php
+                              }
+                              }
+                    ?>
+                    <div class="col-md-4">
+                        <div id="btnCrearFabricante" class="btn btn_consulta col-md-12 btn-fcsm button">+</div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+            <button type="submit" class="btn button btn-fcs col-12" ">Registrar</button> 
+            </div>
         </div>
     </div>
 
     <div id="VentanaCrearFabricante" class="modal">
         <div class="modal-content">
-            <span class="close closeCF">&times;</span>
-            <p>Contenido de Crear Fabricante</p>
+            <div class="container-fluid">
+                <div class="row">
+                    <span class="close closeCF col-1" style="position: fixed;">&times;</span>
+                    <center>
+                    <h1 class="titulo">Crear fabricante</h1>
+                    </center>
+                </div>
+            </div>
+            <center>
+            <form method="post"action="agregar_productos.php" class="col-md-4">
+                    <label for="exampleInputEmail1">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" placeholder="Ej: Matel">
+                    <label for="exampleInputEmail1">Telefono</label>
+                    <input type="text" class="form-control" name="telefono" placeholder="Ej: 3242974388">
+                <button type="submit" class="btn btn_consulta col-md-12 btn-fcsm" name="btn_fabricante">Crear</button>
+            </form>
+            </center>
         </div>
     </div>
 
     <div id="VentanaCategoria" class="modal">
         <div class="modal-content">
-            <span class="close closeAC">&times;</span>
-            <p>Contenido de Añadir Categoría</p>
+            <div class="container-fluid">
+                <div class="row">
+                    <span class="close closeAC col-1" style="position: fixed;">&times;</span>
+                    <center>
+                        <h1 class="titulo">Categorias</h1>
+                    </center>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <?php
+                            include "conexion.php";
+                              $consulta=mysqli_query($conexion,"SELECT * FROM categoria") or die ($conexion."Error en la consulta");
+                              $cantidad = mysqli_num_rows($consulta);
+                              if($cantidad > 0){
+                              while($fila=mysqli_fetch_array($consulta)){
+                                ?>
+                                <form method="post"action="agregar_productos.php" class="col-md-4">
+                                    <input type="text" class="form-control" name="nombre_receta" value="<?php echo $fila['idCategoria'];?>" hidden>
+                                    <button type="submit" class="btn btn_consulta col-md-12 btn-fcsm" name="btn_receta" id="btnAñadirSubcategoria"><?php echo $fila['Nombre'];?></button>
+                                </form>
+                                <?php
+                              }
+                              }
+                    ?>
+                    <div class="col-md-4">
+                        <button id="btnCrearCategoria" class="btn btn_consulta col-md-12 btn-fcsm">+</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="VentanaCrearCategoria" class="modal">
         <div class="modal-content">
-            <span class="close closeCC">&times;</span>
+            <span class="close closeCC col-1" style="position: fixed;">&times;</span>
             <p>Contenido de Crear Categoría</p>
         </div>
     </div>
 
     <div id="VentanaSubcategoria" class="modal">
         <div class="modal-content">
-            <span class="close closeAS">&times;</span>
+            <span class="close closeAS col-1" style="position: fixed;">&times;</span>
             <p>Contenido de Añadir Subcategoría</p>
         </div>
     </div>
 
     <div id="VentanaCrearSubcategoria" class="modal">
         <div class="modal-content">
-            <span class="close closeCS">&times;</span>
+            <span class="close closeCS col-1" style="position: fixed;">&times;</span>
             <p>Contenido de Crear Subcategoría</p>
         </div>
     </div>
+    <?php
+            if(isset($_POST['btn_fabricante'])){
+                $nombre=$_POST['nombre'];
+                $telefono=$_POST['telefono'];
+                $consulta_numero = mysqli_query($conexion,"SELECT * FROM fabricante WHERE Nombre = '$nombre';") or die ($conexion."Error en la consulta");
+                $cantidad_numero = mysqli_num_rows($consulta_numero);
+                if ($cantidad_numero>0){
+                    echo "<script>alert('Ese fabricante ya existe');</script>";
+                }else{
+                    $registrar = mysqli_query($conexion, "INSERT INTO `fabricante` (`idFabricante`, `Nombre`, `Telefono`) VALUES (NULL, '$nombre', '$telefono');") or die($conexion);
+                    echo "<script>alert('Se registro correctamente');</script>";
+                    echo "<script>window.location='dashboard.php' ;</script>";
+
+                }
+            }
+    ?>
+    <script>
+        document.getElementById('imagen').addEventListener('change', function(event) {
+            var input = event.target;
+            var label = document.getElementById('upload-label');
+            var icon = document.getElementById('upload-icon');
+            var text = document.getElementById('upload-text');
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    label.style.backgroundImage = 'url(' + e.target.result + ')';
+                    icon.style.display = 'none';
+                    text.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('boton-subir').addEventListener('click', function() {
+            var input = document.getElementById('imagen');
+            if (input.files.length === 0) {
+                alert('Por favor, selecciona una imagen primero.');
+            } else {
+                document.getElementById('formulario-imagen').submit();
+            }
+        });
+    </script>
     <script src="script.js"></script>
     </body>
 </html>
