@@ -42,6 +42,8 @@ buttons.btnCrearCategoria.onclick = function() {
 buttons.btnAñadirSubcategoria.onclick = function() {
     modals.VentanaSubcategoria.style.display = "block";
 }
+
+
 buttons.btnCrearSubcategoria.onclick = function() {
     modals.VentanaCrearSubcategoria.style.display = "block";
 }
