@@ -39,6 +39,9 @@
 
 }
 
+.selected {
+    border-color: green !important; /* !important para priorizar sobre otros estilos */
+}
 
 .modal {
     display: none;
