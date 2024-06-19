@@ -9,6 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
     // Guardar el fabricante seleccionado en una variable de sesión
     $_SESSION['CategoriaSeleccionadoId'] = $_POST['CategoriaSeleccionadoId'];
 }
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSeleccionado'])) {
+    // Guardar el fabricante seleccionado en una variable de sesión
+    $_SESSION['SubcategoriaSeleccionadoId'] = $_POST['SubcategoriaSeleccionadoId'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
     <link rel="stylesheet" href="css/bootstrap.css">
     <script src="js/jQuery1.9.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style/estilo_dashboard.css">
+    <link rel="stylesheet" type="text/css" href="style/estilos_dashboard.css">
     <meta charset="utf-8">
 </head>
 
@@ -180,8 +184,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
             </div>
         </div>
     </form>
-    <button id="btnCrearSubcategoria">Crear Subcategoría</button>
-
     <div id="VentanaFabricante" class="modal">
         <div class="modal-content">
             <div class="container-fluid">
@@ -280,7 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
                         }
                     ?>
                     <div class="col-md-4">
-                        <button id="btnCrearCategoria" class="btn btn_consulta col-md-12 btn-fcsm">+</button>
+                        <button id="btnCrearCategoria" class="btn btn_consulta col-md-12 btn-fcsm button">+</button>
                     </div>
                 </div>
             </div>
@@ -305,8 +307,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
 
     <div id="VentanaSubcategoria" class="modal">
         <div class="modal-content">
-            <span class="close closeAS col-1" style="position: absolute;">&times;</span>
-            <p>Contenido de Añadir Subcategoría</p>
+            <div class="container-fluid">
+                <div class="row">
+                    <span class="close closeAS col-1" style="position: absolute;">&times;</span>
+                    <center>
+                        <h1 class="titulo">Subcategoria</h1>
+                    </center>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <?php
+                        include "conexion.php";
+                        $categoria= $_SESSION['CategoriaSeleccionadoId'];
+                        $consulta = $conexion->prepare("SELECT * FROM subcategoria WHERE idCategoria = '$categoria';");
+                        $consulta->execute();
+                        $resultados = $consulta->get_result();
+
+                        while ($fila = $resultados->fetch_assoc()) {
+                        ?>
+                            <div class="col-md-4 mb-3">
+                                <div class="btn btn_consulta col-md-12 btn-fcsm button btn_Subcategoria" name="btn_Subcategoria" onclick="selectSubcategoria(this, '<?php echo $fila['idSubcategoria']; ?>')">
+                                    <?php echo htmlspecialchars($fila['Nombre']); ?>
+                                </div>
+                            </div>
+                        <?php
+                        }
+                    ?>
+                    <div class="col-md-4">
+                        <button id="btnCrearSubcategoria" class="btn btn_consulta col-md-12 btn-fcsm button">+</button>
+                    </div>
+                </div>
+            </div>
+            <center>
+                <div class="container">
+                    <form id="registerForm" method="POST" action="">
+                        <input type="hidden" name="SubcategoriaSeleccionadoId" id="SubcategoriaSeleccionadoId">
+                        <button type="submit" class="btn button btn-fcs col-8" name="SubcategoriaSeleccionado" id="SubcategoriaSeleccionado" style="background-color:#000; color:#fff;">Seleccionar</button>
+                    </form>
+                </div>
+            </center>
         </div>
     </div>
 
@@ -317,10 +357,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
         </div>
     </div>
     <?php
-    if (isset($_SESSION['fabricanteSeleccionado'])) {
-        echo "<center>Fabricante seleccionado: " . htmlspecialchars($_SESSION['fabricanteSeleccionadoId']) . "</center>";
-    }
-    ?>
+
+            echo "<center>Fabricante seleccionado: " . htmlspecialchars($_SESSION['fabricanteSeleccionadoId']) . "</center>";
+
+            echo "<center>Categoria seleccionado: " . htmlspecialchars($_SESSION['CategoriaSeleccionadoId']) . "</center>";
+
+            echo "<center>Subcategoria seleccionado: " . htmlspecialchars($_SESSION['SubcategoriaSeleccionadoId']) . "</center>";
+
+        ?>
     <?php
     if (isset($_POST['btn_fabricante'])) {
         $nombre = $_POST['nombre'];
@@ -356,6 +400,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
             document.getElementById('CategoriaSeleccionadoId').value = id;
 
             var buttons = document.querySelectorAll('.btn_selectorSubcategoria');
+            buttons.forEach(function(btn) {
+                btn.classList.remove('selected');
+            });
+
+            // Agregar la clase 'selected' al botón de fabricante seleccionado
+            element.classList.add('selected');
+
+        }
+        function selectSubcategoria(element, id) {
+
+            document.getElementById('SubcategoriaSeleccionadoId').value = id;
+
+            var buttons = document.querySelectorAll('.btnSubcategoria');
             buttons.forEach(function(btn) {
                 btn.classList.remove('selected');
             });
