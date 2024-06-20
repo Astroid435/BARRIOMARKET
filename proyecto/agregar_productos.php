@@ -319,19 +319,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
                 <div class="row">
                     <?php
                         include "conexion.php";
-                        $categoria= $_SESSION['CategoriaSeleccionadoId'];
+                        $categoria = $_SESSION['CategoriaSeleccionadoId'];
                         $consulta = $conexion->prepare("SELECT * FROM subcategoria WHERE idCategoria = '$categoria';");
                         $consulta->execute();
                         $resultados = $consulta->get_result();
 
                         while ($fila = $resultados->fetch_assoc()) {
-                        ?>
-                            <div class="col-md-4 mb-3">
-                                <div class="btn btn_consulta col-md-12 btn-fcsm button btn_Subcategoria" name="btn_Subcategoria" onclick="selectSubcategoria(this, '<?php echo $fila['idSubcategoria']; ?>')">
-                                    <?php echo htmlspecialchars($fila['Nombre']); ?>
+                            ?>
+                                <div class="col-md-4 mb-3">
+                                    <div class="btn btn_consulta col-md-12 btn-fcsm button btn_Subcategoria" name="btn_Subcategoria" onclick="selectSubcategoria(this, '<?php echo $fila['idSubcategoria']; ?>')">
+                                        <?php echo htmlspecialchars($fila['Nombre']); ?>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php
+                            <?php
                         }
                     ?>
                     <div class="col-md-4">
@@ -364,7 +364,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
 
             echo "<center>Subcategoria seleccionado: " . htmlspecialchars($_SESSION['SubcategoriaSeleccionadoId']) . "</center>";
 
-        ?>
+    ?>
     <?php
     if (isset($_POST['btn_fabricante'])) {
         $nombre = $_POST['nombre'];
@@ -380,6 +380,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
         }
     }
     ?>
+
     <script>
         function selectFabricante(element, id) {
 
