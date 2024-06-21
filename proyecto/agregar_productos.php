@@ -9,9 +9,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'
     // Guardar el fabricante seleccionado en una variable de sesión
     $_SESSION['CategoriaSeleccionadoId'] = $_POST['CategoriaSeleccionadoId'];
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSeleccionado'])) {
-    // Guardar el fabricante seleccionado en una variable de sesión
-    $_SESSION['SubcategoriaSeleccionadoId'] = $_POST['SubcategoriaSeleccionadoId'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['SubcategoriaSeleccionadas'])) {
+        // Obtener el array de subcategorías seleccionadas
+        $subcategoriasSeleccionadas = json_decode($_POST['SubcategoriaSeleccionadoId'], true);
+
+        // Guardar el array en la sesión
+        $_SESSION['SubcategoriaSeleccionadoId'] = $subcategoriasSeleccionadas;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -97,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
             </div>
         </div>
     </header>
-    <form action="agregar_productos.php" method="post">
+    <form action="codigo_productos.php" method="post" id="AgregarProductos">
         <div class="container">
             <h1 style="font-size: 57px; font-weight: bold;">Registro de producto</h1>
             <h6 style="color: #828282;">Llena todos los campos para continuar</h6>
@@ -223,7 +228,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
                 <div class="container">
                     <form id="registerForm" method="POST" action="">
                         <input type="hidden" name="fabricanteSeleccionadoId" id="fabricanteSeleccionadoId">
-                        <button type="submit" class="btn button btn-fcs col-8" name="fabricanteSeleccionado" style="background-color:#000; color:#fff;">Seleccionar</button>
+                        <button type="submit" class="btn button btn-fcs col-8" name="fabricanteSeleccionado" style="background-color:#000; color:#fff;" onclick="guardarYReiniciar()">Seleccionar</button>
                     </form>
                 </div>
             </center>
@@ -290,7 +295,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
                 <div class="container">
                     <form id="registerForm" method="POST" action="">
                         <input type="hidden" name="CategoriaSeleccionadoId" id="CategoriaSeleccionadoId">
-                        <button type="submit" class="btn button btn-fcs col-8" name="CategoriaSeleccionado" id="btnAñadirSubcategoria" style="background-color:#000; color:#fff;">Seleccionar</button>
+                        <button type="submit" class="btn button btn-fcs col-8" name="CategoriaSeleccionado" id="btnAñadirSubcategoria" style="background-color:#000; color:#fff;" onclick="guardarYReiniciar()">Seleccionar</button>
                     </form>
                 </div>
             </center>
@@ -343,28 +348,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
                 <div class="container">
                     <form id="registerForm" method="POST" action="">
                         <input type="hidden" name="SubcategoriaSeleccionadoId" id="SubcategoriaSeleccionadoId">
-                        <button type="submit" class="btn button btn-fcs col-8" name="SubcategoriaSeleccionado" id="SubcategoriaSeleccionado" style="background-color:#000; color:#fff;">Seleccionar</button>
+                        <button type="submit" class="btn button btn-fcs col-8" name="SubcategoriaSeleccionadas" id="SubcategoriaSeleccionadas" style="background-color:#000; color:#fff;" onclick="guardarYReiniciar()">Seleccionar</button>
                     </form>
                 </div>
             </center>
         </div>
     </div>
-
     <div id="VentanaCrearSubcategoria" class="modal">
         <div class="modal-content">
             <span class="close closeCS col-1" style="position: absolute;">&times;</span>
             <p>Contenido de Crear Subcategoría</p>
         </div>
     </div>
-    <?php
-
-            echo "<center>Fabricante seleccionado: " . htmlspecialchars($_SESSION['fabricanteSeleccionadoId']) . "</center>";
-
-            echo "<center>Categoria seleccionado: " . htmlspecialchars($_SESSION['CategoriaSeleccionadoId']) . "</center>";
-
-            echo "<center>Subcategoria seleccionado: " . htmlspecialchars($_SESSION['SubcategoriaSeleccionadoId']) . "</center>";
-
-    ?>
     <?php
     if (isset($_POST['btn_fabricante'])) {
         $nombre = $_POST['nombre'];
@@ -409,18 +404,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
             element.classList.add('selected');
 
         }
+        var subcategoriasSeleccionadas = [];
+
         function selectSubcategoria(element, id) {
+            var index = subcategoriasSeleccionadas.indexOf(id);
 
-            document.getElementById('SubcategoriaSeleccionadoId').value = id;
+            if (index === -1) { // No está en el array, agregarlo
+                if (subcategoriasSeleccionadas.length < 3) {
+                    subcategoriasSeleccionadas.push(id);
+                    element.classList.add('selected');
+                } else {
+                    alert('Solo puedes seleccionar hasta 3 subcategorías.');
+                }
+            } else { // Está en el array, quitarlo
+                subcategoriasSeleccionadas.splice(index, 1);
+                element.classList.remove('selected');
+            }
 
-            var buttons = document.querySelectorAll('.btnSubcategoria');
-            buttons.forEach(function(btn) {
-                btn.classList.remove('selected');
-            });
-
-            // Agregar la clase 'selected' al botón de fabricante seleccionado
-            element.classList.add('selected');
-
+            // Actualizar el valor del campo oculto
+            var inputElement = document.getElementById('SubcategoriaSeleccionadoId');
+            inputElement.value = JSON.stringify(subcategoriasSeleccionadas);
         }
     </script>
     <script>
@@ -449,6 +452,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['SubcategoriaSelecciona
                 document.getElementById('formulario-imagen').submit();
             }
         });
+    </script>
+    <script>
+        function guardarYReiniciar() {
+            var formulario = document.getElementById('AgregarProductos');
+            var formData = new FormData(formulario);
+            var valores = {};
+            formData.forEach((value, key) => {
+                if (key === 'imagen' && value.name) {
+                    valores[key] = value.name;
+                } else {
+                    valores[key] = value;
+                }
+            });
+            localStorage.setItem('formData', JSON.stringify(valores));
+            console.log('Valores guardados:', valores);
+            location.reload();
+        }
+
+        function cargarValores() {
+            var valoresGuardados = localStorage.getItem('formData');
+            if (valoresGuardados) {
+                var valores = JSON.parse(valoresGuardados);
+                for (var key in valores) {
+                    if (valores.hasOwnProperty(key)) {
+                        if (key !== 'imagen') {
+                            document.getElementsByName(key)[0].value = valores[key];
+                        } else {
+                        }
+                    }
+                }
+                console.log('Valores cargados:', valores);
+            }
+        }
+
+        // Cargar valores al cargar la página
+        window.onload = function() {
+            cargarValores();
+        };
     </script>
     <script src="script.js"></script>
 </body>

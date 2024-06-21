@@ -1,7 +1,4 @@
-<html>
-  <head>
-  </head>
-</html>
+
 <?php
 include "conexion.php";
 if (isset($_POST["btn_registrar"])){
