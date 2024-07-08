@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </header>
-    <form action="codigo_productos.php" method="post" id="AgregarProductos">
+    <form action="codigo_productos.php" method="post" id="AgregarProductos" enctype="multipart/form-data">
         <div class="container">
             <h1 style="font-size: 57px; font-weight: bold;">Registro de producto</h1>
             <h6 style="color: #828282;">Llena todos los campos para continuar</h6>
