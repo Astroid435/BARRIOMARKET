@@ -29,6 +29,15 @@
     #info_produ{
       margin-top: -14px;
     }
+    .producto1{
+      border-radius: 20px;
+    }
+    #categoriasresumen{
+      display: block;
+    }
+    #categoriastodas{
+      display: none;
+    }
   </style>
 </head>
 
@@ -116,103 +125,112 @@
     </div>
     <div class="container">
       <div class="row">
-        <div class="producto1 col-md-4">
-          <img src="https://images.squarespace-cdn.com/content/v1/5b329780365f02e437a230ae/1621025786950-FEDF64SHMLFEL8TR2ZX9/67655991_149889532779459_4215215230957609642_n.jpeg" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-          <img src="https://tse2.explicit.bing.net/th?id=OIP.A6cPwaeJNuIOAeS-UZhN6gHaEK&pid=Api&P=0&h=180" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-          <img src="https://images4.alphacoders.com/786/thumb-1920-786697.jpg" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
-        
-      </div>
-      <div class="row">
-        <div class="producto1 col-md-4">
-          <img src="https://img.freepik.com/vector-premium/conjunto-diferentes-alimentos-enlatados-alimentos-frascos-aislados_1308-48581.jpg?w=2000" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-          <img src="https://3.bp.blogspot.com/-aZLICOoq3gU/UGJVyphUDPI/AAAAAAABJp4/IQpUYKbjwzM/s1600/only-healthy-foods-2560x1600-wallpaper-solo-comida-saludable.jpg" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-          <img src="https://tse3.mm.bing.net/th?id=OIP.H_8F-1bmoPnqYHRgiY8dMwAAAA&pid=Api&P=0&h=180" height="200px" width="100%">
-          <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-          </div>
-        </div>
+        <?php
+                include "conexion.php";
+                $consulta=mysqli_query($conexion,"SELECT * FROM productos LIMIT 6;") or die ($conexion."Error en la consulta");
+                $cantidad = mysqli_num_rows($consulta);
+                if($cantidad > 0){
+                while($fila=mysqli_fetch_array($consulta)){
+                  ?>
+                  <div class="producto1 col-md-4">
+                    <img src="<?php echo $fila['imagen'];?>" height="200px" width="100%">
+                    <div class="container-info">
+                      <p id="nom_produ"><strong><?php echo $fila['Nombre'];?></strong></p>
+                      <p id="info_produ"><?php echo $fila['Descripcion'];?></p>
+                      <p id="info_produ"><strong>$<?php echo $fila['ValorVenta'];?></strong></p>
+                    </div>
+                  </div>
+                  <?php
+                }
+              }
+        ?>
         <hr>
       </div>
       <div class="row" id="categoria">
-      <h2>Categoria</h2>
+      <h2>Categorias</h2>
     </div>
-      <div class="container">
+      <div class="container" id="categoriasresumen">
         <div class="row">
-          <div class="producto1 col-md-7">
-            <img src="https://images.squarespace-cdn.com/content/v1/5b329780365f02e437a230ae/1621025786950-FEDF64SHMLFEL8TR2ZX9/67655991_149889532779459_4215215230957609642_n.jpeg" height="600px" width="100%">
-            <div class="container-info">
-              <p id="nom_produ"><strong>producto</strong></p>
-              <p id="info_produ">descripcion del producto</p>
-              <p id="info_produ"><strong>$10.99</strong></p>
+                    <?php
+                    include "conexion.php";
+                    $dep=1;
+                    if ($dep==1){
+                      $consulta = $conexion->prepare("SELECT * FROM categoria limit 3");
+                      $consulta->execute();
+                      $resultados = $consulta->get_result();
+  
+                      while ($fila = $resultados->fetch_assoc()) {
+                      ?>
+                          <div class="col-md-4 mb-3">
+                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
+                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
+                              </div>
+                          </div>
+                      <?php
+                      }
+                      ?>
+                      <center>
+                      <div class="col-md-3 mb-3">
+                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermas">
+                              Ver mas
+                          </div>
+                      </div>
+                      </center>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-          </div> 
-          <div class="container-dos col-md-5">
-            <div class="producto1">
-              <img src="https://images.squarespace-cdn.com/content/v1/5b329780365f02e437a230ae/1621025786950-FEDF64SHMLFEL8TR2ZX9/67655991_149889532779459_4215215230957609642_n.jpeg" height="250px" width="100%">
-              <div class="container-info">
-                <p id="nom_produ"><strong>producto</strong></p>
-                <p id="info_produ">descripcion del producto</p>
-                <p id="info_produ"><strong>$10.99</strong></p>
-              </div>
+            <div class="container" id="categoriastodas">
+              <div class="row">
+                    <?php
+                    include "conexion.php";
+                    $dep=1;
+                    if ($dep==1){
+                      $consulta = $conexion->prepare("SELECT * FROM categoria");
+                      $consulta->execute();
+                      $resultados = $consulta->get_result();
+  
+                      while ($fila = $resultados->fetch_assoc()) {
+                      ?>
+                          <div class="col-md-4 mb-3">
+                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
+                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
+                              </div>
+                          </div>
+                      <?php
+                      }
+                      ?>
+                      <center>
+                      <div class="col-md-3 mb-3">
+                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermenos">
+                              Ver menos
+                          </div>
+                      </div>
+                      </center>
+                    <?php
+                    }
+                    ?>
+                </div>
             </div>
-            <div class="producto1">
-              <img src="https://images.squarespace-cdn.com/content/v1/5b329780365f02e437a230ae/1621025786950-FEDF64SHMLFEL8TR2ZX9/67655991_149889532779459_4215215230957609642_n.jpeg" height="250px" width="100%">
-              <div class="container-info">
-                <p id="nom_produ"><strong>producto</strong></p>
-                <p id="info_produ">descripcion del producto</p>
-                <p id="info_produ"><strong>$10.99</strong></p>
-              </div>
-            </div>
-
-          </div> 
-
         </div>
       </div>
     </div>
 
   </div>
 
-
+<script>
+        verMenos=document.getElementById('btn_vermenos');
+        verMenos.onclick = function(){
+          document.getElementById('categoriastodas').style.display = "none";
+          document.getElementById('categoriasresumen').style.display = "block";
+        }
+        verMas=document.getElementById('btn_vermas');
+        verMas.onclick = function(){
+          document.getElementById('categoriastodas').style.display = "block";
+          document.getElementById('categoriasresumen').style.display = "none";
+        }
+</script>
 </body>
 
 </html>
