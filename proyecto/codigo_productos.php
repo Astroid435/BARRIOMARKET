@@ -52,7 +52,7 @@ if (isset($_POST["btn_producto"])){
     $cantidad_numero = mysqli_num_rows($consulta_numero);
       if($cantidad_numero>0){
         echo "<script>alert('El nombre del producto ya esta en uso');</script>";
-        echo "<script>window.location='agregar_productos.php' ;</script>";
+        echo "<script>window.location='modulos/agregar_productos.php' ;</script>";
       }else{
         $registrar = mysqli_query($conexion, "INSERT INTO `productos` (`idProductos`, `Nombre`, `Cantidad`, `ValorCompra`, `ValorVenta`, `Descripcion`, `imagen`, `Fabricante_idFabricante`) VALUES (NULL, '$Nombre', '$Cantidad', '$ValorCompra', '$ValorVenta', '$Descripcion', '$target_file' , '$fabricante')") or die($conexion);
         $consulta_numero = mysqli_query($conexion,"SELECT * FROM productos WHERE Nombre = '$Nombre';") or die ($conexion."Error en la consulta");
@@ -78,7 +78,7 @@ if (isset($_POST["btn_producto"])){
             </script>
         <?php
         echo "<script>alert('Producto registrado correctamente');</script>";
-        echo "<script>window.location='agregar_productos.php' ;</script>";
+        echo "<script>window.location='dashboard.php?mod=AgregarProductos;</script>";
         }
     }
 ?>
