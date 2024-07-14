@@ -78,7 +78,7 @@ if (isset($_POST["btn_producto"])){
             </script>
         <?php
         echo "<script>alert('Producto registrado correctamente');</script>";
-        echo "<script>window.location='dashboard.php?mod=AgregarProductos;</script>";
+        echo "<script>window.location='dashboard.php?mod=AgregarProductos';</script>";
         }
     }
 ?>

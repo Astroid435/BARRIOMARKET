@@ -91,7 +91,7 @@ session_start(); // Iniciar la sesión
                         </a>
                       </li>
                       <li>
-                        <a href="dashboard.php?mod=carrito" class="nav-link text-black">
+                        <a href="dashboard.php?mod=registros" class="nav-link text-black">
                           <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
                           Registros
                         </a>
@@ -196,9 +196,9 @@ session_start(); // Iniciar la sesión
                   require_once("modulos/agregar_productos.php");
                 }
                 else
-                    if(@ $_GET['mod']=="rutinas")
+                    if(@ $_GET['mod']=="registros")
                     {
-                      require_once("modulos/rutinas/rutinas.php");
+                      require_once("modulos/registros.php");
                     }
                     else
                         if(@ $_GET['mod']=="p_alimenticio")
@@ -273,8 +273,7 @@ session_start(); // Iniciar la sesión
       ?>
 
   </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 
 </html>
