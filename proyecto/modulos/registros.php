@@ -57,6 +57,7 @@
                     $idfabricante = $fila['Fabricante_idFabricante'];
                     $cantidad = $fila['Cantidad'];
                     $idproducto = $fila['idProductos'];
+                    $imagen= $fila['imagen'];
                     $var = 1;
                     $consultafabricante = mysqli_query($conexion, "SELECT * FROM `fabricante` WHERE `idFabricante` = $idfabricante;") or die($conexion . "Error en la consulta");
                     if ($fila = mysqli_fetch_array($consultafabricante)) {
@@ -75,7 +76,7 @@
                         }
                     }
             ?>
-                    <div class="col-md-4 shadow card">
+                    <div class="col-md-4 shadow card" style="">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted"><?php echo $nombrefabricante; ?></span>
@@ -105,8 +106,14 @@
                             </ul>
                             <div class="container-fluid">
                                 <div class="row justify-content-evenly">
-                                    <button class="btn btn-edit col-5">Editar</button>
-                                    <button class="btn btn-delete col-5">Eliminar</button>
+                                    <form action="dashboard.php?mod=EditarProducto" method="post" class="col-6">
+                                        <input type="text" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                                        <button class="btn btn-edit col-12" id="btn_edit" name="btn_edit" type="submit">Editar</button>
+                                    </form>
+                                    <form action="./codigo_productos.php" method="POST" class="col-6">
+                                        <input type="text" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                                        <button class="btn btn-delete col-12" name="btn_delete" id="btn_delete" type="submit">Eliminar</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -132,6 +139,8 @@
         <input type="text" id="search" placeholder="Ej: Cuaderno">
     </center>
 </div>
+<?php
+?>
 <script>
     function selectRegistro(element, id) {
         var registro = parseInt(id, 10);

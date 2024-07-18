@@ -2,46 +2,31 @@
 include "conexion.php";
 if (isset($_POST['btn_edit'])) {
   $idproducto = $_POST['idproducto'];
-  $consulta = mysqli_query($conexion, "SELECT * FROM productos;") or die($conexion . "Error en la consulta");
-  $cantidad = mysqli_num_rows($consulta);
-  if ($cantidad > 0) {
-    while ($fila = mysqli_fetch_array($consulta)) {
-      $nombre = $fila['Nombre'];
+  $consulta = mysqli_query($conexion, "SELECT * FROM productos where idProductos = $idproducto;") or die($conexion . "Error en la consulta");
+    if ($fila = mysqli_fetch_array($consulta)) {
+      $Nombre = $fila['Nombre'];
       $ValorVenta = $fila['ValorVenta'];
-      $idfabricante = $fila['Fabricante_idFabricante'];
-      $cantidad = $fila['Cantidad'];
+      $ValorCompra = $fila['ValorCompra'];
+      $Descripcion = $fila['Descripcion'];
+      $_SESSION['fabricanteSeleccionadoId'] = $fila['Fabricante_idFabricante'];
+      $Cantidad = $fila['Cantidad'];
       $idproducto = $fila['idProductos'];
       $imagen = $fila['imagen'];
-      $var = 1;
-      $consultafabricante = mysqli_query($conexion, "SELECT * FROM `fabricante` WHERE `idFabricante` = $idfabricante;") or die($conexion . "Error en la consulta");
-      if ($fila = mysqli_fetch_array($consultafabricante)) {
-        $nombrefabricante = $fila['Nombre'];
-      }
       $consultasubcategorias = mysqli_query($conexion, "SELECT * FROM `productoscategoria` WHERE `Productos_idProductos` = $idproducto;") or die($conexion . "Error en la consulta");
       if ($fila = mysqli_fetch_array($consultasubcategorias)) {
         $idsubcategoria = $fila['Subcategoria_idSubcategoria'];
         $consultacategoria = mysqli_query($conexion, "SELECT * FROM `subcategoria` WHERE `idSubcategoria` = $idsubcategoria;") or die($conexion . "Error en la consulta");
         if ($fila = mysqli_fetch_array($consultacategoria)) {
-          $idcategoria = $fila['idCategoria'];
-          $consultanombrecategoria = mysqli_query($conexion, "SELECT * FROM `categoria` WHERE `idCategoria` = $idcategoria;") or die($conexion . "Error en la consulta");
-          if ($fila = mysqli_fetch_array($consultanombrecategoria)) {
-            $nombrecategoria = $fila['Nombre'];
-          }
+            $_SESSION['CategoriaSeleccionadoId'] = $fila['idCategoria'];
         }
       }
-
       $consultasubcategorias2 = mysqli_query($conexion, "SELECT * FROM `productoscategoria` WHERE `Productos_idProductos` = $idproducto;") or die($conexion . "Error en la consulta");
       $subsubcategorias = array();
       while ($fila = mysqli_fetch_array($consultasubcategorias2)) {
         $idsubcategoria = $fila['Subcategoria_idSubcategoria'];
         array_push($subsubcategorias, $idsubcategoria);
       }
-      if (!empty($subsubcategorias)) {
-        $subcategorias = implode(',', $subsubcategorias);
-        $consultanombresubcategoria = mysqli_query($conexion, "SELECT * FROM `subcategoria` WHERE `idSubcategoria` IN ($subcategorias)") or die($conexion . "Error en la consulta");
-        while ($fila = mysqli_fetch_array($consultanombresubcategoria)) {
-        }
-      }
+      $_SESSION['SubcategoriaSeleccionadoId']= $subsubcategorias;
     }
   }
 
@@ -64,7 +49,7 @@ if (isset($_POST['btn_edit'])) {
   }
 ?>
 
-  <form action="./codigo_productos.php" method="post" id="AgregarProductos" enctype="multipart/form-data">
+  <form action="./codigo_productos.php" method="post" id="EditarProductos" enctype="multipart/form-data">
     <div class="container">
       <h1 style="font-size: 57px; font-weight: bold;">Registro de producto</h1>
       <h6 style="color: #828282;">Llena todos los campos para continuar</h6>
@@ -76,13 +61,14 @@ if (isset($_POST['btn_edit'])) {
               <div class="col-md-6">
                 <label for="exampleInputEmail1">Nombre</label>
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Ej: Cartulina*" name="Nombre" required>
+                <input type="text" class="form-control" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                  <input type="text" class="form-control" placeholder="Ej: Cartulina*" name="Nombre" value="<?php echo $Nombre; ?>" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <label for="exampleInputEmail1">Cantidad Producto</label>
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Ej: 34*" name="Cantidad" required>
+                  <input type="text" class="form-control" placeholder="Ej: 34*" name="Cantidad" value="<?php echo $Cantidad ?>" required>
                 </div>
               </div>
             </div>
@@ -92,13 +78,13 @@ if (isset($_POST['btn_edit'])) {
               <div class="col-md-6">
                 <label for="exampleInputEmail1">Valor venta</label>
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Ej: 2500*" name="ValorVenta" required>
+                  <input type="text" class="form-control" placeholder="Ej: 2500*" value="<?php echo $ValorVenta; ?>" name="ValorVenta" required>
                 </div>
               </div>
               <div class="col-md-6">
                 <label for="exampleInputEmail1">Valor Compra</label>
                 <div class="col">
-                  <input type="text" class="form-control" placeholder="Ej: 2000*" name="ValorCompra" required>
+                  <input type="text" class="form-control" placeholder="Ej: 2000*" value="<?php echo $ValorCompra; ?>" name="ValorCompra" required>
                 </div>
               </div>
             </div>
@@ -108,7 +94,7 @@ if (isset($_POST['btn_edit'])) {
               <div class="col-md-12">
                 <label for="exampleInputEmail1">Descripcion</label>
                 <div class="col">
-                  <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150"></textarea>
+                  <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150"><?php echo $Descripcion; ?></textarea>
                 </div>
               </div>
             </div>
@@ -117,7 +103,7 @@ if (isset($_POST['btn_edit'])) {
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md-12">
-                  <div id="btnAñadirFabricante" class="btn btn-fcs button col-12">Añadir fabricante</div>
+                  <div id="btnAñadirFabricante" class="btn btn-fcs button col-12">Editar fabricante</div>
                 </div>
               </div>
             </div>
@@ -126,7 +112,7 @@ if (isset($_POST['btn_edit'])) {
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md-12">
-                  <div id="btnAñadirCategoria" class="btn button btn-fcs col-12">Añadir Categoria-Subcategoria</div>
+                  <div id="btnAñadirCategoria" class="btn button btn-fcs col-12">Editar Categoria-Subcategoria</div>
                 </div>
               </div>
             </div>
@@ -135,7 +121,7 @@ if (isset($_POST['btn_edit'])) {
             <div class="container-fluid">
               <div class="row">
                 <div class="col-md-12">
-                  <button type="submit" class="btn button btn-fcs col-12" id="btn_registro" name="btn_producto">Registrar</button>
+                  <button type="submit" class="btn button btn-fcs col-12" id="btn_registro" name="btn_editar_producto">Editar</button>
                 </div>
               </div>
           </center>
@@ -144,7 +130,7 @@ if (isset($_POST['btn_edit'])) {
         <div class="col-md-6">
           <label class="upload-container" for="imagen" id="upload-label">
             <div class="upload-icon" id="upload-icon">+</div>
-            <div class="upload-text" id="upload-text">Agregar imagen de producto</div>
+            <div class="upload-text" id="upload-text">Editar imagen de producto</div>
             <input type="file" id="imagen" name="imagen" accept="image/*">
           </label>
         </div>
@@ -498,9 +484,45 @@ if (isset($_POST['btn_edit'])) {
       document.getElementById('uploadModal').style.display = 'flex';
     });
   </script>
+<script>
+    function guardarYReiniciar() {
+        var formulario = document.getElementById('EditarProductos');
+        var formData = new FormData(formulario);
+        var valores = {};
+        formData.forEach((value, key) => {
+            if (key === 'imagen' && value.name) {
+                valores[key] = value.name;
+            } else {
+                valores[key] = value;
+            }
+        });
+        localStorage.setItem('formData', JSON.stringify(valores));
+        console.log('Valores guardados:', valores);
+        location.reload();
+    }
 
+    function cargarValores() {
+        var valoresGuardados = localStorage.getItem('formData');
+        if (valoresGuardados) {
+            var valores = JSON.parse(valoresGuardados);
+            for (var key in valores) {
+                if (valores.hasOwnProperty(key)) {
+                    if (key !== 'imagen') {
+                        document.getElementsByName(key)[0].value = valores[key];
+                    } else {}
+                }
+            }
+            console.log('Valores cargados:', valores);
+        }
+    }
+
+    // Cargar valores al cargar la página
+    window.onload = function() {
+        cargarValores();
+    };
+</script>
 <?php
-}
+
 
 
 ?>

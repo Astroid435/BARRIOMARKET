@@ -201,9 +201,9 @@ session_start(); // Iniciar la sesión
                       require_once("modulos/registros.php");
                     }
                     else
-                        if(@ $_GET['mod']=="p_alimenticio")
+                        if(@ $_GET['mod']=="EditarProducto")
                         {
-                          require_once("modulos/plan/p_alimenticio.php");
+                          require_once("modulos/editar_producto.php");
                         }
                         else
                             if(@ $_GET['mod']=="seguimiento")
