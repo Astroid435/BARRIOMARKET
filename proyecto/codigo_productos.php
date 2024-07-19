@@ -99,6 +99,7 @@ if (isset($_POST["btn_producto"])){
         $ValorVenta = $_POST['ValorVenta'];
         $ValorCompra = $_POST['ValorCompra'];
         $Descripcion = $_POST['Descripcion'];
+        $imagen=$_POST['imagen'];
         $target_dir = "ImgProductos/";
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($_FILES["imagen"]["name"], PATHINFO_EXTENSION));
@@ -133,6 +134,7 @@ if (isset($_POST["btn_producto"])){
                 } else {
                     if (move_uploaded_file($_FILES["imagen"]["tmp_name"], $target_file)) {
                         echo "El archivo ". htmlspecialchars(basename($_FILES["imagen"]["name"])) . " ha sido subido.";
+                        $imagen=$target_file;
                     } else {
                         echo "Lo siento, hubo un error subiendo tu archivo.";
                     }
@@ -145,7 +147,7 @@ if (isset($_POST["btn_producto"])){
             echo "<script>alert('El nombre del producto ya esta en uso');</script>";
             echo "<script>window.location='modulos/agregar_productos.php' ;</script>";
           }else{
-            $actualizar = mysqli_query($conexion, "UPDATE `productos` SET `Nombre` = '$Nombre', `Cantidad` = '$Cantidad', `ValorCompra` = '$ValorCompra', `ValorVenta` = '$ValorVenta', `Descripcion` = '$Descripcion', `imagen` = '$target_file', `Fabricante_idFabricante` = '$fabricante' WHERE `productos`.`idProductos` = $idproducto") or die($conexion);
+            $actualizar = mysqli_query($conexion, "UPDATE `productos` SET `Nombre` = '$Nombre', `Cantidad` = '$Cantidad', `ValorCompra` = '$ValorCompra', `ValorVenta` = '$ValorVenta', `Descripcion` = '$Descripcion', `imagen` = '$imagen', `Fabricante_idFabricante` = '$fabricante' WHERE `productos`.`idProductos` = $idproducto") or die($conexion);
             $eliminarsubcategorias = mysqli_query($conexion, "DELETE FROM `productoscategoria` where `productoscategoria` . `Productos_idProductos` = '$idproducto'") or die ($conexion."Error en la consulta");
             $cantidadSubcategorias=count($subcategorias);
                 $i=0;

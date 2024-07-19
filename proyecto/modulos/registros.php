@@ -120,6 +120,42 @@
                     </div>
             <?php
                 }
+                ?>
+
+                <div class="container">
+                    <div class="row justify-content-evenly">
+                        <a href="dashboard.php?mod=AgregarProductos" class="col-4">
+                            <button class="btn btn-edit button col-12" href="dashboard.php?mod=AgregarProductos">Agregar Producto</button>
+                        </a>
+                    </div>
+                    <div class="row justify-content-evenly">
+                        <a href="" class="col-4">
+                            <button class="btn btn-edit button col-12">Productos faltantes</button>
+                        </a>
+                    </div>
+                </div>
+
+                <?php
+            }else{
+                ?> 
+                    <center>
+                        
+                        <p class="text-muted" style="padding-top:13px;">No se encontro ningun producto</p>
+                    </center>
+                <div class="container">
+                    <div class="row justify-content-evenly">
+                        <a href="dashboard.php?mod=AgregarProductos" class="col-4">
+                            <button class="btn btn-edit button col-12" href="dashboard.php?mod=AgregarProductos">Agregar Producto</button>
+                        </a>
+                    </div>
+                    <div class="row justify-content-evenly">
+                        <a href="" class="col-4">
+                            <button class="btn btn-edit button col-12">Productos faltantes</button>
+                        </a>
+                    </div>
+                </div>
+
+                <?php
             }
             ?>
         </div>

@@ -1,7 +1,11 @@
 <?php
+include "./conexion.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['fabricanteSeleccionado'])) {
     // Guardar el fabricante seleccionado en una variable de sesión
     $_SESSION['fabricanteSeleccionadoId'] = $_POST['fabricanteSeleccionadoId'];
+
+}else{
+    $_SESSION['fabricanteSeleccionadoId']=0;
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'])) {
     // Guardar el fabricante seleccionado en una variable de sesión
@@ -30,13 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-6">
                             <label for="exampleInputEmail1">Nombre</label>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Ej: Cartulina*" name="Nombre" required>
+                                <input type="text" class="form-control" placeholder="Ej: Cartulina*" name="Nombre" maxlength="45" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label for="exampleInputEmail1">Cantidad Producto</label>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Ej: 34*" name="Cantidad" required>
+                                <input type="number" class="form-control" placeholder="Ej: 34*" name="Cantidad" maxlength="5" required>
                             </div>
                         </div>
                     </div>
@@ -46,13 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-6">
                             <label for="exampleInputEmail1">Valor venta</label>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Ej: 2500*" name="ValorVenta" required>
+                                <input type="number" class="form-control" placeholder="Ej: 2500*" name="ValorVenta" maxlength="7" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label for="exampleInputEmail1">Valor Compra</label>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Ej: 2000*" name="ValorCompra" required>
+                                <input type="number" class="form-control" placeholder="Ej: 2000*" name="ValorCompra" maxlength="7   " required>
                             </div>
                         </div>
                     </div>
@@ -62,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-12">
                             <label for="exampleInputEmail1">Descripcion</label>
                             <div class="col">
-                                <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150"></textarea>
+                                <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" required maxlength="150"></textarea>
                             </div>
                         </div>
                     </div>
@@ -71,7 +75,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">
-                                <div id="btnAñadirFabricante" class="btn btn-fcs button col-12">Añadir fabricante</div>
+                                <?php
+                                    $fabricante=$_SESSION['fabricanteSeleccionadoId'];
+                                    $consultanombrefabricante=mysqli_query($conexion,"SELECT * FROM fabricante where idFabricante = '$fabricante';");
+                                    if($fila=mysqli_fetch_array($consultanombrefabricante)){
+                                        $nombrefabricante=$fila['Nombre'];
+                                    }
+                                ?>
+                                <div id="btnAñadirFabricante" class="btn btn-fcs button col-12"><?php if ($fabricante==0){echo "Añadir fabricante";}else{echo $nombrefabricante;} ?></div>
                             </div>
                         </div>
                     </div>
@@ -99,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="upload-container" for="imagen" id="upload-label">
                     <div class="upload-icon" id="upload-icon">+</div>
                     <div class="upload-text" id="upload-text">Agregar imagen de producto</div>
-                    <input type="file" id="imagen" name="imagen" accept="image/*">
+                    <input type="file" id="imagen" name="imagen" accept="image/*" required>
                 </label>
             </div>
         </div>
@@ -421,12 +432,12 @@ if (isset($_POST['btn_subcategoria'])) {
         }
     });
 
-    document.getElementById('boton-subir').addEventListener('click', function() {
+    document.getElementById('btn_registro').addEventListener('click', function() {
         var input = document.getElementById('imagen');
         if (input.files.length === 0) {
             alert('Por favor, selecciona una imagen primero.');
         } else {
-            document.getElementById('formulario-imagen').submit();
+            document.getElementById('AgregarProductos').submit();
         }
     });
 </script>

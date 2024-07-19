@@ -62,6 +62,8 @@ if (isset($_POST['btn_edit'])) {
                 <label for="exampleInputEmail1">Nombre</label>
                 <div class="col">
                 <input type="text" class="form-control" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                <input type="text" class="form-control" name="imagen" value="<?php echo $imagen; ?>" hidden>
+
                   <input type="text" class="form-control" placeholder="Ej: Cartulina*" name="Nombre" value="<?php echo $Nombre; ?>" required>
                 </div>
               </div>
@@ -94,7 +96,7 @@ if (isset($_POST['btn_edit'])) {
               <div class="col-md-12">
                 <label for="exampleInputEmail1">Descripcion</label>
                 <div class="col">
-                  <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150"><?php echo $Descripcion; ?></textarea>
+                  <textarea type="text" class="form-control col-12" name="Descripcion" placeholder="Ej: Papel grueso especializado en pliegues para origami" requirted maxlength="150" required><?php echo $Descripcion; ?></textarea>
                 </div>
               </div>
             </div>
