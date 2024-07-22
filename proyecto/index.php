@@ -31,6 +31,7 @@
                                                 $_SESSION['Documento'] = $fila['Documento'];
                                                 $_SESSION['Correo'] = $fila['Correo'];
                                                 $_SESSION['Rol'] = $fila['Rol'];
+                                                $_SESSION['fabricanteSeleccionadoId']=0;
                                                 echo "<script>window.location='dashboard.php';</script>";
                                                 exit();
                                             }

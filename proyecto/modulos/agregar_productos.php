@@ -4,8 +4,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['fabricanteSeleccionado
     // Guardar el fabricante seleccionado en una variable de sesión
     $_SESSION['fabricanteSeleccionadoId'] = $_POST['fabricanteSeleccionadoId'];
 
-}else{
-    $_SESSION['fabricanteSeleccionadoId']=0;
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['CategoriaSeleccionado'])) {
     // Guardar el fabricante seleccionado en una variable de sesión
@@ -27,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 style="font-size: 57px; font-weight: bold;">Registro de producto</h1>
         <h6 style="color: #828282;">Llena todos los campos para continuar</h6>
         <br>
+        
         <div class="row">
             <div class="col-md-6">
                 <div class="container-fluid">
@@ -82,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $nombrefabricante=$fila['Nombre'];
                                     }
                                 ?>
-                                <div id="btnAñadirFabricante" class="btn btn-fcs button col-12"><?php if ($fabricante==0){echo "Añadir fabricante";}else{echo $nombrefabricante;} ?></div>
+                                <div id="btnAñadirFabricante" class="btn btn-fcs button col-12"><?php if ($fabricante>0){echo $nombrefabricante;}else{echo "Añadir fabricante";} ?></div>
                             </div>
                         </div>
                     </div>

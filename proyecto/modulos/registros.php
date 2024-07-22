@@ -166,8 +166,98 @@
 <div class="contenedorfabricantes" id="contenedorfabricantes">
     <center>
         <h6>Busqueda</h6>
-        <input type="text" id="search" class="form-control" placeholder="Ej: Cuaderno" style="width: 18rem;">
+        <input type="text" id="search" class="form-control" placeholder="Ej: Matel" style="width: 18rem;">
     </center>
+    <div class="container-fluid" style="padding-top:10px;">
+        <div class="row justify-content-evenly">
+            <?php
+            include "conexion.php";
+            $consulta = mysqli_query($conexion, "SELECT * FROM fabricante;") or die($conexion . "Error en la consulta");
+            $cantidad = mysqli_num_rows($consulta);
+            if ($cantidad > 0) {
+                while ($fila = mysqli_fetch_array($consulta)) {
+                    $Nombre = $fila['Nombre'];
+                    $idFabricante = $fila['idFabricante'];
+            ?>
+                    <div class="col-md-4 shadow card" style="">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $Nombre; ?></h5>
+                            <span class="text-muted"><?php echo "Productos relacionados" ?></span>
+                            <ul class="list-styled" style="height:96px">
+                                <?php
+                                    $consultaproductosconteo= mysqli_query($conexion,"SELECT * FROM productos where Fabricante_idFabricante = $idFabricante") or die("Error en la consulta:".$conexion);
+                                    $cantidadproductos=mysqli_num_rows($consultaproductosconteo);
+                                    if ($cantidadproductos>3){
+                                        $consultaproductosmas= mysqli_query($conexion,"SELECT * FROM productos where Fabricante_idFabricante = $idFabricante LIMIT 3") or die("Error en la consulta:".$conexion);
+                                        while($fila = mysqli_fetch_array($consultaproductosmas)){
+                                            $nombrep=$fila['Nombre'];
+                                            $masproductos = $cantidadproductos-3;
+                                            ?>
+                                                <li><?php echo $nombrep; ?></li>
+                                            <?php
+                                        }
+                                        ?>
+                                        <li class="text-muted"><?php echo $masproductos." Mas"; ?></li>                            
+                                        <?php
+                                    }else{
+                                        $consultaproductosmenos= mysqli_query($conexion,"SELECT * FROM productos where Fabricante_idFabricante = $idFabricante") or die("Error en la consulta:".$conexion);
+                                        while($fila = mysqli_fetch_array($consultaproductosmenos)){
+                                            $nombrep=$fila['Nombre'];
+
+                                            ?>
+                                                <li><?php echo $nombrep; ?></li>
+                                            <?php
+                                        }
+                                    }
+                                ?>
+                            </ul>
+                            <div class="container-fluid">
+                                <div class="row justify-content-evenly">
+                                    <form action="dashboard.php?mod=EditarProducto" method="post" class="col-6">
+                                        <input type="text" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                                        <button class="btn btn-edit col-12" id="btn_edit" name="btn_edit" type="submit">Editar</button>
+                                    </form>
+                                    <form action="./codigo_productos.php" method="POST" class="col-6">
+                                        <input type="text" name="idproducto" value="<?php echo $idproducto; ?>" hidden>
+                                        <button class="btn btn-delete col-12" name="btn_delete" id="btn_delete" type="submit">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            <?php
+                }
+                ?>
+
+                <div class="container">
+                    <div class="row justify-content-evenly">
+                        <a href="dashboard.php?mod=AgregarProductos" class="col-4">
+                            <button class="btn btn-edit button col-12" href="dashboard.php?mod=AgregarProductos">Agregar Fabricante</button>
+                        </a>
+                    </div>
+                </div>
+
+                <?php
+            }else{
+                ?> 
+                    <center>
+                        
+                        <p class="text-muted" style="padding-top:13px;">No se encontro ningun Fabrincate</p>
+                    </center>
+                <div class="container">
+                    <div class="row justify-content-evenly">
+                        <a href="dashboard.php?mod=AgregarProductos" class="col-4">
+                            <button class="btn btn-edit button col-12" href="dashboard.php?mod=AgregarProductos">Agregar Fabricante</button>
+                        </a>
+                    </div>
+                </div>
+
+                <?php
+            }
+            ?>
+        </div>
+    </div>
+
 </div>
 <div class="contenedorcategorias" id="contenedorcategorias">
     <center>
