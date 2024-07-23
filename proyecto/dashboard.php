@@ -217,9 +217,9 @@ session_start(); // Iniciar la sesión
                                   require_once("modulos/ver_producto.php");
                                 }
                                 else
-                                    if(@ $_GET['mod']=="calendario")
+                                    if(@ $_GET['mod']=="Carrito")
                                     {
-                                      require_once("modulos/calendario.php");
+                                      require_once("modulos/carrito.php");
                                     }
                                     else
                                         if(@ $_GET['mod']=="calculadora")
