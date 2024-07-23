@@ -44,6 +44,17 @@
     border-color: green !important;
 }
 
+.btn_SeleccionRegistro{
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.seleccionRegistro{
+    background-color: white !important; 
+}
+
+
 .modal {
     display: none;
     position: fixed;

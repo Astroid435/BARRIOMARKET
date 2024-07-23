@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-06-2024 a las 06:10:35
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.2.4
+-- Tiempo de generación: 16-07-2024 a las 17:47:49
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -57,14 +57,6 @@ CREATE TABLE `cantidadventa` (
   `Cantidad` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Volcado de datos para la tabla `cantidadventa`
---
-
-INSERT INTO `cantidadventa` (`RegistroVenta_idRegistroVenta`, `Productos_idProductos`, `Cantidad`) VALUES
-(1, 1, 1),
-(1, 2, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -81,9 +73,9 @@ CREATE TABLE `categoria` (
 --
 
 INSERT INTO `categoria` (`idCategoria`, `Nombre`) VALUES
-(1, 'Aseo'),
-(2, 'Cuadernos'),
-(3, 'Lapiceros');
+(1, 'Lapiceros'),
+(2, 'pepe'),
+(3, 'Aseo');
 
 -- --------------------------------------------------------
 
@@ -102,8 +94,8 @@ CREATE TABLE `fabricante` (
 --
 
 INSERT INTO `fabricante` (`idFabricante`, `Nombre`, `Telefono`) VALUES
-(1, 'Jabonate', '3123123'),
-(2, 'Norma', '123123');
+(1, 'Danielitos', '123123'),
+(2, 'Matel', '1111');
 
 -- --------------------------------------------------------
 
@@ -115,14 +107,6 @@ CREATE TABLE `metodosventa` (
   `TiposMetodo_idTiposMetodo` tinyint(2) NOT NULL,
   `RegistroVenta_idRegistroVenta` smallint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `metodosventa`
---
-
-INSERT INTO `metodosventa` (`TiposMetodo_idTiposMetodo`, `RegistroVenta_idRegistroVenta`) VALUES
-(1, 1),
-(2, 1);
 
 -- --------------------------------------------------------
 
@@ -137,7 +121,7 @@ CREATE TABLE `productos` (
   `ValorCompra` int(7) NOT NULL,
   `ValorVenta` int(7) NOT NULL,
   `Descripcion` varchar(150) NOT NULL,
-  `imagen` blob DEFAULT NULL,
+  `imagen` varchar(50) DEFAULT NULL,
   `Fabricante_idFabricante` tinyint(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -146,8 +130,11 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`idProductos`, `Nombre`, `Cantidad`, `ValorCompra`, `ValorVenta`, `Descripcion`, `imagen`, `Fabricante_idFabricante`) VALUES
-(1, 'Cuaderno Spider-Man', 15, 10000, 15000, 'Cuadernazo', '', 2),
-(2, 'Cuaderno Hello-kitty', 13, 10000, 15000, 'Cuadernazo', '', 2);
+(1, 'Arepa', 123, 123, 123, '123', '123', 1),
+(2, '123', 123, 123, 123, '123', 'ImgProductos/66967c7c9cc1f.jpeg', 1),
+(3, '1231', 1231, 12311, 1231, '123123', 'ImgProductos/66967d8aeb66d.jpeg', 1),
+(4, 'Hola', 123, 111111, 1211, '123123131', 'ImgProductos/66967e12801c4.jpg', 1),
+(8, '1111', 111, 11, 111, '11', 'ImgProductos/669681ba50e99.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -159,16 +146,6 @@ CREATE TABLE `productoscategoria` (
   `Productos_idProductos` smallint(4) NOT NULL,
   `Subcategoria_idSubcategoria` tinyint(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `productoscategoria`
---
-
-INSERT INTO `productoscategoria` (`Productos_idProductos`, `Subcategoria_idSubcategoria`) VALUES
-(1, 3),
-(1, 4),
-(2, 3),
-(2, 4);
 
 -- --------------------------------------------------------
 
@@ -191,7 +168,6 @@ CREATE TABLE `registroencargo` (
 CREATE TABLE `registrofalta` (
   `idRegistroFalta` tinyint(3) NOT NULL,
   `NombreProducto` varchar(45) NOT NULL,
-  `Fecha` datetime NOT NULL,
   `Contador` tinyint(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -224,13 +200,6 @@ CREATE TABLE `registroventa` (
   `DocumentoCliente` bigint(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Volcado de datos para la tabla `registroventa`
---
-
-INSERT INTO `registroventa` (`idRegistroVenta`, `Valor`, `ValorTotal`, `Fecha`, `Usuario_DocumentoAdministrador`, `DocumentoCliente`) VALUES
-(1, 30000, 33300, '2024-06-12 16:14:02', 1011397031, 1011397031);
-
 -- --------------------------------------------------------
 
 --
@@ -259,20 +228,23 @@ INSERT INTO `rol` (`IdRol`, `Nombre`) VALUES
 CREATE TABLE `subcategoria` (
   `idSubcategoria` tinyint(3) NOT NULL,
   `Nombre` varchar(45) NOT NULL,
-  `Categoria_idCategoria` tinyint(2) NOT NULL
+  `idCategoria` tinyint(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `subcategoria`
 --
 
-INSERT INTO `subcategoria` (`idSubcategoria`, `Nombre`, `Categoria_idCategoria`) VALUES
-(1, 'limpieza', 1),
-(2, 'Desinfeccion', 1),
-(3, 'Argollado', 2),
-(4, 'Cuadriculado', 2),
-(5, 'Retractil', 3),
-(6, 'Negro', 3);
+INSERT INTO `subcategoria` (`idSubcategoria`, `Nombre`, `idCategoria`) VALUES
+(1, 'Retractil', 1),
+(1, '123131', 2),
+(2, 'Redondo', 1),
+(3, 'Negro', 1),
+(4, 'Triangular', 1),
+(6, '123', 1),
+(7, '123111', 2),
+(8, 'Limpieza', 3),
+(9, 'Desinfeccion', 3);
 
 -- --------------------------------------------------------
 
@@ -291,9 +263,8 @@ CREATE TABLE `tiposdocumento` (
 --
 
 INSERT INTO `tiposdocumento` (`idTiposDocumento`, `Sigla`, `Descripcion`) VALUES
-(1, 'TI', 'Tarjeta de indentidad'),
-(2, 'CC', 'Cedula de cuidadania'),
-(3, 'RC', 'Registro civil');
+(1, 'TI', 'Tarjeta de Identidad'),
+(2, 'CC', 'Cedula de Ciudadanía');
 
 -- --------------------------------------------------------
 
@@ -305,14 +276,6 @@ CREATE TABLE `tiposmetodo` (
   `idTiposMetodo` tinyint(2) NOT NULL,
   `Nombre` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
---
--- Volcado de datos para la tabla `tiposmetodo`
---
-
-INSERT INTO `tiposmetodo` (`idTiposMetodo`, `Nombre`) VALUES
-(1, 'Efectivo'),
-(2, 'Transferencia');
 
 -- --------------------------------------------------------
 
@@ -336,8 +299,20 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`Documento`, `PrimerNombre`, `PrimerApellido`, `Telefono`, `Correo`, `Contraseña`, `TipoDocumento`, `Rol`) VALUES
-(1011397030, 'Juan', 'Benitez', '3242974380', 'prueba@gmail.com', '5e8667a439c68f5145dd2fcbecf02209', 2, 1),
-(1011397031, 'Juan', 'Benitez', '3242974388', 'jujobelo9@gmail.com', 'Astroid435', 1, 2);
+(1231231, '12312', '123123', '1231231', 'juanjos', '123123', 1, 2),
+(1011397031, 'Juan', 'Benitez', '3242974388', 'prueba@gmail.com', '5e8667a439c68f5145dd2fcbecf02209', 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarioproductofaltante`
+--
+
+CREATE TABLE `usuarioproductofaltante` (
+  `DocumentoCliente` bigint(12) NOT NULL,
+  `IdProductoFaltante` tinyint(3) NOT NULL,
+  `Fecha` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Índices para tablas volcadas
@@ -347,14 +322,13 @@ INSERT INTO `usuario` (`Documento`, `PrimerNombre`, `PrimerApellido`, `Telefono`
 -- Indices de la tabla `cantidadencargo`
 --
 ALTER TABLE `cantidadencargo`
-  ADD PRIMARY KEY (`RegistroVenta_idRegistroVenta`,`Productos_idProductos`),
-  ADD KEY `fk_CantidadVenta_Productos1_idx` (`Productos_idProductos`);
+  ADD KEY `fk_CantidadVenta_Productos1_idx` (`Productos_idProductos`),
+  ADD KEY `fk_CantidadVenta_RegistroVenta10` (`RegistroVenta_idRegistroVenta`);
 
 --
 -- Indices de la tabla `cantidadpedido`
 --
 ALTER TABLE `cantidadpedido`
-  ADD PRIMARY KEY (`Productos_idProductos`,`RegistroPedido_idRegistroPedido`),
   ADD KEY `fk_CantidadVenta_Productos1_idx` (`Productos_idProductos`),
   ADD KEY `fk_CantidadVenta_copy1_RegistroPedido1_idx` (`RegistroPedido_idRegistroPedido`);
 
@@ -362,8 +336,8 @@ ALTER TABLE `cantidadpedido`
 -- Indices de la tabla `cantidadventa`
 --
 ALTER TABLE `cantidadventa`
-  ADD PRIMARY KEY (`RegistroVenta_idRegistroVenta`,`Productos_idProductos`),
-  ADD KEY `fk_CantidadVenta_Productos1_idx` (`Productos_idProductos`);
+  ADD KEY `fk_CantidadVenta_Productos1_idx` (`Productos_idProductos`),
+  ADD KEY `fk_CantidadVenta_RegistroVenta1` (`RegistroVenta_idRegistroVenta`);
 
 --
 -- Indices de la tabla `categoria`
@@ -382,8 +356,8 @@ ALTER TABLE `fabricante`
 -- Indices de la tabla `metodosventa`
 --
 ALTER TABLE `metodosventa`
-  ADD PRIMARY KEY (`TiposMetodo_idTiposMetodo`,`RegistroVenta_idRegistroVenta`),
-  ADD KEY `fk_MetodosVenta_RegistroVenta1_idx` (`RegistroVenta_idRegistroVenta`);
+  ADD KEY `fk_MetodosVenta_RegistroVenta1_idx` (`RegistroVenta_idRegistroVenta`),
+  ADD KEY `fk_MetodosVenta_TiposMetodo1` (`TiposMetodo_idTiposMetodo`);
 
 --
 -- Indices de la tabla `productos`
@@ -396,7 +370,6 @@ ALTER TABLE `productos`
 -- Indices de la tabla `productoscategoria`
 --
 ALTER TABLE `productoscategoria`
-  ADD PRIMARY KEY (`Productos_idProductos`,`Subcategoria_idSubcategoria`),
   ADD KEY `fk_Productos_has_Subcategoria_Subcategoria1_idx` (`Subcategoria_idSubcategoria`),
   ADD KEY `fk_Productos_has_Subcategoria_Productos1_idx` (`Productos_idProductos`);
 
@@ -437,8 +410,8 @@ ALTER TABLE `rol`
 -- Indices de la tabla `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  ADD PRIMARY KEY (`idSubcategoria`,`Categoria_idCategoria`),
-  ADD KEY `fk_Subcategoria_Categoria1_idx` (`Categoria_idCategoria`);
+  ADD PRIMARY KEY (`idSubcategoria`,`idCategoria`),
+  ADD KEY `fk_Subcategoria_Categoria1_idx` (`idCategoria`);
 
 --
 -- Indices de la tabla `tiposdocumento`
@@ -462,6 +435,13 @@ ALTER TABLE `usuario`
   ADD KEY `fk_Usuario_Rol1_idx` (`Rol`);
 
 --
+-- Indices de la tabla `usuarioproductofaltante`
+--
+ALTER TABLE `usuarioproductofaltante`
+  ADD KEY `fk_Usuario_has_RegistroFalta_RegistroFalta1_idx` (`IdProductoFaltante`),
+  ADD KEY `fk_Usuario_has_RegistroFalta_Usuario1_idx` (`DocumentoCliente`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -481,7 +461,7 @@ ALTER TABLE `fabricante`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `idProductos` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idProductos` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `registroencargo`
@@ -505,31 +485,13 @@ ALTER TABLE `registropedido`
 -- AUTO_INCREMENT de la tabla `registroventa`
 --
 ALTER TABLE `registroventa`
-  MODIFY `idRegistroVenta` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `rol`
---
-ALTER TABLE `rol`
-  MODIFY `IdRol` tinyint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idRegistroVenta` smallint(4) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  MODIFY `idSubcategoria` tinyint(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT de la tabla `tiposdocumento`
---
-ALTER TABLE `tiposdocumento`
-  MODIFY `idTiposDocumento` tinyint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `tiposmetodo`
---
-ALTER TABLE `tiposmetodo`
-  MODIFY `idTiposMetodo` tinyint(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idSubcategoria` tinyint(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restricciones para tablas volcadas
@@ -592,7 +554,7 @@ ALTER TABLE `registroventa`
 -- Filtros para la tabla `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  ADD CONSTRAINT `fk_Subcategoria_Categoria1` FOREIGN KEY (`Categoria_idCategoria`) REFERENCES `categoria` (`idCategoria`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Subcategoria_Categoria1` FOREIGN KEY (`idCategoria`) REFERENCES `categoria` (`idCategoria`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `usuario`
@@ -600,6 +562,13 @@ ALTER TABLE `subcategoria`
 ALTER TABLE `usuario`
   ADD CONSTRAINT `fk_Administrador_TiposDocumento0` FOREIGN KEY (`TipoDocumento`) REFERENCES `tiposdocumento` (`idTiposDocumento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Usuario_Rol1` FOREIGN KEY (`Rol`) REFERENCES `rol` (`IdRol`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `usuarioproductofaltante`
+--
+ALTER TABLE `usuarioproductofaltante`
+  ADD CONSTRAINT `fk_Usuario_has_RegistroFalta_RegistroFalta1` FOREIGN KEY (`IdProductoFaltante`) REFERENCES `registrofalta` (`idRegistroFalta`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Usuario_has_RegistroFalta_Usuario1` FOREIGN KEY (`DocumentoCliente`) REFERENCES `usuario` (`Documento`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

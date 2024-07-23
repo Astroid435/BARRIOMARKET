@@ -1,3 +1,8 @@
+<?php
+session_start(); // Iniciar la sesión
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,172 +70,210 @@
       <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"></path>
     </symbol>
   </svg>
-  <header>
-    <div class="px-3 py-2 text-black">
-      <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
-            Barrio Market/SYS Fatima
-          </a>
-
-          <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
-            <li>
-              <a href="#" class="nav-link text-black">
-                <svg class="bi d-block mx-auto mb-1" width="24" height="24">
-                  <use xlink:href="#home"></use>
-                </svg>
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="#" class="nav-link text-black">
-                <svg class="bi d-block mx-auto mb-1" width="24" height="24">
-                  <use xlink:href="#grid"></use>
-                </svg>
-                Productos
-              </a>
-            </li>
-            <li>
-              <a href="#" class="nav-link text-black">
-                <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
-                Carrito
-              </a>
-            </li>
-            <li>
-              <a href="#" class="nav-link text-black">
-                <svg class="bi d-block mx-auto mb-1" width="24" height="24">
-                  <use xlink:href="#people-circle"></use>
-                </svg>
-                Perfil
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </header>
-  <div class="container">
-    <div class="container Fatima mt-5">
-      <center>
-        <h1 class="text-white SYS">SYS Fatima</h1>
-        <h4 class="text-white">Papeleria y otros servicios</h4>
-        <br>
-        <a href="agregar_productos.php">
-          <button class="btn-primary btn">Ver productos</button>
-        </a>
-      </center>
-    </div>
-    <div class="row" id="productos_destacados">
-      <h2>Productos destacados</h2>
-    </div>
-    <div class="container">
-      <div class="row">
-        <?php
-                include "conexion.php";
-                $consulta=mysqli_query($conexion,"SELECT * FROM productos LIMIT 6;") or die ($conexion."Error en la consulta");
-                $cantidad = mysqli_num_rows($consulta);
-                if($cantidad > 0){
-                while($fila=mysqli_fetch_array($consulta)){
-                  ?>
-                  <div class="producto1 col-md-4">
-                    <img src="<?php echo $fila['imagen'];?>" height="200px" width="100%">
-                    <div class="container-info">
-                      <p id="nom_produ"><strong><?php echo $fila['Nombre'];?></strong></p>
-                      <p id="info_produ"><?php echo $fila['Descripcion'];?></p>
-                      <p id="info_produ"><strong>$<?php echo $fila['ValorVenta'];?></strong></p>
-                    </div>
+  <?php
+          $admin= $_SESSION['Rol'];
+          if($admin==2){
+          ?>
+                        <header>
+              <div class="px-3 py-2 text-black">
+                <div class="container">
+                  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="dashboard.php?mod=inicio" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
+                      Barrio Market/SYS Fatima
+                    </a>
+                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                      <li>
+                        <a href="dashboard.php?mod=inicio" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#home"></use>
+                          </svg>
+                          Home
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=registros" class="nav-link text-black">
+                          <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
+                          Registros
+                        </a>
+                      </li>
+                      <li>
+                      <li>
+                        <a href="dashboard.php?mod=productos" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#grid"></use>
+                          </svg>
+                          Ventas
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=carrito" class="nav-link text-black">
+                          <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
+                          Compras
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=carrito" class="nav-link text-black">
+                          <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
+                          Pedidos
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=perfil" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#people-circle"></use>
+                          </svg>
+                          Perfil
+                        </a>
+                      </li>
+                    </ul>
                   </div>
-                  <?php
+                </div>
+              </div>
+            </header>
+          <?php
+          }else{
+          ?>
+            <header>
+              <div class="px-3 py-2 text-black">
+                <div class="container">
+                  <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="dashboard.php?mod=inicio" class="d-flex align-items-center my-2 my-lg-0 me-lg-auto text-black text-decoration-none">
+                      Barrio Market/SYS Fatima
+                    </a>
+                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+                      <li>
+                        <a href="dashboard.php?mod=inicio" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#home"></use>
+                          </svg>
+                          Home
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=productos" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#grid"></use>
+                          </svg>
+                          Productos
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=carrito" class="nav-link text-black">
+                          <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
+                          Carrito
+                        </a>
+                      </li>
+                      <li>
+                        <a href="dashboard.php?mod=perfil" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#people-circle"></use>
+                          </svg>
+                          Perfil
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </header>
+          <?php
+          }
+          ?>
+  <div class="container">
+  <?php
+        if(@ $_GET['mod']=="")
+        {
+          require_once("modulos/inicio.php");
+        }
+        else
+            if(@ $_GET['mod']=="inicio")
+            {
+              require_once("modulos/inicio.php");
+            }
+            else
+                if(@ $_GET['mod']=="AgregarProductos")
+                {
+                  require_once("modulos/agregar_productos.php");
                 }
-              }
-        ?>
-        <hr>
-      </div>
-      <div class="row" id="categoria">
-      <h2>Categorias</h2>
-    </div>
-      <div class="container" id="categoriasresumen">
-        <div class="row">
-                    <?php
-                    include "conexion.php";
-                    $dep=1;
-                    if ($dep==1){
-                      $consulta = $conexion->prepare("SELECT * FROM categoria limit 3");
-                      $consulta->execute();
-                      $resultados = $consulta->get_result();
-  
-                      while ($fila = $resultados->fetch_assoc()) {
-                      ?>
-                          <div class="col-md-4 mb-3">
-                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
-                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
-                              </div>
-                          </div>
-                      <?php
-                      }
-                      ?>
-                      <center>
-                      <div class="col-md-3 mb-3">
-                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermas">
-                              Ver mas
-                          </div>
-                      </div>
-                      </center>
-                    <?php
+                else
+                    if(@ $_GET['mod']=="registros")
+                    {
+                      require_once("modulos/registros.php");
                     }
-                    ?>
-                </div>
-            </div>
-            <div class="container" id="categoriastodas">
-              <div class="row">
-                    <?php
-                    include "conexion.php";
-                    $dep=1;
-                    if ($dep==1){
-                      $consulta = $conexion->prepare("SELECT * FROM categoria");
-                      $consulta->execute();
-                      $resultados = $consulta->get_result();
-  
-                      while ($fila = $resultados->fetch_assoc()) {
-                      ?>
-                          <div class="col-md-4 mb-3">
-                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
-                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
-                              </div>
-                          </div>
-                      <?php
-                      }
-                      ?>
-                      <center>
-                      <div class="col-md-3 mb-3">
-                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermenos">
-                              Ver menos
-                          </div>
-                      </div>
-                      </center>
-                    <?php
-                    }
-                    ?>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
+                    else
+                        if(@ $_GET['mod']=="EditarProducto")
+                        {
+                          require_once("modulos/editar_producto.php");
+                        }
+                        else
+                            if(@ $_GET['mod']=="seguimiento")
+                            {
+                              require_once("modulos/seguimiento.php");
+                            }
+                            else
+                                if(@ $_GET['mod']=="cuenta")
+                                {
+                                  require_once("modulos/cuenta.php");
+                                }
+                                else
+                                    if(@ $_GET['mod']=="calendario")
+                                    {
+                                      require_once("modulos/calendario.php");
+                                    }
+                                    else
+                                        if(@ $_GET['mod']=="calculadora")
+                                        {
+                                          require_once("modulos/macros/calculadora.php");
+                                        }
+                                        else
+                                            if(@ $_GET['mod']=="usuarios")
+                                            {
+                                              require_once("modulos/usuarios.php");
+                                            }
+                                            else
+                                                if(@ $_GET['mod']=="gestionar")
+                                                {
+                                                  require_once("modulos/gestionar.php");
+                                                }
+                                                else
+                                                  if(@ $_GET['mod']=="info_receta")
+                                                  {
+                                                    require_once("modulos/info_receta.php");
+                                                  }
+                                                  else
+                                                    if(@ $_GET['mod']=="selector_rutina")
+                                                    {
+                                                      require_once("modulos/rutinas/selector_rutina.php");
+                                                    }
+                                                    else
+                                                      if(@ $_GET['mod']=="menu_alimentos")
+                                                      {
+                                                        require_once("modulos/macros/menu_alimentos.php");
+                                                      }
+                                                      else
+                                                        if(@ $_GET['mod']=="rutina_pro")
+                                                        {
+                                                          require_once("modulos/rutinas/rutina_pro.php");
+                                                        }
+                                                        else
+                                                          if(@ $_GET['mod']=="form_palimenticio")
+                                                          {
+                                                            require_once("modulos/plan/form_palimenticio.php");
+                                                          }
+                                                          else
+                                                            if(@ $_GET['mod']=="palimenticio_pro")
+                                                            {
+                                                              require_once("modulos/plan/palimenticio_pro.php");
+                                                            }
+                                                            else
+                                                              if(@ $_GET['mod']=="info_ejercicio")
+                                                              {
+                                                                require_once("modulos/rutinas/info_ejercicio.php");
+                                                              }
+      ?>
 
   </div>
-
-<script>
-        verMenos=document.getElementById('btn_vermenos');
-        verMenos.onclick = function(){
-          document.getElementById('categoriastodas').style.display = "none";
-          document.getElementById('categoriasresumen').style.display = "block";
-        }
-        verMas=document.getElementById('btn_vermas');
-        verMas.onclick = function(){
-          document.getElementById('categoriastodas').style.display = "block";
-          document.getElementById('categoriasresumen').style.display = "none";
-        }
-</script>
+<script src="script.js"></script>
 </body>
 
 </html>
