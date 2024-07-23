@@ -206,6 +206,7 @@ session_start(); // Iniciar la sesión
                           require_once("modulos/editar_producto.php");
                         }
                         else
+
                             if(@ $_GET['mod']=="RegistrarVenta")
                             {
                               require_once("modulos/registrar_venta.php");
