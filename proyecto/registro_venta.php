@@ -12,32 +12,73 @@
   <link rel="stylesheet" type="text/css" href="style/estilos_dashboard.css">
   <meta charset="utf-8">
   <style>
-    #productos_destacados {
-      background-color: white;
-      margin-top: 50px;
+ 
+ .card {
+      margin-bottom: 20px;
+      border-radius: 3px black solid !important;
+      margin-left: 20px;
+      margin-right: 20px;
+      box-shadow: 0 0 12px rgb(0, 0, 0, 0.2);
+      border: transparent;
+      height: 200px;
     }
-    #categoria {
-      background-color: white;
-      margin-top: 65px;
+
+    .card .card-link {
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background-color: #000;
+        border-radius: 5px;
+        color: #ffff;
+        text-decoration: none;
     }
-    .container-info{
-      margin-left: 10px;
+
+    .card .precio-nombre {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
     }
-    #nom_produ{
-      margin-top: 10px;
+
+    .card .precio-nombre .card-text {
+        margin-top: 15px;
     }
-    #info_produ{
-      margin-top: -14px;
+    .containertop{
+        box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
+        border: 0 0 4px black solid !important;
+        border-radius: 10px;
+        padding: 5px;
+        width: 700px;
+        display: flex !important;
+        margin-left: 27%;
+        margin-top: 25px;
+        margin-bottom: 30px;
+        text-align: center;
     }
-    .producto1{
-      border-radius: 20px;
+    .containertop h3{
+        margin-left: 37%;
     }
-    #categoriasresumen{
-      display: block;
+    .container-valor{
+        background-color: green;
+        margin-left: 12%;
+        width: 820px;
+        height: 800px;
     }
-    #categoriastodas{
-      display: none;
+    .cont{
+        width: 200px;
     }
+    .cont label{
+        font-size: 20px;
+        color: black;
+        font-weight: 500;
+    }
+    .container-precio{
+        box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
+        border: 0 0 4px black solid !important;
+        border-radius: 10px;
+    }
+
   </style>
 </head>
 
@@ -109,128 +150,73 @@
       </div>
     </div>
   </header>
-  <div class="container">
-    <div class="container Fatima mt-5">
-      <center>
-        <h1 class="text-white SYS">SYS Fatima</h1>
-        <h4 class="text-white">Papeleria y otros servicios</h4>
-        <br>
-        <a href="agregar_productos.php">
-          <button class="btn-primary btn">Ver productos</button>
-        </a>
-      </center>
-    </div>
-    <div class="row" id="productos_destacados">
-      <h2>Productos destacados</h2>
-    </div>
+  <center>
+    <h1><strong>Registrar Venta</strong></h1>
+    <p>Llene todos los campos para continuar</p>
     <div class="container">
-      <div class="row">
-        <?php
-                include "conexion.php";
-                $consulta=mysqli_query($conexion,"SELECT * FROM productos LIMIT 6;") or die ($conexion."Error en la consulta");
-                $cantidad = mysqli_num_rows($consulta);
-                if($cantidad > 0){
-                while($fila=mysqli_fetch_array($consulta)){
-                  ?>
-                  <div class="producto1 col-md-4">
-                    <img src="<?php echo $fila['imagen'];?>" height="200px" width="100%">
-                    <div class="container-info">
-                      <p id="nom_produ"><strong><?php echo $fila['Nombre'];?></strong></p>
-                      <p id="info_produ"><?php echo $fila['Descripcion'];?></p>
-                      <p id="info_produ"><strong>$<?php echo $fila['ValorVenta'];?></strong></p>
-                    </div>
-                  </div>
-                  <?php
-                }
-              }
-        ?>
-        <hr>
+    <div class="d-flex flex-wrap">
+    <div class="card" style="width: 20rem;">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted" style="font-size: 20px;">Norma 3 unidades</h6>
+          <div class="precio-nombre"> 
+            <h5 class="card-title" style="font-size: 40px; margin-left:-65px" >cuaderno </h5>
+            <p class="card-text" id="precio">$10.000</p>
+          </div>
+          <a href="#" class="card-link">Eliminar </a>
+        </div>
       </div>
-      <div class="row" id="categoria">
-      <h2>Categorias</h2>
-    </div>
-      <div class="container" id="categoriasresumen">
-        <div class="row">
-                    <?php
-                    include "conexion.php";
-                    $dep=1;
-                    if ($dep==1){
-                      $consulta = $conexion->prepare("SELECT * FROM categoria limit 3");
-                      $consulta->execute();
-                      $resultados = $consulta->get_result();
-  
-                      while ($fila = $resultados->fetch_assoc()) {
-                      ?>
-                          <div class="col-md-4 mb-3">
-                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
-                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
-                              </div>
-                          </div>
-                      <?php
-                      }
-                      ?>
-                      <center>
-                      <div class="col-md-3 mb-3">
-                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermas">
-                              Ver mas
-                          </div>
-                      </div>
-                      </center>
-                    <?php
-                    }
-                    ?>
-                </div>
-            </div>
-            <div class="container" id="categoriastodas">
-              <div class="row">
-                    <?php
-                    include "conexion.php";
-                    $dep=1;
-                    if ($dep==1){
-                      $consulta = $conexion->prepare("SELECT * FROM categoria");
-                      $consulta->execute();
-                      $resultados = $consulta->get_result();
-  
-                      while ($fila = $resultados->fetch_assoc()) {
-                      ?>
-                          <div class="col-md-4 mb-3">
-                              <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector" onclick="selectFabricante(this, '<?php echo $fila['idCategoria']; ?>')">
-                                  <?php echo htmlspecialchars($fila['Nombre']); ?>
-                              </div>
-                          </div>
-                      <?php
-                      }
-                      ?>
-                      <center>
-                      <div class="col-md-3 mb-3">
-                          <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermenos">
-                              Ver menos
-                          </div>
-                      </div>
-                      </center>
-                    <?php
-                    }
-                    ?>
+      <div class="card" style="width: 20rem;">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted" style="font-size: 20px;">Norma 3 unidades</h6>
+          <div class="precio-nombre"> 
+            <h5 class="card-title" style="font-size: 40px; margin-left:-65px" >colores </h5>
+            <p class="card-text" id="precio">$10.000</p>
+          </div>
+          
+          <a href="#" class="card-link">Eliminar </a>
+        </div>
+      </div>
+      <div class="card" style="width: 20rem;">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted" style="font-size: 20px;">Norma 3 unidades</h6>
+          <div class="precio-nombre"> 
+            <h5 class="card-title" style="font-size: 40px; margin-left:-65px" >lapiceros </h5>
+            <p class="card-text" id="precio">$10.000</p>
+          </div>
+          
+          <a href="#" class="card-link">Eliminar </a>
+        </div>
+      </div>
+      <div>
+        <div class="containertop">
+            <h3>Añadir producto</h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="container-valor">
+            <div class="cont col-md-4">
+                <label for="">Precio Neto</label>
+                <div class="container-precio">
+                    <h4>$999.999</h4>
                 </div>
             </div>
         </div>
+        <div class="container-valor">
+            <div class="cont col-md-4">
+                <label for="">Precio Neto</label>
+                
+            </div>
+        </div>
+        <div class="container-valor">
+            <div class="cont col-md-4">
+                <label for="">Precio Neto</label>
+                
+            </div>
+        </div>
+
       </div>
-    </div>
 
-  </div>
 
-<script>
-        verMenos=document.getElementById('btn_vermenos');
-        verMenos.onclick = function(){
-          document.getElementById('categoriastodas').style.display = "none";
-          document.getElementById('categoriasresumen').style.display = "block";
-        }
-        verMas=document.getElementById('btn_vermas');
-        verMas.onclick = function(){
-          document.getElementById('categoriastodas').style.display = "block";
-          document.getElementById('categoriasresumen').style.display = "none";
-        }
-</script>
 </body>
 
 </html>

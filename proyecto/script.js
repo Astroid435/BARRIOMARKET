@@ -28,22 +28,23 @@ const closes = {
 
 // Abrir el modal cuando se haga clic en el botón
 buttons.btnAñadirFabricante.onclick = function() {
-    modals.VentanaFabricante.style.display = "block";
+    modals.VentanaFabricante.style.display = "flex";
 }
 buttons.btnCrearFabricante.onclick = function() {
-    modals.VentanaCrearFabricante.style.display = "block";
+    modals.VentanaCrearFabricante.style.display = "flex";
 }
 buttons.btnAñadirCategoria.onclick = function() {
-    modals.VentanaCategoria.style.display = "block";
+    modals.VentanaCategoria.style.display = "flex";
 }
 buttons.btnCrearCategoria.onclick = function() {
-    modals.VentanaCrearCategoria.style.display = "block";
+    modals.VentanaCrearCategoria.style.display = "flex";
 }
 buttons.btnAñadirSubcategoria.onclick = function() {
-    modals.VentanaSubcategoria.style.display = "block";
+    modals.VentanaSubcategoria.style.display = "flex";
 }
+
 buttons.btnCrearSubcategoria.onclick = function() {
-    modals.VentanaCrearSubcategoria.style.display = "block";
+    modals.VentanaCrearSubcategoria.style.display = "flex";
 }
 
 // Cerrar el modal cuando se haga clic en el botón de cierre
@@ -79,3 +80,16 @@ window.onclick = function(event) {
         }
     }
 }
+
+window.addEventListener('load', function() {
+    if (localStorage.getItem('showModal') === 'true') {
+        document.getElementById('VentanaSubcategoria').style.display = 'flex';
+        localStorage.removeItem('showModal'); // Limpiar la bandera para que no se muestre de nuevo
+    }
+});
+
+// Botón que establece la bandera en localStorage y muestra el modal
+document.getElementById('btnAñadirSubcategoria').addEventListener('click', function() {
+    localStorage.setItem('showModal', 'true');
+    document.getElementById('uploadModal').style.display = 'flex';
+});
