@@ -77,7 +77,7 @@
                     }
 
             ?>
-                    <div class="col-md-4 shadow card" style="background: url('ImgProductos/66a2632e7b7ca.jpg');">
+                    <div class="col-md-4 shadow card" style="background: url('ImgProductos/66a2632e7b7ca.png');">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted"><?php echo $nombrefabricante; ?></span>
