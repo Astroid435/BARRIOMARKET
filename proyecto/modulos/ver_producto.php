@@ -41,7 +41,10 @@
         </ul>
         <p id="precio"><strong>$10.10</strong></p>
         <p>Para agregar el producto al carrito inicie sesión</p>
+        <a href="dashboard.php?mod=Carrito">
         <button type="submit" class="inicio-log">Iniciar sesión</button>
+
+        </a>
 
       </div>
       <div class="row">
