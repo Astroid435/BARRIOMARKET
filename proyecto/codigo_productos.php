@@ -69,7 +69,7 @@ if (isset($_POST["btn_producto"])){
             }
         }
         unset($_SESSION['SubcategoriaSeleccionadoId']);
-        unset($_SESSION['fabricanteSeleccionadoId']);
+        $_SESSION['fabricanteSeleccionadoId']=0;
         unset($_SESSION['CategoriaSeleccionadoId']);
         ?>
             <script>
@@ -157,7 +157,7 @@ if (isset($_POST["btn_producto"])){
                 }
             }
             unset($_SESSION['SubcategoriaSeleccionadoId']);
-            unset($_SESSION['fabricanteSeleccionadoId']);
+            $_SESSION['fabricanteSeleccionadoId']=0;
             unset($_SESSION['CategoriaSeleccionadoId']);
             ?>
                 <script>

@@ -158,6 +158,14 @@ session_start(); // Iniciar la sesión
                         </a>
                       </li>
                       <li>
+                        <a href="dashboard.php?mod=Carrito" class="nav-link text-black">
+                          <svg class="bi d-block mx-auto mb-1" width="24" height="24">
+                            <use xlink:href="#grid"></use>
+                          </svg>
+                          Productos
+                        </a>
+                      </li>
+                      <li>
                         <a href="dashboard.php?mod=carrito" class="nav-link text-black">
                           <img src="style/carrito.png" alt="" width="24" height="24" class="bi d-block mx-auto mb-1">
                           Carrito
