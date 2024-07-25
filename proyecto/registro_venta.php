@@ -44,6 +44,10 @@
     .card .precio-nombre .card-text {
         margin-top: 15px;
     }
+    .containertop2{
+      justify-content: center;
+      width: 100%;
+    }
     .containertop{
         box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
         border: 0 0 4px black solid !important;
@@ -51,7 +55,6 @@
         padding: 5px;
         width: 700px;
         display: flex !important;
-        margin-left: 27%;
         margin-top: 25px;
         margin-bottom: 30px;
         text-align: center;
@@ -61,12 +64,12 @@
     }
     .container-valor{
         background-color: green;
-        margin-left: 12%;
         width: 820px;
         height: 800px;
     }
     .cont{
         width: 200px;
+        margin: 30px;
     }
     .cont label{
         font-size: 20px;
@@ -77,6 +80,19 @@
         box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
         border: 0 0 4px black solid !important;
         border-radius: 10px;
+        width: 190px;
+    }
+    .container-precio h4{
+      text-align: left;
+      color: grey !important;
+      padding: 5px;
+    }
+    .row{
+      justify-content: center;
+
+    }
+    .cont label{
+      font-size: 23px;
     }
 
   </style>
@@ -187,34 +203,13 @@
           <a href="#" class="card-link">Eliminar </a>
         </div>
       </div>
-      <div>
+      <div class="containertop2">
         <div class="containertop">
             <h3>Añadir producto</h3>
         </div>
       </div>
-      <div class="row">
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                <div class="container-precio">
-                    <h4>$999.999</h4>
-                </div>
-            </div>
-        </div>
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                
-            </div>
-        </div>
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                
-            </div>
-        </div>
 
-      </div>
+      
 
 
 </body>
