@@ -94,6 +94,27 @@
     .cont label{
       font-size: 23px;
     }
+    .container .row{
+      width: 900px;
+    }
+    .container .row label{
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .container .row input{
+      width: 230px;
+      margin-left: 55px;
+    }
+    .container-uni{
+      margin-top: 60px; 
+      margin-bottom: 60px; 
+      width: 600px;
+    }
+    .container-uni label{
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 11px;
+    }
 
   </style>
 </head>
@@ -206,6 +227,31 @@
       <div class="containertop2">
         <div class="containertop">
             <h3>Añadir producto</h3>
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="container-triple col-md-4">
+              <label for="">Precio Neto</label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            <div class="container-triple col-md-4">
+              <label for="">Precio Final</label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            <div class="container-triple col-md-4">
+              <label for="">Documento </label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            
+          </div>
+          <div class="container-uni">
+            <label for="">Documento de cliente</label>
+            <input type="text" class="form-control" placeholder="Ej: 102345674">
+          </div>
+          <div class="containertop">
+            <h3 style="margin-left: 200px;">Añadir metodo de pago</h3>
+        </div>
+          <button type="button" style="background-color: #000 !important; padding: 13px; width: 500px;" class="btn btn-dark">Registrar venta</button>
         </div>
       </div>
 
