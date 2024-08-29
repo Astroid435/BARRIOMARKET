@@ -44,6 +44,10 @@
     .card .precio-nombre .card-text {
         margin-top: 15px;
     }
+    .containertop2{
+      justify-content: center;
+      width: 100%;
+    }
     .containertop{
         box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
         border: 0 0 4px black solid !important;
@@ -51,7 +55,6 @@
         padding: 5px;
         width: 700px;
         display: flex !important;
-        margin-left: 27%;
         margin-top: 25px;
         margin-bottom: 30px;
         text-align: center;
@@ -61,12 +64,12 @@
     }
     .container-valor{
         background-color: green;
-        margin-left: 12%;
         width: 820px;
         height: 800px;
     }
     .cont{
         width: 200px;
+        margin: 30px;
     }
     .cont label{
         font-size: 20px;
@@ -77,6 +80,40 @@
         box-shadow: 0 0 7px rgb(0, 0, 0, 0.2);
         border: 0 0 4px black solid !important;
         border-radius: 10px;
+        width: 190px;
+    }
+    .container-precio h4{
+      text-align: left;
+      color: grey !important;
+      padding: 5px;
+    }
+    .row{
+      justify-content: center;
+
+    }
+    .cont label{
+      font-size: 23px;
+    }
+    .container .row{
+      width: 900px;
+    }
+    .container .row label{
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .container .row input{
+      width: 230px;
+      margin-left: 55px;
+    }
+    .container-uni{
+      margin-top: 60px; 
+      margin-bottom: 60px; 
+      width: 600px;
+    }
+    .container-uni label{
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 11px;
     }
 
   </style>
@@ -187,34 +224,38 @@
           <a href="#" class="card-link">Eliminar </a>
         </div>
       </div>
-      <div>
+      <div class="containertop2">
         <div class="containertop">
             <h3>Añadir producto</h3>
         </div>
+        <div class="container">
+          <div class="row">
+            <div class="container-triple col-md-4">
+              <label for="">Precio Neto</label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            <div class="container-triple col-md-4">
+              <label for="">Precio Final</label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            <div class="container-triple col-md-4">
+              <label for="">Documento </label>
+              <input type="text" class="form-control" placeholder="$59.400">
+            </div>
+            
+          </div>
+          <div class="container-uni">
+            <label for="">Documento de cliente</label>
+            <input type="text" class="form-control" placeholder="Ej: 102345674">
+          </div>
+          <div class="containertop">
+            <h3 style="margin-left: 200px;">Añadir metodo de pago</h3>
+        </div>
+          <button type="button" style="background-color: #000 !important; padding: 13px; width: 500px;" class="btn btn-dark">Registrar venta</button>
+        </div>
       </div>
-      <div class="row">
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                <div class="container-precio">
-                    <h4>$999.999</h4>
-                </div>
-            </div>
-        </div>
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                
-            </div>
-        </div>
-        <div class="container-valor">
-            <div class="cont col-md-4">
-                <label for="">Precio Neto</label>
-                
-            </div>
-        </div>
 
-      </div>
+      
 
 
 </body>
