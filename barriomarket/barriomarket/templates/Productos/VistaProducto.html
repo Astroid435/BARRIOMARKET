@@ -131,33 +131,18 @@ input[type="number"]::-webkit-inner-spin-button {
   <div class="container-fluid">
     <h2>Productos relacionados</h2>
     <div class="row">
-        <div class="producto1 col-md-4">
-        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
+      {% for producto in Relacionados %}
+      <div class="producto1 col-md-4">
+        <a href="/Productos/VistaProducto/{{ producto.idProducto }}">
+          <img src="{% static 'image/Productos/' %}{{ producto.Imagen }}" height="250px" width="100%">
+        </a>
         <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
+          <p id="nom_produ"><strong>{{ producto.Nombre }}</strong></p>
+          <p id="info_produ">{{ producto.Descripcion }}</p>
+          <p id="info_produ"><strong>${{ producto.ValorVenta }}</strong></p>
         </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
-        <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-        </div>
-        </div>
-
-        <div class="producto1 col-md-4">
-        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
-        <div class="container-info">
-            <p id="nom_produ"><strong>producto</strong></p>
-            <p id="info_produ">descripcion del producto</p>
-            <p id="info_produ"><strong>$10.99</strong></p>
-        </div>
-        </div>
-        
+      </div>
+    {% endfor %}
     </div>
   </div>
 

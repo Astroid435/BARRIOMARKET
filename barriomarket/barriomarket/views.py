@@ -253,6 +253,7 @@ def VistaProducto (request, idProducto):
 
     listaproducto=[]
     listaerrores=[]
+    listarelacionados=[]
     
     producto=Productos.objects.get(id=idProducto)
     
@@ -262,6 +263,7 @@ def VistaProducto (request, idProducto):
     for subcategorias in buscarsubcategorias:
         subcategoriasnombres.append(subcategorias.Subcategoria.Nombre)
         NombreCategoria = subcategorias.Subcategoria.Categoria.Nombre
+        idCategoria = subcategorias.Subcategoria.Categoria.id
         
     listaproducto.append({
             'idProducto': producto.id, 
@@ -274,6 +276,27 @@ def VistaProducto (request, idProducto):
             'Categoria': NombreCategoria,
             'Subcategorias': subcategoriasnombres,
     })
+    
+    subcategorias=Subcategoria.objects.filter(Categoria_id=idCategoria)
+    idproductos=[]
+    for subcategoria in subcategorias:
+      categoriasproducto = ProductosCategoria.objects.filter(Subcategoria_id=subcategoria.id)
+      for producto in categoriasproducto:
+        if not  producto.Productos.id in idproductos:
+          idproductos.append(producto.Productos.id)
+    
+    for idproducto in idproductos:
+      productos=Productos.objects.get(id=idproducto)
+      listarelacionados.append({
+              'idProducto': productos.id, 
+              'Nombre': productos.Nombre,
+              'Descripcion': productos.Descripcion,
+              'ValorVenta': productos.ValorVenta,
+              'Imagen': productos.imagen,
+      })
+      
+    
+    
     if request.user.is_authenticated:
         if request.method == 'POST':
             if request.POST.get('Cantidad') and request.POST.get('Producto'):
@@ -310,7 +333,7 @@ def VistaProducto (request, idProducto):
                 else:
                     listaerrores.append("No se puede agregar un producto con cantidad igual o menor a 0")
             
-    return  render(request, "Productos/VistaProducto.html", {'Productos': listaproducto,'errores':listaerrores})
+    return  render(request, "Productos/VistaProducto.html", {'Productos': listaproducto,'errores':listaerrores, 'Relacionados':listarelacionados})
 
 def Vistacarrito (request):
     listadocarrito=[]
@@ -370,3 +393,5 @@ class CustomLoginView(LoginView):
         form.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Correo'})
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
+
+
