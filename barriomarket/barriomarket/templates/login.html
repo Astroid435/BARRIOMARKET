@@ -1,0 +1,46 @@
+{% load static %}
+
+<html lang="es">
+    <head>
+        <title>Barrio Market</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <script src="{% static  'js/jQuery1.9.1.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'style/estilos_login.css' %}">
+        <meta charset="utf-8">
+    </head>
+    <style>
+      html{
+        height: 100%;
+    }
+    body{
+        font-family: poppins;
+        font-weight: 300;
+        color: var(--text);
+        background-color: rgb(255, 255, 255);
+        background-image: radial-gradient(at 98.17% 95.50%, rgb(75, 85, 99) 0, transparent 71%), radial-gradient(at 0% 0%, rgb(148, 163, 184) 0, transparent 60%), radial-gradient(at 0% 0%, rgb(255, 255, 255) 0, transparent 100%), radial-gradient(at 2.60% 98.17%, rgb(20, 184, 166) 0, transparent 52%), radial-gradient(at 99.06% 1.33%, rgb(244, 114, 182) 0, transparent 95%);
+    }
+    </style>
+    <body>
+        <div class="container-fluid main">
+            <div class="form-content ">
+                    <div class="form col-md-5 inicio login_content">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <center>
+                            <h3>Ingresa</H3>
+                            <h6>Llena todos los campos para continuar</h6>
+                            <br>
+                            {{ form.as_p }}
+                            <button type="submit" class="btn_ingresar" name="btn_ingresar">Ingresar</button>
+                            <br><br>
+                            <a href="recuperar.php">¿Has olvidado tu contraseña?</a> | <a href="/registro"> ¿No tienes cuenta?<br>Regístrate </a>
+                            </center>
+                        </form>
+                    </div>
+                </center>
+            </div>
+        </div>
+    </body>
+</html>
