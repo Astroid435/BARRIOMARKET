@@ -1,0 +1,101 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+
+<div class="container Fatima mt-5" style="background: url('{% static 'image/fondoFati.jpg' %}'); background-position: center; background-size: cover;">
+    <center>
+      <h1 class="text-white SYS">SYS Fatima</h1>
+      <h4 class="text-white">Papeleria y otros servicios</h4>
+      <br>
+      <a href="/registros">
+        <button class="btn-primary btn">Ver productos</button>
+      </a>
+    </center>
+  </div>
+  <div class="row" id="productos_destacados">
+    <h2>Productos destacados</h2>
+  </div>
+  <div class="container">
+    <div class="row">
+        {% for fila in listadoproductos %}
+          <div class="producto1 col-md-4">
+            <a href="Productos/VistaProducto/{{fila.0}}">
+              <img src="{% static 'image/Productos/' %}{{fila.6}}" height="250px" width="100%">
+            </a>
+            <div class="container-info">
+              <p id="nom_produ"><strong>{{ fila.1 }}</strong></p>
+              <p id="info_produ">{{ fila.5 }}</p>
+              <p id="info_produ"><strong>${{ fila.4 }}</strong></p>
+            </div>
+          </div>
+        {% endfor %}
+      <hr>
+    </div>
+    <div class="row" id="categoria">
+        <h2>Categorias</h2>
+      </div>
+      <div class="container" id="categoriasresumen">
+        <div class="row">
+            {% for fila in listadocategorias %}
+              <div class="col-md-4 mb-3">
+                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector">
+                  {{ fila.1 }}
+                </div>
+              </div>
+            {% endfor %}
+            <center>
+              <div class="col-md-3 mb-3">
+                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermas">
+                  Ver mas
+                </div>
+              </div>
+            </center>
+        </div>
+      </div>
+      <div class="container" id="categoriastodas">
+        <div class="row">
+            {% for fila in listadocategoriasall %}
+              <div class="col-md-4 mb-3">
+                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector">
+                  {{ fila.1 }}
+                </div>
+              </div>
+            {% endfor %}
+            <center>
+              <div class="col-md-3 mb-3">
+                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermenos">
+                  Ver menos
+                </div>
+              </div>
+            </center>
+
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+        </div>
+
+      </div>
+
+    </section>
+    <form method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+  </form>
+  <script>
+    localStorage.clear();
+</script>
+    <script>
+      verMenos = document.getElementById('btn_vermenos');
+      verMenos.onclick = function() {
+        document.getElementById('categoriastodas').style.display = "none";
+        document.getElementById('categoriasresumen').style.display = "block";
+      }
+      verMas = document.getElementById('btn_vermas');
+      verMas.onclick = function() {
+        document.getElementById('categoriastodas').style.display = "block";
+        document.getElementById('categoriasresumen').style.display = "none";
+      }
+    </script>
+{% include 'inc/footer.html' %}

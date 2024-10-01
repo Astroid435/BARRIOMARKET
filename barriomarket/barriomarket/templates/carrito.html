@@ -1,0 +1,102 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+
+<style>
+
+.card {
+  margin: 1rem;
+  border: none !important;
+}
+
+.btn-delete {
+  background-color: #f00;
+  color: #fff;
+}
+
+.btn-menos, .btn-mas {
+  border-radius: 15px 0 0 15px; /* Redondear los lados exteriores */
+
+}
+
+.btn-mas {
+  border-radius: 0 15px 15px 0;
+}
+
+
+  
+</style>
+
+<center>
+  <h1 style="font-size: 57px; font-weight: bold;">Carrito de compra</h1>
+  <p style="color: #828282; width: 40%;">En esta seccion se muestra los productos seleccionados para realizar el pedido</p>
+</center>  
+{% if listadocarrito %}
+  <div class="container-flex">
+  <div class="row justify-content-evenly">
+      {% for carro in listadocarrito %}
+        
+      <div class="card shadow" style="width: 20rem;">
+        <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <span class="text-muted">{{carro.NombreFabricante}}</span>
+            <div>
+              <form method="post" action="">
+                {% csrf_token %} 
+                  <div class="row justify-content-center align-items-center">
+                      <input type="number" value="{{carro.idCarrito}}" name="id" hidden>
+                      <button type="submit" class="col btn-menos form-control" name="menos" value="1">-</button>
+                      <span class="text-muted col">{{carro.Cantidad}}</span>
+                      <button type="submit" class="col btn-mas form-control" name="mas"value="2">+</button>
+                  </div>
+              </form>
+            </div>
+          </div>  
+          <div class="precio-nombre">
+            <div class="row justify-content-between">
+              <h4 class="card-title col">{{carro.Nombre}}</h4>
+              <p class="card-text col text-end" id="precio">${{carro.ValorUnitario}}</p>
+            </div> 
+            <br>
+            <p class="card-text" id="precio">Precio total: ${{carro.ValorTotal}}</p>
+          </div>
+          <a href="/Carrito/borrar/{{ carro.idCarrito }}" class="col-6">
+            <button class="btn btn-delete col-12" id="btn_edit" name="btn_edit">Eliminar</button>
+          </a>
+        </div>
+      </div>
+
+      {% endfor %}
+      <center>
+        <h3 style="padding-top:30px;">Total del carrito</h3>
+        <h5>${{ValorTodo}}</h5>
+      </center>
+      
+    </div>
+    <center>
+      <h5 style="padding-top:30px;">Observaciones</h5>
+      </center>
+      <div class="justify-content-between">
+        <center>
+          <div class="col-5">
+            <form action="" method="POST">
+              <textarea type="text" class="form-control" name="Descripcion" placeholder="Ej:" requirted maxlength="150"></textarea>
+              <br>
+              <button type="submit" class="btn button btn-fcs col-8" id="btn_registro" name="btn_producto">Realizar Pedido</button>
+            </form>
+          </div>
+        </center>
+      </div>
+    </div>
+  </div>
+{% else %}  
+<center>
+  <p style="color: #828282; width: 40%; padding-top:50px;">No se han agregado productos al carrito</p>
+  <a href="/registros">
+    <button class="btn button btn-fcs col-3" id="btn_registro" name="btn_producto">Ver productos</button>
+  </a>
+</center>
+
+{% endif %}
+
+{% include 'inc/footer.html' %}

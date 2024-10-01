@@ -1,0 +1,189 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+<style>
+.container-info {
+  margin-top: 35px;
+}
+
+/* Elimina los controles del input number */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ajuste para el grupo de input */
+.input-group {
+    display: flex;
+    max-width: 200px; /* Ajusta este valor para controlar el tamaño del grupo */
+    height: 38px; /* Controla la altura total del conjunto */
+}
+
+/* Estilos para los botones */
+.btn-menos {
+    border-radius: 15px 0 0 15px;
+    background-color: #ffffff; /* Color claro por defecto */
+    border-color: #c0c0c0; /* Borde más claro */
+    margin-top: 0px;
+    margin-bottom: 15px;
+  }
+  
+.btn-mas {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    border-radius: 0 15px 15px 0;
+    background-color: #ffffff; /* Color claro por defecto */
+    border-color: #c0c0c0; /* Borde más claro */
+}
+
+/* Estilo para el input */
+.cantidad {
+    text-align: center;
+    max-width: 60px; /* Ajusta el tamaño del input */
+    border-radius: 0; /* No redondear el input */
+    height: 38px; /* Asegura que coincida la altura */
+    border-color: #ccc;
+}
+
+/* Estilo en hover para los botones */
+.btn:hover {
+    background-color: #f0f0f0; /* Color más suave cuando el mouse está encima */
+    border-color: #c0c0c0; /* Borde más claro */
+}
+
+/* Evita que los botones se vean más grandes al hacer hover */
+.btn {
+    transition: background-color 0.2s, border-color 0.2s; /* Transición suave */
+}
+</style>
+
+
+
+<div class="container-fluid">
+  {% if Productos %}
+    {% for Producto in Productos %}
+      <div class="row">
+        <div class="col-6">
+          <img src="{% static 'image/Productos/' %}{{Producto.Imagen}}" width="100%" height="400px">
+        </div>
+        <div class="col-6 ">
+          <div class="row">
+            <h2 class="col-8">{{Producto.Nombre}}</h2>
+            <p style="color: #828282; width: 40%;" class="col text-end">{{Producto.Cantidad}} Disponibles</p>
+          </div>
+          <p style="color: #828282; width: 40%;">{{Producto.Fabricante}}</p>
+          <h4 id="precio">${{Producto.ValorVenta}}</h4>
+          <p>{{Producto.Descripcion}}</p>
+          
+          <ul>
+            <li style="color: black !important;">{{Producto.Categoria}}</li>
+            {% for subcategoria in Producto.Subcategorias %}
+              <li class="text-muted">{{ subcategoria }}</li>
+            {% endfor %}
+          </ul>
+            {% if request.user.is_authenticated %}
+          
+            <div>
+              <form action="" method="POST">
+                {% csrf_token %} 
+                <div class="row">
+                  <div class="col-4">
+                    <div class="input-group">
+                      <button type="button" class="btn  btn-menos">-</button>
+                      <input type="number" class="form-control text-center cantidad" value="0" name="Cantidad">
+                      <button type="button" class="btn btn-mas">+</button>
+                    </div>
+                  </div>
+                  <input type="number" class="form-control text-center cantidad" value="{{Producto.idProducto}}" name="Producto" hidden>
+                  <button type="submit" class="btn button btn-fcs col-8" id="btn_registro" name="btn_producto">agregar al carrito</button>
+                </div>
+              </form>
+            </div>
+
+              {% if errores %}
+
+                <ul>
+                  {% for error in errores %}
+                    <li class="text-muted">{{ error }}</li>
+                  {% endfor %}
+                </ul>
+
+              {% endif %}
+
+            {% else %}
+            <center>
+              <p>Para agregar el producto al carrito inicie sesión</p>
+              <a href="/login">
+                <button type="submit" class="btn button btn-fcs col-8" id="btn_registro" name="btn_producto">Login</button>
+              </a>
+            {% endif %}
+          </center>
+        </div>
+      </div>
+    {% endfor %}
+
+
+  {% else %}
+
+  {% endif %}
+
+  <div class="container-fluid">
+    <h2>Productos relacionados</h2>
+    <div class="row">
+        <div class="producto1 col-md-4">
+        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
+        <div class="container-info">
+            <p id="nom_produ"><strong>producto</strong></p>
+            <p id="info_produ">descripcion del producto</p>
+            <p id="info_produ"><strong>$10.99</strong></p>
+        </div>
+        </div>
+
+        <div class="producto1 col-md-4">
+        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
+        <div class="container-info">
+            <p id="nom_produ"><strong>producto</strong></p>
+            <p id="info_produ">descripcion del producto</p>
+            <p id="info_produ"><strong>$10.99</strong></p>
+        </div>
+        </div>
+
+        <div class="producto1 col-md-4">
+        <img src="https://s3.amazonaws.com/imagenes-sellers-mercado-ripley/2020/03/04165305/343211.jpg" height="200px" width="100%">
+        <div class="container-info">
+            <p id="nom_produ"><strong>producto</strong></p>
+            <p id="info_produ">descripcion del producto</p>
+            <p id="info_produ"><strong>$10.99</strong></p>
+        </div>
+        </div>
+        
+    </div>
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Obtener elementos
+        const btnMenos = document.querySelector(".btn-menos");
+        const btnMas = document.querySelector(".btn-mas");
+        const cantidadInput = document.querySelector(".cantidad");
+
+        // Función para decrementar
+        btnMenos.addEventListener("click", function(e) {
+            e.preventDefault(); // Evitar que el botón intente enviar el formulario
+            let cantidad = parseInt(cantidadInput.value);
+            if (cantidad >= 1) { // Evitar que la cantidad sea menor a 1
+                cantidadInput.value = cantidad - 1;
+            }
+        });
+
+        // Función para incrementar
+        btnMas.addEventListener("click", function(e) {
+            e.preventDefault(); // Evitar que el botón intente enviar el formulario
+            let cantidad = parseInt(cantidadInput.value);
+            cantidadInput.value = cantidad + 1;
+        });
+    });
+</script>
+{% include 'inc/footer.html' %}
