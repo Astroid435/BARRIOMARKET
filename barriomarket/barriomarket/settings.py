@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -143,3 +142,10 @@ AUTH_USER_MODEL = 'barriomarket.Usuario'
 LOGIN_REDIRECT_URL = '/inicio'
 
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'barriomarket435@gmail.com'
+EMAIL_HOST_PASSWORD = 'lzua ptdy goyz ammx'
