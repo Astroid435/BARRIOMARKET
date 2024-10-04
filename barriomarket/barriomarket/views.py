@@ -1,12 +1,17 @@
 import json
 import uuid
+import random
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.db import connection
 from .forms import MyUserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from .models import Productos,Categoria,ProductosCategoria,Subcategoria,Fabricante,Carrito
+from .models import Productos,Categoria,ProductosCategoria,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
 
 def home(request):
@@ -17,6 +22,21 @@ def home(request):
     listadocategorias.execute("SELECT * FROM categoria LIMIT 3")
     listadocategoriasall.execute("SELECT * FROM categoria")
     return render(request,'home.html',{'listadoproductos':listadoproductos, 'listadocategorias':listadocategorias, 'listadocategoriasall':listadocategoriasall})
+
+def generate_code():
+    digits = [str(random.randint(0, 9)) for _ in range(4)]  # Genera 4 números aleatorios
+    repeat_digit = random.choice(digits)  # Elige un número aleatorio para repetir
+    code = digits + [repeat_digit, repeat_digit]  # Añade el número repetido dos veces
+    random.shuffle(code)  # Mezcla los dígitos
+    return ''.join(code)
+
+def send_recovery_email(user_email, code):
+    subject = 'Recuperación de contraseña'
+    message = f'Tu código de recuperación es: {code}. Este código es válido por 10 minutos.'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [user_email]
+    send_mail(subject, message, email_from, recipient_list)
+
 
 def register(request):
     if request.method == 'POST':
@@ -281,9 +301,10 @@ def VistaProducto (request, idProducto):
     idproductos=[]
     for subcategoria in subcategorias:
       categoriasproducto = ProductosCategoria.objects.filter(Subcategoria_id=subcategoria.id)
-      for producto in categoriasproducto:
-        if not  producto.Productos.id in idproductos:
-          idproductos.append(producto.Productos.id)
+      for productos in categoriasproducto:
+        if not productos.Productos.id in idproductos:
+          if producto.id in idproductos:
+            idproductos.append(productos.Productos.id)
     
     for idproducto in idproductos:
       productos=Productos.objects.get(id=idproducto)
@@ -382,6 +403,39 @@ def borrarcarro(request, idCarro):
     borrar=Carrito.objects.get(id=idCarro)
     borrar.delete()
     return redirect("/Carrito")
+
+def SolicutarCorreo(request):
+    if request.method == 'POST':
+        email = request.POST['Correo']
+        try:            
+            user = Usuario.objects.get(Correo=email)
+            code = generate_code()
+            send_recovery_email(user.Correo, code)
+            request.session['reset_code'] = code
+            request.session['reset_email'] = email
+            request.session['code_generated_time'] = now().timestamp()  # Guardar tiempo de generación
+            return redirect('/CambioContrasena/Codigo')  # Redirigir a la página de verificación de código
+        except User.DoesNotExist:
+            # Manejar el caso cuando el correo no existe
+            pass
+    return render(request, 'CambioContrasena/SolicitudCorreo.html')
+  
+def SolicitarCodigo(request):
+    if request.method == 'POST':
+        entered_code = request.POST['code']
+        generated_code = request.session.get('reset_code')
+        email = request.session.get('reset_email')
+        code_time = request.session.get('code_generated_time')
+
+        if generated_code and email:
+            # Verifica si el código coincide y si no ha expirado (ej. 10 minutos)
+            if entered_code == generated_code and now().timestamp() - code_time < 600:
+                # Código válido, redirigir al formulario de cambio de contraseña
+                return redirect('CambioContrasena/Cambio')
+            else:
+                pass
+    return render(request, 'CambioContrasena/SolicitudCodigo.html')
+
 
 class CustomLoginView(LoginView):
     form_class = AuthenticationForm
