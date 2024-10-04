@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo
+from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena
 from django.contrib.auth.views import LogoutView
 from .views import CustomLoginView
 
@@ -36,5 +36,6 @@ urlpatterns = [
     path('Productos/Actualizar/<str:idProducto>', ActualizarProducto),
     path('CambioContrasena/Correo', SolicutarCorreo),
     path('CambioContrasena/Codigo', SolicitarCodigo),
+    path('CambioContrasena/Cambio', SolicitarContrasena),
 
 ]

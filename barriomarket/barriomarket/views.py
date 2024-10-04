@@ -1,6 +1,7 @@
 import json
 import uuid
 import random
+import re  
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -431,10 +432,41 @@ def SolicitarCodigo(request):
             # Verifica si el código coincide y si no ha expirado (ej. 10 minutos)
             if entered_code == generated_code and now().timestamp() - code_time < 600:
                 # Código válido, redirigir al formulario de cambio de contraseña
-                return redirect('CambioContrasena/Cambio')
+                return redirect('/CambioContrasena/Cambio')
             else:
                 pass
     return render(request, 'CambioContrasena/SolicitudCodigo.html')
+  
+def SolicitarContrasena(request):
+  Errores=[]
+  if request.method == 'POST':
+    if request.POST.get('Contrasena') and request.POST.get('CContrasena'):
+      Contrasena=request.POST.get('Contrasena')
+      CContrasena=request.POST.get('CContrasena')
+      if Contrasena == CContrasena:
+        if len(Contrasena) < 8:
+            Errores.append("La contraseña debe tener al menos 8 caracteres")
+
+        if not re.search(r'[A-Z]', Contrasena):
+            Errores.append("La contraseña debe tener al menos una letra mayúscula")
+
+        if not re.search(r'\d', Contrasena):
+            Errores.append("La contraseña debe tener al menos un número")
+
+        if not re.search(r'[@$!%*?&]', Contrasena):
+            Errores.append("La contraseña debe tener al menos un carácter especial (@, $, !, %, *, ?, &)")
+        
+        if not Errores:
+          email = request.session.get('reset_email')
+          usuario=Usuario.objects.get(Correo=email)
+          usuario.set_password(Contrasena)
+          usuario.save()
+          return redirect('/login')
+      else:
+        Errores.append("Las contraseñas no coinciden")
+  
+  return render(request, 'CambioContrasena/SolicitudContrasena.html',{'Errores':Errores})
+        
 
 
 class CustomLoginView(LoginView):

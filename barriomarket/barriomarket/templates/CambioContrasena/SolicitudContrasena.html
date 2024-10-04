@@ -4,13 +4,19 @@
   <div>
     <center>
       <h1 style="font-size: 57px; font-weight: bold;">Cambio de contraseña</h1>        
-      <p style="color: #828282; width: 40%;">Ingresa el codigo que se te enio al correo para el cambio de contraseña</p>
+      <p style="color: #828282; width: 40%;">Ingresa tu nueva contraseña</p>
       <form method="POST" action="">
         {% csrf_token %} 
         <div class="container-fluid">
-          <label for="exampleInputEmail1">Codigo</label>
+          <label for="exampleInputEmail1">Nueva Contraseña</label>
           <div class="col-4">
-            <input type="number" class="form-control" name="code" placeholder="Ej: 999999" required maxlength="6"></input>
+            <input type="text" class="form-control" name="Contrasena" placeholder="Contraseña" required maxlength="20"></input>
+            <input type="text" class="form-control" name="CContrasena" placeholder="Confirmar contraseña" required maxlength="20"></input>
+            <ul>
+              {% for error in Errores %}
+                <li class="text-muted">{{ error }}</li>
+              {% endfor %}
+            </ul>
             <button type="submit" class="btn btn-edit button col-12" name="CorreoEnviar">Enviar</button>
           </div>
         </div>
