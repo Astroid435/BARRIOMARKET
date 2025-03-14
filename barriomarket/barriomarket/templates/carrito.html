@@ -79,8 +79,10 @@
       <div class="justify-content-between">
         <center>
           <div class="col-5">
-            <form action="" method="POST">
-              <textarea type="text" class="form-control" name="Descripcion" placeholder="Ej:" requirted maxlength="150"></textarea>
+            <form action="/GenerarPedido" method="POST">
+              {% csrf_token %} 
+              <textarea type="text" class="form-control" name="Observaciones" requirted maxlength="200"></textarea>
+              <input type="number" name="ValorTotal" value="{{ValorTodo}}" hidden>
               <br>
               <button type="submit" class="btn button btn-fcs col-8" id="btn_registro" name="btn_producto">Realizar Pedido</button>
             </form>

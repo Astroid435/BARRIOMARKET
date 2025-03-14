@@ -83,6 +83,22 @@ class ProductosCategoria(models.Model):
     class Meta:
         db_table = 'productoscategoria'
         
+class RegistroPedido(models.Model):
+    Fecha = models.DateField()
+    ValorTotal = models.IntegerField()
+    Observaciones = models.CharField(max_length=200)
+    Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'registropedido'
+        
+class CantidadPedido(models.Model):
+    Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
+    RegistroPedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE)
+    Cantidad = models.SmallIntegerField()
+    class Meta:
+        db_table = 'cantidadpedido'
+        
+        
 class Carrito(models.Model):
     Cantidad= models.IntegerField()
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)

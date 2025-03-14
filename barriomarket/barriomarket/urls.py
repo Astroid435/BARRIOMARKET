@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena
 from django.contrib.auth.views import LogoutView
-from .views import CustomLoginView
+from .views import CustomLoginView, GenerarPedido
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +27,7 @@ urlpatterns = [
     path('registros', registros),
     path('Carrito', Vistacarrito),
     path('Carrito/borrar/<str:idCarro>', borrarcarro),
+    path('GenerarPedido', GenerarPedido),
     path('registro',register),
     path('login', CustomLoginView.as_view(template_name='login.html')),
     path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),

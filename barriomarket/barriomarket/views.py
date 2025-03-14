@@ -12,7 +12,7 @@ from django.db import connection
 from .forms import MyUserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from .models import Productos,Categoria,ProductosCategoria,Subcategoria,Fabricante,Carrito,Usuario
+from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
 
 def home(request):
@@ -25,10 +25,10 @@ def home(request):
     return render(request,'home.html',{'listadoproductos':listadoproductos, 'listadocategorias':listadocategorias, 'listadocategoriasall':listadocategoriasall})
 
 def generate_code():
-    digits = [str(random.randint(0, 9)) for _ in range(4)]  # Genera 4 números aleatorios
-    repeat_digit = random.choice(digits)  # Elige un número aleatorio para repetir
-    code = digits + [repeat_digit, repeat_digit]  # Añade el número repetido dos veces
-    random.shuffle(code)  # Mezcla los dígitos
+    digits = [str(random.randint(0, 9)) for _ in range(4)] 
+    repeat_digit = random.choice(digits) 
+    code = digits + [repeat_digit, repeat_digit]
+    random.shuffle(code) 
     return ''.join(code)
 
 def send_recovery_email(user_email, code):
@@ -405,6 +405,29 @@ def borrarcarro(request, idCarro):
     borrar.delete()
     return redirect("/Carrito")
 
+def GenerarPedido(request):
+    if request.user.is_authenticated:
+        carrito=Carrito.objects.filter(Usuario=request.user)
+        if request.method == 'POST':
+            if request.POST.get('Observaciones') and request.POST.get('ValorTotal'):
+                pedido=RegistroPedido(
+                    Fecha=now(),
+                    Observaciones=request.POST.get('Observaciones'),
+                    ValorTotal=request.POST.get('ValorTotal'),
+                    Usuario=request.user
+                )
+                pedido.save()
+                for carro in carrito:
+                    Cantidadpedido=CantidadPedido(
+                        Productos=carro.Productos,
+                        RegistroPedido=pedido,
+                        Cantidad=carro.Cantidad
+                    )
+                    Cantidadpedido.save()
+                    carro.delete()
+                    
+                return render(request, '/carrito.html')
+
 def SolicutarCorreo(request):
     if request.method == 'POST':
         email = request.POST['Correo']
@@ -467,8 +490,6 @@ def SolicitarContrasena(request):
   
   return render(request, 'CambioContrasena/SolicitudContrasena.html',{'Errores':Errores})
         
-
-
 class CustomLoginView(LoginView):
     form_class = AuthenticationForm
     template_name = 'login.html'
