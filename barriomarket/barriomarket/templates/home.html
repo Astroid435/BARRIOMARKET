@@ -1,101 +1,318 @@
 {% load static %}
 {% include 'inc/header.html' %}
 
+<style>
+    /* Estilos consistentes con login/registro */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #333333;
+        --light-color: #f8f9fa;
+        --border-color: #dddddd;
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+        color: var(--primary-color);
+        background-color: #ffffff;
+        line-height: 1.6;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        margin-bottom: 3rem;
+        background-image: url('{% static 'image/fondoFati.jpg' %}');
+        background-position: center;
+        background-size: cover;
+        position: relative;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-section h4 {
+        font-size: 1.25rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+    }
+    
+    /* Botón consistente con login/registro */
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+    }
+    
+    .btn-primary:hover {
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+    
+    /* Secciones */
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
+    
+    /* Productos */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+    
+    .product-card {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-description {
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .product-price {
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    
+    /* Categorías */
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .category-btn {
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid var(--border-color);
+        padding: 1rem;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+    }
+    
+    .category-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .view-more-btn {
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        margin: 2rem auto;
+        display: block;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 300;
+    }
+    
+    .view-more-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Responsividad */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 3rem 0;
+        }
+        
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+        
+        .hero-section h4 {
+            font-size: 1rem;
+        }
+        
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .category-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .hero-section {
+            padding: 2rem 0;
+        }
+        
+        .hero-section h1 {
+            font-size: 1.75rem;
+        }
+        
+        .btn-primary {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
 
-<div class="container Fatima mt-5" style="background: url('{% static 'image/fondoFati.jpg' %}'); background-position: center; background-size: cover;">
-    <center>
-      <h1 class="text-white SYS">SYS Fatima</h1>
-      <h4 class="text-white">Papeleria y otros servicios</h4>
-      <br>
-      <a href="/registros">
-        <button class="btn-primary btn">Ver productos</button>
-      </a>
-    </center>
-  </div>
-  <div class="row" id="productos_destacados">
-    <h2>Productos destacados</h2>
-  </div>
-  <div class="container">
-    <div class="row">
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>SYS Fatima</h1>
+        <h4>Papelería y otros servicios</h4>
+        <br>
+        <a href="/registros">
+            <button class="btn-primary">Ver productos</button>
+        </a>
+    </div>
+</div>
+
+<!-- Productos Destacados -->
+<div class="container">
+    <h2 class="section-title">Productos destacados</h2>
+    <div class="product-grid">
         {% for fila in listadoproductos %}
-          <div class="producto1 col-md-4">
+        <div class="product-card">
             <a href="Productos/VistaProducto/{{fila.0}}">
-              <img src="{% static 'image/Productos/' %}{{fila.6}}" height="250px" width="100%">
+                <img src="{% static 'image/Productos/' %}{{fila.6}}" class="product-image">
             </a>
-            <div class="container-info">
-              <p id="nom_produ"><strong>{{ fila.1 }}</strong></p>
-              <p id="info_produ">{{ fila.5 }}</p>
-              <p id="info_produ"><strong>${{ fila.4 }}</strong></p>
+            <div class="product-info">
+                <p class="product-name"><strong>{{ fila.1 }}</strong></p>
+                <p class="product-description">{{ fila.5 }}</p>
+                <p class="product-price"><strong>${{ fila.4 }}</strong></p>
             </div>
-          </div>
+        </div>
         {% endfor %}
-      <hr>
     </div>
-    <div class="row" id="categoria">
-        <h2>Categorias</h2>
-      </div>
-      <div class="container" id="categoriasresumen">
-        <div class="row">
+</div>
+
+<!-- Categorías -->
+<div class="container">
+    <h2 class="section-title">Categorías</h2>
+    
+    <!-- Resumen de Categorías -->
+    <div id="categoriasresumen">
+        <div class="category-grid">
             {% for fila in listadocategorias %}
-              <div class="col-md-4 mb-3">
-                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector">
-                  {{ fila.1 }}
-                </div>
-              </div>
+            <div class="category-btn" name="btn_selector">
+                {{ fila.1 }}
+            </div>
             {% endfor %}
-            <center>
-              <div class="col-md-3 mb-3">
-                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermas">
-                  Ver mas
-                </div>
-              </div>
-            </center>
         </div>
-      </div>
-      <div class="container" id="categoriastodas">
-        <div class="row">
+        <button class="view-more-btn" id="btn_vermas">Ver más</button>
+    </div>
+    
+    <!-- Todas las Categorías -->
+    <div id="categoriastodas" style="display: none;">
+        <div class="category-grid">
             {% for fila in listadocategoriasall %}
-              <div class="col-md-4 mb-3">
-                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" name="btn_selector">
-                  {{ fila.1 }}
-                </div>
-              </div>
+            <div class="category-btn" name="btn_selector">
+                {{ fila.1 }}
+            </div>
             {% endfor %}
-            <center>
-              <div class="col-md-3 mb-3">
-                <div class="btn btn_consulta btn_fabricantes col-md-12 btn-fcsm button" id="btn_vermenos">
-                  Ver menos
-                </div>
-              </div>
-            </center>
-
         </div>
-      </div>
+        <button class="view-more-btn" id="btn_vermenos">Ver menos</button>
     </div>
-    </div>
-    </div>
-        </div>
+</div>
 
-      </div>
+<!-- Logout Button (Opcional) -->
+<div class="container text-center mt-5 mb-5">
+    <form method="POST" action="{% url 'logout' %}" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary" style="background-color: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);">
+            Cerrar sesión
+        </button>
+    </form>
+</div>
 
-    </section>
-    <form method="POST" action="{% url 'logout' %}">
-      {% csrf_token %}
-      <button type="submit">Logout</button>
-  </form>
-  <script>
+<script>
     localStorage.clear();
-</script>
-    <script>
-      verMenos = document.getElementById('btn_vermenos');
-      verMenos.onclick = function() {
-        document.getElementById('categoriastodas').style.display = "none";
-        document.getElementById('categoriasresumen').style.display = "block";
-      }
-      verMas = document.getElementById('btn_vermas');
-      verMas.onclick = function() {
+    
+    // Manejo de botones Ver más/Ver menos
+    document.getElementById('btn_vermas').onclick = function() {
         document.getElementById('categoriastodas').style.display = "block";
         document.getElementById('categoriasresumen').style.display = "none";
-      }
-    </script>
+    }
+    
+    document.getElementById('btn_vermenos').onclick = function() {
+        document.getElementById('categoriastodas').style.display = "none";
+        document.getElementById('categoriasresumen').style.display = "block";
+    }
+</script>
+
 {% include 'inc/footer.html' %}

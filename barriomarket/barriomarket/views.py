@@ -426,7 +426,7 @@ def GenerarPedido(request):
                     Cantidadpedido.save()
                     carro.delete()
                     
-                return render(request, '/carrito.html')
+                return render(request, '/carrito')
 
 def SolicutarCorreo(request):
     if request.method == 'POST':
