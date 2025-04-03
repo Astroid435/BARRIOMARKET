@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena
+from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena,  catalogo
 from django.contrib.auth.views import LogoutView
 from .views import CustomLoginView, GenerarPedido
 
@@ -32,9 +32,10 @@ urlpatterns = [
     path('login', CustomLoginView.as_view(template_name='login.html')),
     path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('Productos/AgregarProductos', AgregarProductos),
-    path('Productos/VistaProducto/<str:idProducto>', VistaProducto),
+    path('Productos/VistaProducto/<str:idProducto>', VistaProducto, name='detalle_producto'),
     path('Productos/borrar/<str:idProducto>', borrarproductos),
     path('Productos/Actualizar/<str:idProducto>', ActualizarProducto),
+    path('productos/', catalogo, name='catalogo'),
     path('CambioContrasena/Correo', SolicutarCorreo),
     path('CambioContrasena/Codigo', SolicitarCodigo),
     path('CambioContrasena/Cambio', SolicitarContrasena),

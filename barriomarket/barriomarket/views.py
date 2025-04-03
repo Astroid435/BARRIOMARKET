@@ -2,6 +2,8 @@ import json
 import uuid
 import random
 import re  
+from django.db.models import Q
+from django.core.paginator import Paginator
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -201,8 +203,7 @@ def AgregarProductos(request):
     else:
         CategoriaSeleccionada=Categoria.objects.get(id=categoriaidsession)
         Nombrecategoria=CategoriaSeleccionada.Nombre
-            
-            
+                    
     return render(request,'Productos/AgregarProductos.html',{'fabricantes':listadofabricante, 'categorias':listadocategoria, 'subcategorias': listadosubcategorias, 'Seleccionfabricante': Nombrefabricante, 'Seleccioncategoria': Nombrecategoria})
 
 def ActualizarProducto(request, idProducto):
@@ -356,6 +357,64 @@ def VistaProducto (request, idProducto):
                     listaerrores.append("No se puede agregar un producto con cantidad igual o menor a 0")
             
     return  render(request, "Productos/VistaProducto.html", {'Productos': listaproducto,'errores':listaerrores, 'Relacionados':listarelacionados})
+
+def catalogo(request):
+    productos = Productos.objects.all().distinct()
+    
+    # Filtro por categoría (usando la relación a través de ProductosCategoria)
+    categoria_id = request.GET.get('categoria')
+    if categoria_id:
+        productos = productos.filter(
+            productoscategoria__Subcategoria__Categoria_id=categoria_id
+        ).distinct()
+    
+    # Filtro por fabricante
+    fabricante_id = request.GET.get('fabricante')
+    if fabricante_id:
+        productos = productos.filter(Fabricante_id=fabricante_id)
+    
+    # Filtros por precio y búsqueda
+    precio_min = request.GET.get('precio_min')
+    if precio_min:
+        productos = productos.filter(ValorVenta__gte=precio_min)
+    
+    precio_max = request.GET.get('precio_max')
+    if precio_max:
+        productos = productos.filter(ValorVenta__lte=precio_max)
+    
+    busqueda = request.GET.get('busqueda')
+    if busqueda:
+        productos = productos.filter(
+            Q(Nombre__icontains=busqueda) |
+            Q(Descripcion__icontains=busqueda)
+        )
+    
+    # Optimización de consultas
+    productos = productos.select_related('Fabricante').prefetch_related(
+        'productoscategoria_set__Subcategoria__Categoria'
+    )
+    
+    # Paginación
+    paginator = Paginator(productos, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Categorías disponibles (productos que tienen al menos un producto)
+    categorias = Categoria.objects.filter(
+        subcategoria__productoscategoria__isnull=False
+    ).distinct()
+    
+    # Fabricantes disponibles (que tienen productos)
+    fabricantes = Fabricante.objects.filter(
+        productos__isnull=False
+    ).distinct()
+    
+    context = {
+        'productos': page_obj,
+        'categorias': categorias,
+        'fabricantes': fabricantes,
+    }
+    return render(request, 'catalogo.html', context)
 
 def Vistacarrito (request):
     listadocarrito=[]

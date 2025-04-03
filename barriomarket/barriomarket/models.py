@@ -65,6 +65,11 @@ class Productos(models.Model):
     Fabricante = models.ForeignKey(Fabricante, on_delete=models.CASCADE)
     class Meta:
         db_table = 'productos'
+        
+    def categorias(self):
+        return Categoria.objects.filter(
+            subcategoria__productoscategoria__Productos=self
+        ).distinct()
 
 class Categoria(models.Model):
     Nombre = models.CharField(max_length=45)
@@ -81,6 +86,7 @@ class ProductosCategoria(models.Model):
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
     Subcategoria = models.ForeignKey(Subcategoria, on_delete=models.CASCADE)
     class Meta:
+        unique_together = ('Productos', 'Subcategoria')
         db_table = 'productoscategoria'
         
 class RegistroPedido(models.Model):
