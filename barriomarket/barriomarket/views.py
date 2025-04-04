@@ -18,13 +18,13 @@ from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, Regi
 from django.core.files.storage import FileSystemStorage
 
 def home(request):
-    listadoproductos = connection.cursor()
-    listadocategorias = connection.cursor()
-    listadocategoriasall = connection.cursor()
-    listadoproductos.execute("SELECT * FROM productos LIMIT 6")
-    listadocategorias.execute("SELECT * FROM categoria LIMIT 3")
-    listadocategoriasall.execute("SELECT * FROM categoria")
-    return render(request,'home.html',{'listadoproductos':listadoproductos, 'listadocategorias':listadocategorias, 'listadocategoriasall':listadocategoriasall})
+    producto= Productos.objects.all()[:3]
+    categorias= Categoria.objects.all()
+    context = {
+        'productos': producto,
+        'categorias': categorias,
+    }
+    return render(request,'home.html', context)
 
 def generate_code():
     digits = [str(random.randint(0, 9)) for _ in range(4)] 

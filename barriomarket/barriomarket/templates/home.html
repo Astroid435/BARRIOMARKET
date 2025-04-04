@@ -248,15 +248,15 @@
 <div class="container">
     <h2 class="section-title">Productos destacados</h2>
     <div class="product-grid">
-        {% for fila in listadoproductos %}
+        {% for producto in productos %}
         <div class="product-card">
-            <a href="Productos/VistaProducto/{{fila.0}}">
-                <img src="{% static 'image/Productos/' %}{{fila.6}}" class="product-image">
+            <a href="Productos/VistaProducto/{{producto.id}}">
+                <img src="{% static 'image/Productos/' %}{{producto.imagen}}" class="product-image">
             </a>
             <div class="product-info">
-                <p class="product-name"><strong>{{ fila.1 }}</strong></p>
-                <p class="product-description">{{ fila.5 }}</p>
-                <p class="product-price"><strong>${{ fila.4 }}</strong></p>
+                <p class="product-name"><strong>{{ producto.Nombre }}</strong></p>
+                <p class="product-description">{{ producto.Descripcion }}</p>
+                <p class="product-price"><strong>${{ producto.ValorVenta }}</strong></p>
             </div>
         </div>
         {% endfor %}
@@ -270,10 +270,12 @@
     <!-- Resumen de Categorías -->
     <div id="categoriasresumen">
         <div class="category-grid">
-            {% for fila in listadocategorias %}
-            <div class="category-btn" name="btn_selector">
-                {{ fila.1 }}
-            </div>
+            {% for categoria in categorias %}
+            <a href="productos/?categoria={{categoria.id}}">
+                <div class="category-btn" name="btn_selector">
+                    {{ categoria.Nombre }}
+                </div>
+            </a>
             {% endfor %}
         </div>
         <button class="view-more-btn" id="btn_vermas">Ver más</button>
