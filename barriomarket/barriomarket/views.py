@@ -40,7 +40,6 @@ def send_recovery_email(user_email, code):
     recipient_list = [user_email]
     send_mail(subject, message, email_from, recipient_list)
 
-
 def register(request):
     if request.method == 'POST':
         form = MyUserCreationForm(request.POST)
