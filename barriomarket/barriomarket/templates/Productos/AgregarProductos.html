@@ -381,6 +381,16 @@
 </div>
 
 <script>
+    document.getElementById("AgregarProductos").addEventListener("submit", function(e) {
+        var imagenInput = document.getElementById("imagen");
+        if (!imagenInput.value) {
+            e.preventDefault();
+            alert("Por favor, selecciona una imagen para el producto.");
+        }
+    });
+</script>
+
+<script>
     function selectFabricante(element, id) {
 
         document.getElementById('fabricanteSeleccionadoId').value = id;

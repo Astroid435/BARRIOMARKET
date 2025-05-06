@@ -12,10 +12,14 @@ from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.db import connection
 from .forms import MyUserCreationForm
+from django.contrib.admin.views.decorators import staff_member_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
+
+def es_admin(user):
+    return user.is_authenticated and user.rol.Nombre == 'Administrador' 
 
 def home(request):
     producto= Productos.objects.all()[:3]
@@ -50,6 +54,7 @@ def register(request):
         form = MyUserCreationForm()
     return render(request, 'registro.html', {'form': form})
 
+@user_passes_test(es_admin, login_url='inicio')
 def registros(request):
     
     if request.method == 'POST':
@@ -110,11 +115,13 @@ def registros(request):
     
     return render(request,'registros.html',{'listadoproductos':listadoproductos,'listadofabricantes':listadofabricantes})
 
+@user_passes_test(es_admin, login_url='inicio')
 def borrarproductos(request, idProducto):
     borrar=Productos.objects.get(id=idProducto)
     borrar.delete()
     return redirect("/registros")
 
+@user_passes_test(es_admin, login_url='inicio')
 def AgregarProductos(request):
     
     subcategorias=[]
@@ -205,6 +212,7 @@ def AgregarProductos(request):
                     
     return render(request,'Productos/AgregarProductos.html',{'fabricantes':listadofabricante, 'categorias':listadocategoria, 'subcategorias': listadosubcategorias, 'Seleccionfabricante': Nombrefabricante, 'Seleccioncategoria': Nombrecategoria})
 
+@user_passes_test(es_admin, login_url='inicio')
 def ActualizarProducto(request, idProducto):
     
     Producto=Productos.objects.get(id=idProducto)
@@ -558,5 +566,3 @@ class CustomLoginView(LoginView):
         form.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Correo'})
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
-
-

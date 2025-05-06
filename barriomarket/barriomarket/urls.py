@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,borrarcarro,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena,  catalogo
 from django.contrib.auth.views import LogoutView
 from .views import CustomLoginView, GenerarPedido
@@ -23,7 +25,7 @@ from .views import CustomLoginView, GenerarPedido
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',home),
-    path('inicio',home),
+    path('inicio',home, name='inicio'),
     path('registros', registros),
     path('Carrito', Vistacarrito),
     path('Carrito/borrar/<str:idCarro>', borrarcarro),
@@ -40,4 +42,4 @@ urlpatterns = [
     path('CambioContrasena/Codigo', SolicitarCodigo),
     path('CambioContrasena/Cambio', SolicitarContrasena),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

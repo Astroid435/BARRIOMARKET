@@ -283,7 +283,7 @@
         <div class="product-main">
             <!-- Galería de imágenes -->
             <div class="product-gallery">
-                <img src="{% static 'image/Productos/' %}{{Producto.Imagen}}" class="product-image" alt="{{Producto.Nombre}}">
+                <img src="{{ Producto.Imagen.url }}" class="product-image" alt="{{Producto.Nombre}}">
             </div>
             
             <!-- Información del producto -->

@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,7 +131,8 @@ STATICFILES_DIRS=[
     'barriomarket/public'
 ]
 
-MEDIA_ROOT='barriomarket/public/image/Productos'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'barriomarket', 'public', 'image', 'Productos')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -141,7 +143,7 @@ AUTH_USER_MODEL = 'barriomarket.Usuario'
 
 LOGIN_REDIRECT_URL = '/inicio'
 
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/logout'
 
 
 EMAIL_HOST = 'smtp.gmail.com'
