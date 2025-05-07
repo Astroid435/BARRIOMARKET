@@ -74,17 +74,23 @@ class Productos(models.Model):
 
     class Meta:
         db_table = 'productos'
-
+        
+    @property
     def categorias(self):
         return Categoria.objects.filter(
             subcategoria__productoscategoria__Productos=self
-        ).distinct()
+        ).first()
 
 class Categoria(models.Model):
     Nombre = models.CharField(max_length=45)
 
     class Meta:
         db_table = 'categoria'
+
+    def productos(self):
+        return Productos.objects.filter(
+            productoscategoria__Subcategoria__Categoria=self
+        ).distinct()
 
 class Subcategoria(models.Model):
     Nombre = models.CharField(max_length=45)
@@ -110,13 +116,14 @@ class RegistroPedido(models.Model):
     ValorTotal = models.IntegerField()
     Observaciones = models.CharField(max_length=200)
     Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    Estado= models.CharField(max_length=45)
 
     class Meta:
         db_table = 'registropedido'
 
 class CantidadPedido(models.Model):
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    RegistroPedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE)
+    RegistroPedido = models.ForeignKey(RegistroPedido, related_name='CantidadPedido', on_delete=models.CASCADE)
     Cantidad = models.SmallIntegerField()
 
     class Meta:

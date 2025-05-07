@@ -296,7 +296,7 @@
 
 <!-- Logout Button (Opcional) -->
 <div class="container text-center mt-5 mb-5">
-    <form method="POST" action="{% url 'logout' %}" class="d-inline">
+    <form method="post" action="{% url 'logout' %}" class="d-inline">
         {% csrf_token %}
         <button type="submit" class="btn-primary" style="background-color: transparent; color: var(--primary-color); border: 1px solid var(--primary-color);">
             Cerrar sesión

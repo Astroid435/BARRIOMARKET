@@ -261,9 +261,9 @@
             <div class="product-info">
                 <h3 class="product-name">{{ producto.Nombre }}</h3>
                 <p class="product-category">
-                    {% for categoria in producto.categorias %}
-                        {{ categoria.Nombre }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
+                    <p class="product-category">
+                        {{ producto.categorias.Nombre|default:"Sin categoría" }}
+                    </p>
                 </p>
                 <p class="product-price">${{ producto.ValorVenta }}</p>
             </div>
@@ -273,22 +273,22 @@
     
 <!-- Paginación -->
 <div class="pagination">
-    {% if page_obj.has_previous %}
+    {% if productos.has_previous %}
         <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">&laquo; Primera</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Anterior</a>
+        <a href="?page={{ productos.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Anterior</a>
     {% endif %}
     
-    {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
+    {% for num in productos.paginator.page_range %}
+        {% if productos.number == num %}
             <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link active">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        {% elif num > productos.number|add:'-3' and num < productos.number|add:'3' %}
             <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ num }}</a>
         {% endif %}
     {% endfor %}
     
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Siguiente</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Última &raquo;</a>
+    {% if productos.has_next %}
+        <a href="?page={{ productos.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Siguiente</a>
+        <a href="?page={{ productos.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">Última &raquo;</a>
     {% endif %}
 </div>
     

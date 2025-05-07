@@ -189,63 +189,6 @@
         border: 1px solid var(--primary-color);
     }
     
-    /* Sección de productos relacionados */
-    .related-products {
-        margin-top: 4rem;
-        padding-top: 3rem;
-        border-top: 1px solid var(--border-color);
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 400;
-        margin-bottom: 2rem;
-    }
-    
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-    }
-    
-    .product-card {
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        overflow: hidden;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-    
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .product-card-image {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-    }
-    
-    .product-card-info {
-        padding: 1.5rem;
-    }
-    
-    .product-card-name {
-        font-size: 1rem;
-        font-weight: 400;
-        margin-bottom: 0.5rem;
-    }
-    
-    .product-card-description {
-        font-size: 0.9rem;
-        color: var(--secondary-color);
-        margin-bottom: 1rem;
-    }
-    
-    .product-card-price {
-        font-size: 1rem;
-        font-weight: 400;
-    }
     
     /* Mensajes de error */
     .error-messages {
@@ -275,6 +218,64 @@
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         }
     }
+
+    .products-grid-r {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .product-card-r {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .product-card-r:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-image-container-r {
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .product-image-r {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .product-card-r:hover .product-image-r {
+        transform: scale(1.05);
+    }
+    
+    .product-info-r {
+        padding: 1.5rem;
+    }
+    
+    .product-name-r {
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-category-r {
+        color: var(--gray);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-price-r {
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+    
+
 </style>
 
 <div class="container-fluid">
@@ -339,21 +340,30 @@
     {% endif %}
     
     <!-- Productos relacionados -->
+    {% if Relacionados %}
     <div class="related-products">
         <h2 class="section-title">Productos relacionados</h2>
-        <div class="products-grid">
+        <div class="products-grid-r">
             {% for producto in Relacionados %}
-            <a href="/Productos/VistaProducto/{{ producto.idProducto }}" class="product-card">
-                <img src="{% static 'image/Productos/' %}{{ producto.Imagen }}" class="product-card-image" alt="{{ producto.Nombre }}">
-                <div class="product-card-info">
-                    <h3 class="product-card-name">{{ producto.Nombre }}</h3>
-                    <p class="product-card-description">{{ producto.Descripcion }}</p>
-                    <p class="product-card-price">${{ producto.ValorVenta }}</p>
+            <a href="{% url 'detalle_producto' producto.idProducto %}" class="product-card-r">
+                <div class="product-image-container-r">
+                    <img src="{% if producto.Imagen %}{% static 'image/Productos/' %}{{ producto.Imagen }}{% else %}{% static 'image/placeholder.jpg' %}{% endif %}" 
+                         alt="{{ producto.nombre }}" class="product-image-r">
+                </div>
+                <div class="product-info-r">
+                    <h3 class="product-name-r">{{ producto.Nombre }}</h3>
+                    <p class="product-category-r">
+                        {% for categoria in producto.categorias %}
+                            {{ categoria.Nombre }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="product-price-r">${{ producto.ValorVenta }}</p>
                 </div>
             </a>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 
 <script>

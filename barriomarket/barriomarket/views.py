@@ -1,3 +1,5 @@
+from django.utils import timezone
+from datetime import timedelta
 import json
 import uuid
 import random
@@ -19,6 +21,9 @@ from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, Regi
 from django.core.files.storage import FileSystemStorage
 
 def es_admin(user):
+    return user.is_authenticated and user.rol.Nombre == 'Administrador' 
+
+def auth(user):
     return user.is_authenticated and user.rol.Nombre == 'Administrador' 
 
 def home(request):
@@ -306,27 +311,20 @@ def VistaProducto (request, idProducto):
             'Subcategorias': subcategoriasnombres,
     })
     
-    subcategorias=Subcategoria.objects.filter(Categoria_id=idCategoria)
-    idproductos=[]
-    for subcategoria in subcategorias:
-      categoriasproducto = ProductosCategoria.objects.filter(Subcategoria_id=subcategoria.id)
-      for productos in categoriasproducto:
-        if not productos.Productos.id in idproductos:
-          if producto.id in idproductos:
-            idproductos.append(productos.Productos.id)
     
-    for idproducto in idproductos:
-      productos=Productos.objects.get(id=idproducto)
-      listarelacionados.append({
-              'idProducto': productos.id, 
-              'Nombre': productos.Nombre,
-              'Descripcion': productos.Descripcion,
-              'ValorVenta': productos.ValorVenta,
-              'Imagen': productos.imagen,
-      })
+    categoria = producto.categorias
+    productosRelacionados = categoria.productos()
+
+    for prod in productosRelacionados:
+        if prod.id != producto.id:  # Evita incluir el producto actual
+            listarelacionados.append({
+                'idProducto': prod.id,
+                'Nombre': prod.Nombre,
+                'Descripcion': prod.Descripcion,
+                'ValorVenta': prod.ValorVenta,
+                'Imagen': prod.imagen,
+            })
       
-    
-    
     if request.user.is_authenticated:
         if request.method == 'POST':
             if request.POST.get('Cantidad') and request.POST.get('Producto'):
@@ -423,6 +421,7 @@ def catalogo(request):
     }
     return render(request, 'catalogo.html', context)
 
+@user_passes_test(auth, login_url='inicio')
 def Vistacarrito (request):
     listadocarrito=[]
     ValorTodo=0
@@ -465,22 +464,25 @@ def Vistacarrito (request):
                     
             
             return  render(request, "carrito.html",{'listadocarrito':listadocarrito,'ValorTodo':ValorTodo })
-    
+
+@user_passes_test(auth, login_url='inicio')
 def borrarcarro(request, idCarro):
     borrar=Carrito.objects.get(id=idCarro)
     borrar.delete()
     return redirect("/Carrito")
 
+@user_passes_test(auth, login_url='inicio')
 def GenerarPedido(request):
     if request.user.is_authenticated:
         carrito=Carrito.objects.filter(Usuario=request.user)
         if request.method == 'POST':
             if request.POST.get('Observaciones') and request.POST.get('ValorTotal'):
                 pedido=RegistroPedido(
-                    Fecha=now(),
+                    Fecha=timezone.now(),
                     Observaciones=request.POST.get('Observaciones'),
                     ValorTotal=request.POST.get('ValorTotal'),
-                    Usuario=request.user
+                    Usuario=request.user,
+                    Estado="sin_atender"
                 )
                 pedido.save()
                 for carro in carrito:
@@ -566,3 +568,30 @@ class CustomLoginView(LoginView):
         form.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Correo'})
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
+
+
+@user_passes_test(es_admin, login_url='inicio')
+def Pedidos(request):
+    pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').all()
+    return render(request, 'pedidos/pedidos.html', {'lista_pedidos': pedidos})
+
+@user_passes_test(es_admin, login_url='inicio')
+def pedidos_ajax(request):
+    estado = request.GET.get('estado')
+    rango = request.GET.get('rango')
+    pedidos = RegistroPedido.objects.all()
+
+    if estado in ['atendido', 'sin_atender']:
+        pedidos = pedidos.filter(Estado=estado)
+
+    # Rango de fechas
+    now = timezone.now()
+    if rango == 'hoy':
+        pedidos = pedidos.filter(Fecha=now.date())
+    elif rango == 'semana':
+        start = now - timedelta(days=now.weekday())
+        pedidos = pedidos.filter(Fecha__gte=start.date())
+    elif rango == 'mes':
+        pedidos = pedidos.filter(Fecha__month=now.month, Fecha__year=now.year)
+
+    return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
