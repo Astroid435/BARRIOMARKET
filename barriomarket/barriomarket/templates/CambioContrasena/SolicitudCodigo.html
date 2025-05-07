@@ -1,0 +1,21 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+  <div>
+    <center>
+      <h1 style="font-size: 57px; font-weight: bold;">Cambio de contraseña</h1>        
+      <p style="color: #828282; width: 40%;">Ingresa el codigo que se te enio al correo para el cambio de contraseña</p>
+      <form method="POST" action="">
+        {% csrf_token %} 
+        <div class="container-fluid">
+          <label for="exampleInputEmail1">Codigo</label>
+          <div class="col-4">
+            <input type="number" class="form-control" name="code" placeholder="Ej: 999999" required maxlength="6"></input>
+            <button type="submit" class="btn btn-edit button col-12" name="CorreoEnviar">Enviar</button>
+          </div>
+        </div>
+      </form>
+    </center>
+  </div>      
+
+{% include 'inc/footer.html' %}
