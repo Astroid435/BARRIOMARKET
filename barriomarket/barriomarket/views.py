@@ -566,3 +566,5 @@ class CustomLoginView(LoginView):
         form.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Correo'})
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
+
+ 

@@ -29,6 +29,7 @@ urlpatterns = [
     path('registros', registros),
     path('Carrito', Vistacarrito),
     path('Carrito/borrar/<str:idCarro>', borrarcarro),
+    path('perfilusuario', CustomLoginView.as_view(template_name='perfilusuario.html')),
     path('GenerarPedido', GenerarPedido),
     path('registro',register),
     path('login', CustomLoginView.as_view(template_name='login.html')),
