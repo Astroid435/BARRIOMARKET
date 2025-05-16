@@ -259,19 +259,17 @@
     </div>
     
     {% if listadocarrito %}
-    <div class="cart-container">
+    <div class="cart-container" id="contenedor-carrito">
         <div class="cart-grid">
             {% for carro in listadocarrito %}
-            <div class="cart-card">
+            <div class="cart-card" id="producto-{{carro.idCarrito}}">
                 <div class="card-header">
                     <span class="brand-name">{{carro.NombreFabricante}}</span>
-                    <form method="post" action="" class="quantity-control">
-                        {% csrf_token %}
-                        <input type="hidden" value="{{carro.idCarrito}}" name="id">
-                        <button type="submit" class="quantity-btn minus-btn" name="menos" value="1">-</button>
-                        <span class="quantity-value">{{carro.Cantidad}}</span>
-                        <button type="submit" class="quantity-btn plus-btn" name="mas" value="2">+</button>
-                    </form>
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus-btn" data-id="{{carro.idCarrito}}" data-precio="{{carro.ValorUnitario}}">-</button>
+                        <span class="quantity-value" id="cantidad-{{carro.idCarrito}}">{{carro.Cantidad}}</span>
+                        <button class="quantity-btn plus-btn" data-id="{{carro.idCarrito}}" data-precio="{{carro.ValorUnitario}}">+</button>
+                    </div>                   
                 </div>
                 
                 <div class="product-info">
@@ -279,17 +277,16 @@
                         <h3 class="product-title">{{carro.Nombre}}</h3>
                         <p class="product-price">${{carro.ValorUnitario}}</p>
                     </div>
-                    <p class="total-price">Total: ${{carro.ValorTotal}}</p>
+                    <p class="total-price" id="total-{{carro.idCarrito}}">Total: ${{carro.ValorTotal}}</p>
                 </div>
                 
-                <a href="/Carrito/borrar/{{ carro.idCarrito }}" class="btn btn-delete">Eliminar</a>
-            </div>
+                <button class="btn btn-delete delete-btn" data-id="{{ carro.idCarrito }}">Eliminar</button>            </div>
             {% endfor %}
         </div>
         
         <div class="cart-total">
             <h3 class="cart-total-title">Total del carrito</h3>
-            <h2 class="cart-total-amount">${{ValorTodo}}</h2>
+            <h2 class="cart-total-amount" id="total-general">${{ValorTodo}}</h2>
         </div>
         
         <div class="observations">
@@ -302,12 +299,107 @@
             </form>
         </div>
     </div>
-    {% else %}
-    <div class="empty-cart">
+    {% endif %}
+
+    <div class="empty-cart" id="carrito-vacio" style="display: none;">
         <p class="empty-cart-message">No se han agregado productos al carrito</p>
         <a href="/productos" class="btn btn-primary">Ver productos</a>
     </div>
-    {% endif %}
 </div>
 
+<script>
+    function actualizarCantidad(id, tipo, precioUnitario) {
+        fetch("{% url 'carrito' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({
+                id: id,
+                [tipo]: '1'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'updated') {
+                const nuevaCantidad = data.cantidad;
+                document.getElementById('cantidad-' + id).textContent = nuevaCantidad;
+                const nuevoTotal = nuevaCantidad * precioUnitario;
+                // Actualiza total parcial con id correcto
+                document.getElementById('total-' + id).textContent = 'Total: $' + nuevoTotal.toFixed(2);
+    
+                recalcularTotalGeneral();
+            } else if (data.status === 'deleted') {
+                document.getElementById('producto-' + id).remove();
+                recalcularTotalGeneral();
+        
+                // Aquí revisa si quedan productos
+                if (document.querySelectorAll('.cart-card').length === 0) {
+                    document.getElementById('contenedor-carrito').style.display = 'none';
+                    document.getElementById('carrito-vacio').style.display = 'block';
+                }
+            }
+        });
+    }
+    
+    function recalcularTotalGeneral() {
+        let total = 0;
+        document.querySelectorAll('.total-price').forEach(el => {
+            const valorTexto = el.textContent.replace('Total: $', '');
+            const valor = parseFloat(valorTexto);
+            if (!isNaN(valor)) {
+                total += valor;
+            }
+        });
+        document.getElementById('total-general').textContent = '$' + total.toFixed(2);
+    }
+    
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const precio = parseFloat(btn.dataset.precio);
+            actualizarCantidad(id, 'menos', precio);
+        });
+    });
+    
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const precio = parseFloat(btn.dataset.precio);
+            actualizarCantidad(id, 'mas', precio);
+        });
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            fetch("{% url 'carrito' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    id: id,
+                    borrar: '1'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'deleted') {
+                    document.getElementById('producto-' + id).remove();
+                    recalcularTotalGeneral();
+
+                }
+                if (document.querySelectorAll('.cart-card').length === 0) {
+                    document.getElementById('contenedor-carrito').style.display = 'none';
+                    document.getElementById('carrito-vacio').style.display = 'block';
+                }
+            });
+        });
+    });
+</script>
 {% include 'inc/footer.html' %}

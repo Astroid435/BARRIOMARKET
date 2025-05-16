@@ -44,10 +44,86 @@ def generate_code():
 
 def send_recovery_email(user_email, code):
     subject = 'Recuperación de contraseña'
-    message = f'Tu código de recuperación es: {code}. Este código es válido por 10 minutos.'
+
+    # Cuerpo del mensaje en formato HTML con un diseño más atractivo y la fuente Poppins
+    message = f"""
+    <html>
+    <head>
+        <style>
+            /* Importando la fuente Poppins desde Google Fonts */
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+            body {{
+                font-family: 'Poppins', sans-serif;
+                background-color: #f8f8f8;
+                color: #333333;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }}
+            .email-container {{
+                width: 100%;
+                max-width: 600px;
+                background-color: #ffffff;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                border: 1px solid #e1e1e1;
+            }}
+            h1 {{
+                font-size: 32px;
+                color: #333333;
+                font-weight: 600;
+                margin-bottom: 20px;
+            }}
+            p {{
+                font-size: 16px;
+                color: #666666;
+                line-height: 1.6;
+                margin-bottom: 20px;
+            }}
+            .code {{
+                font-size: 28px;
+                font-weight: 600;
+                color: #ffffff;
+                background-color: #333333;
+                padding: 15px;
+                border-radius: 8px;
+                display: inline-block;
+                margin-top: 20px;
+                letter-spacing: 1px;
+            }}
+            .footer {{
+                margin-top: 30px;
+                font-size: 14px;
+                color: #999999;
+            }}
+            .footer a {{
+                color: #333333;
+                text-decoration: none;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <h1>Recuperación de Contraseña</h1>
+            <p>Hola,</p>
+            <p>Hemos recibido una solicitud para recuperar tu contraseña. Tu código de recuperación es:</p>
+            <p class="code">{code}</p>
+            <p>Este código es válido por 10 minutos.</p>
+            <p class="footer">Si no solicitaste este cambio, por favor ignora este mensaje.</p>
+        </div>
+    </body>
+    </html>
+    """
+    
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [user_email]
-    send_mail(subject, message, email_from, recipient_list)
+    send_mail(subject, message, email_from, recipient_list, html_message=message)
 
 def register(request):
     if request.method == 'POST':
@@ -422,54 +498,63 @@ def catalogo(request):
     return render(request, 'catalogo.html', context)
 
 @user_passes_test(auth, login_url='inicio')
-def Vistacarrito (request):
-    listadocarrito=[]
-    ValorTodo=0
-    if request.user.is_authenticated:
-            user_id = request.user.id
-            carrito = Carrito.objects.filter(Usuario=user_id)
-            for carro in carrito:
-                idcarrito=carro.id
-                Cantidadventa=carro.Productos.ValorVenta
-                Cantidad=carro.Cantidad
-                CantidadTotal=Cantidadventa*Cantidad
-                ValorTodo+=CantidadTotal
-                Nombre=carro.Productos.Nombre
-                fabricante=carro.Productos.Fabricante.Nombre
-                listadocarrito.append({
-                    'idCarrito':idcarrito,
-                    'Nombre':Nombre,
-                    'ValorUnitario':Cantidadventa,
-                    'ValorTotal': CantidadTotal,
-                    'Cantidad':Cantidad,
-                    'NombreFabricante':fabricante
-                })
-        
-            if request.method == 'POST':
-                if request.POST.get('id') and request.POST.get('menos'):
-                    carrito=Carrito.objects.get(id=request.POST.get('id'))
-                    if carrito.Cantidad==1:
-                        carrito.delete()
-                        return redirect("/Carrito")
-                    else:
-                        carrito.Cantidad-=1
-                        carrito.save()
-                        return redirect("/Carrito")
-                elif request.POST.get('id') and request.POST.get('mas'):
-                    carrito=Carrito.objects.get(id=request.POST.get('id'))
-                    if carrito.Cantidad<carrito.Productos.Cantidad:
-                        carrito.Cantidad+=1
-                        carrito.save()
-                        return redirect("/Carrito")
-                    
-            
-            return  render(request, "carrito.html",{'listadocarrito':listadocarrito,'ValorTodo':ValorTodo })
+def Vistacarrito(request):
+    listadocarrito = []
+    ValorTodo = 0
 
-@user_passes_test(auth, login_url='inicio')
-def borrarcarro(request, idCarro):
-    borrar=Carrito.objects.get(id=idCarro)
-    borrar.delete()
-    return redirect("/Carrito")
+    if request.user.is_authenticated:
+        user_id = request.user.id
+        carrito = Carrito.objects.filter(Usuario=user_id)
+
+        for carro in carrito:
+            idcarrito = carro.id
+            Cantidadventa = carro.Productos.ValorVenta
+            Cantidad = carro.Cantidad
+            CantidadTotal = Cantidadventa * Cantidad
+            ValorTodo += CantidadTotal
+            Nombre = carro.Productos.Nombre
+            fabricante = carro.Productos.Fabricante.Nombre
+            listadocarrito.append({
+                'idCarrito': idcarrito,
+                'Nombre': Nombre,
+                'ValorUnitario': Cantidadventa,
+                'ValorTotal': CantidadTotal,
+                'Cantidad': Cantidad,
+                'NombreFabricante': fabricante
+            })
+
+        # AJAX request
+        if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            carrito_id = request.POST.get('id')
+            try:
+                carrito = Carrito.objects.get(id=carrito_id, Usuario=request.user)
+            except Carrito.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'No encontrado'}, status=404)
+
+            if request.POST.get('menos'):
+                if carrito.Cantidad == 1:
+                    carrito.delete()
+                    return JsonResponse({'status': 'deleted'})
+                else:
+                    carrito.Cantidad -= 1
+                    carrito.save()
+                    return JsonResponse({'status': 'updated', 'cantidad': carrito.Cantidad})
+            
+            elif request.POST.get('mas'):
+                if carrito.Cantidad < carrito.Productos.Cantidad:
+                    carrito.Cantidad += 1
+                    carrito.save()
+                    return JsonResponse({'status': 'updated', 'cantidad': carrito.Cantidad})
+                else:
+                    return JsonResponse({'status': 'limit'})
+            
+            elif request.POST.get('borrar'):
+                carrito.delete()
+                return JsonResponse({'status': 'deleted'})
+
+            return JsonResponse({'status': 'error'})
+
+    return render(request, "carrito.html", {'listadocarrito': listadocarrito, 'ValorTodo': ValorTodo})
 
 @user_passes_test(auth, login_url='inicio')
 def GenerarPedido(request):
@@ -568,7 +653,6 @@ class CustomLoginView(LoginView):
         form.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Correo'})
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
-
 
 @user_passes_test(es_admin, login_url='inicio')
 def Pedidos(request):
