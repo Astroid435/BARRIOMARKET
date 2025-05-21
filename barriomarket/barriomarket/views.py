@@ -17,6 +17,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
+from django.contrib import messages
+
 
 def es_admin(user):
     return user.is_authenticated and user.rol.Nombre == 'Administrador' 
@@ -53,6 +55,39 @@ def register(request):
     else:
         form = MyUserCreationForm()
     return render(request, 'registro.html', {'form': form})
+
+
+def Perfil(request):
+    rol = request.user.rol_id
+    if rol == 2:
+        if request.method == 'POST':
+            usuario = Usuario.objects.get(id=request.user.id)
+            usuario.Correo = request.POST.get('correo')
+            usuario.Primer_nombre = request.POST.get('nombre')
+            usuario.Primer_apellido = request.POST.get('apellido')
+            usuario.Telefono = request.POST.get('Telefono')
+            usuario.Documento = request.POST.get('Documento')
+            usuario.save()
+            messages.success(request, "Datos actualizados correctamente.")
+            return redirect('/Perfil')
+        usuarios = Usuario.objects.all()
+        return render(request, 'Perfil.html', {'usuarios':usuarios})
+    else:
+        if request.method == 'POST':
+            usuario = Usuario.objects.get(id=request.user.id)
+            usuario.Correo = request.POST.get('correo')
+            usuario.Primer_nombre = request.POST.get('nombre')
+            usuario.Primer_apellido = request.POST.get('apellido')
+            usuario.Telefono = request.POST.get('Telefono')
+            usuario.Documento = request.POST.get('Documento')
+            usuario.save()
+            messages.success(request, "Datos actualizados correctamente.")
+
+            return redirect('/Perfil')
+        return render(request, 'Perfil.html')
+    
+
+
 
 @user_passes_test(es_admin, login_url='inicio')
 def registros(request):

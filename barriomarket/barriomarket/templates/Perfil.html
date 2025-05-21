@@ -1,0 +1,133 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+<style>
+    form div.mb {
+        margin: 30px;
+    }
+
+    form button {
+        width: 400px;
+    }
+
+    table {
+        width: 90%;
+        margin: 20px auto;
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #000;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 200;
+    }
+
+    .btn-primary:hover {
+        background-color: white;
+        color: #000;
+        border: 1px solid #000;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="card shadow-sm m-5">
+        <div class="card-body">
+            {% if messages %}
+            <div class="container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <h2 class="card-title text-center mb-4" style="margin-top: 20px;">Perfil de Usuario</h2>
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label for="correo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="correo" value="{{ request.user.Correo }}"
+                            name="correo" placeholder="Ingrese su correo" required>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre"
+                                value="{{ request.user.Primer_nombre }}" placeholder="Ingrese su nombre" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="apellido" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="apellido" name="apellido"
+                                value="{{ request.user.Primer_apellido}}" placeholder="Ingrese su apellido" required>
+                        </div>
+                    </div>
+                    <div class="row mb-4" style="margin-bottom: 300px;">
+                        <div class="col-md-6">
+                            <label for="Telefono" class="form-label">Telefono</label>
+                            <input type="text" class="form-control" id="Telefono" value="{{ request.user.Telefono }}"
+                                name="Telefono" placeholder="Ingrese su Telefono" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Documento" class="form-label">Documento</label>
+                            <input type="text" class="form-control" id="Documento" value="{{ request.user.Documento }}"
+                                name="Documento" placeholder="Ingrese su Documento" required>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn-primary" style="margin-top: 15px;">Guardar</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        {% if request.user.rol_id == 2 %}
+        <div class="container">
+            <h2>Lista de Usuarios</h2>
+            <table class="table-hover">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Telefono</th>
+                        <th>Correo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for Usuario in usuarios %}
+                    <tr>
+                        <td>{{ Usuario.Documento }}</td>
+                        <td>{{ Usuario.Primer_nombre }}</td>
+                        <td>{{ Usuario.Primer_apellido }}</td>
+                        <td>{{ Usuario.Telefono }}</td>
+                        <td>{{ Usuario.Correo }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+
+
+{% include 'inc/footer.html' %}
