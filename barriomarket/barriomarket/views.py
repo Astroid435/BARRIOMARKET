@@ -26,7 +26,7 @@ def es_admin(user):
     return user.is_authenticated and user.rol.Nombre == 'Administrador' 
 
 def auth(user):
-    return user.is_authenticated and user.rol.Nombre == 'Administrador' 
+    return user.is_authenticated 
 
 def home(request):
     producto= Productos.objects.all()[:3]
@@ -137,39 +137,40 @@ def register(request):
         form = MyUserCreationForm()
     return render(request, 'registro.html', {'form': form})
 
-
 def Perfil(request):
     rol = request.user.rol_id
     if rol == 2:
         if request.method == 'POST':
-            usuario = Usuario.objects.get(id=request.user.id)
-            usuario.Correo = request.POST.get('correo')
-            usuario.Primer_nombre = request.POST.get('nombre')
-            usuario.Primer_apellido = request.POST.get('apellido')
-            usuario.Telefono = request.POST.get('Telefono')
-            usuario.Documento = request.POST.get('Documento')
-            usuario.save()
-            messages.success(request, "Datos actualizados correctamente.")
+            if request.POST.get('correo') and request.POST.get('nombre') and request.POST.get('apellido') and request.POST.get('Telefono') and request.POST.get('Documento'):
+                usuario = Usuario.objects.get(id=request.user.id)
+                usuario.Correo = request.POST.get('correo')
+                usuario.Primer_nombre = request.POST.get('nombre')
+                usuario.Primer_apellido = request.POST.get('apellido')
+                usuario.Telefono = request.POST.get('Telefono')
+                usuario.Documento = request.POST.get('Documento')
+                usuario.save()
+                messages.success(request, "Datos actualizados correctamente.")
+            else:
+                messages.error(request, "Por favor, completa todos los campos.")
             return redirect('/Perfil')
         usuarios = Usuario.objects.all()
         return render(request, 'Perfil.html', {'usuarios':usuarios})
     else:
         if request.method == 'POST':
-            usuario = Usuario.objects.get(id=request.user.id)
-            usuario.Correo = request.POST.get('correo')
-            usuario.Primer_nombre = request.POST.get('nombre')
-            usuario.Primer_apellido = request.POST.get('apellido')
-            usuario.Telefono = request.POST.get('Telefono')
-            usuario.Documento = request.POST.get('Documento')
-            usuario.save()
-            messages.success(request, "Datos actualizados correctamente.")
-
+            if request.POST.get('correo') and request.POST.get('nombre') and request.POST.get('apellido') and request.POST.get('Telefono') and request.POST.get('Documento'):
+                usuario = Usuario.objects.get(id=request.user.id)
+                usuario.Correo = request.POST.get('correo')
+                usuario.Primer_nombre = request.POST.get('nombre')
+                usuario.Primer_apellido = request.POST.get('apellido')
+                usuario.Telefono = request.POST.get('Telefono')
+                usuario.Documento = request.POST.get('Documento')
+                usuario.save()
+                messages.success(request, "Datos actualizados correctamente.")
+            else:
+                messages.error(request, "Por favor, completa todos los campos.")
             return redirect('/Perfil')
         return render(request, 'Perfil.html')
     
-
-
-
 @user_passes_test(es_admin, login_url='inicio')
 def registros(request):
     
