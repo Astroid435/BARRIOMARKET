@@ -10,44 +10,89 @@
         --bs-light: #f8f9fa;
     }
 
-    .filters, .time-filters {
-        margin: 1.5rem 0;
+    h1 {
+        font-size: 2.25rem;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
     }
 
-    @media (max-width: 768px) {
-        .filters .btn, .time-filters .btn {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
+    p.subtitle {
+        color: #828282;
+        width: 40%;
+        margin: auto;
+        margin-bottom: 2rem;
     }
+
+    .btn {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+        background-color: #000;
+        color: white;
+    }
+
+    .filters-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-group {
+        background-color: #F5F5F5;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
     .btn.active {
         background-color: #000;
         color: white;
         border: 1px solid #000;
     }
+
+    #contenedor-pedidos {
+        padding: 1rem 2rem 3rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        p.subtitle {
+            width: 90%;
+        }
+    }
 </style>
 
-    <center>
-        <h1 style="font-size: 57px; font-weight: bold;">Pedidos</h1>
-        <p style="color: #828282; width: 40%;"> Esta es una lista donde puedes visualizar los pedidos realizados y los pedidos sin atender</p>
+<div class="text-center">
+    <h1>Pedidos</h1>
+    <p class="subtitle">Esta es una lista donde puedes visualizar los pedidos realizados y los pedidos sin atender</p>
 
-
-        <div class="col-3" style="background-color: #F5F5F5; padding:7px; border-radius:5px;">
-            <button class="btn filtro-estado" data-estado="atendido">Atendidos</button>
-            <button class="btn filtro-estado" data-estado="sin_atender">Sin Atender</button>
+    <div class="filters-wrapper">
+        <div class="filter-group">
+            <button class="btn btn-outline-dark filtro-estado" data-estado="atendido">Atendidos</button>
+            <button class="btn btn-outline-dark filtro-estado" data-estado="sin_atender">Sin Atender</button>
         </div>
-        
-        <div class="col-4" style="background-color: #F5F5F5; padding:7px; border-radius:5px; ">
-            <button class="btn filtro-fecha" data-rango="hoy">Hoy</button>
-            <button class="btn filtro-fecha" data-rango="semana">Semana</button>
-            <button class="btn filtro-fecha" data-rango="mes">Mes</button>
-        </div>
-    </center>
 
-    <div id="contenedor-pedidos">
-        {% include "pedidos/_parcial_listado.html" with lista_pedidos=lista_pedidos %}
+        <div class="filter-group">
+            <button class="btn btn-outline-dark filtro-fecha" data-rango="hoy">Hoy</button>
+            <button class="btn btn-outline-dark filtro-fecha" data-rango="semana">Semana</button>
+            <button class="btn btn-outline-dark filtro-fecha" data-rango="mes">Mes</button>
+        </div>
     </div>
-    
+</div>
+
+<div id="contenedor-pedidos">
+    {% include "pedidos/_parcial_listado.html" with lista_pedidos=lista_pedidos %}
+</div>
 
 <script>
     function cargarPedidos(estado, rango) {
@@ -81,4 +126,5 @@
         });
     });
 </script>
+
 {% include 'inc/footer.html' %}

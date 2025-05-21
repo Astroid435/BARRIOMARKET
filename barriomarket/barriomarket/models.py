@@ -111,6 +111,7 @@ class ProductosCategoria(models.Model):
 # Pedidos, Carrito y Cantidades
 # -----------------------------------
 
+
 class RegistroPedido(models.Model):
     Fecha = models.DateField()
     ValorTotal = models.IntegerField()

@@ -143,9 +143,6 @@ AUTH_USER_MODEL = 'barriomarket.Usuario'
 
 LOGIN_REDIRECT_URL = '/inicio'
 
-LOGOUT_REDIRECT_URL = '/logout'
-
-
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
