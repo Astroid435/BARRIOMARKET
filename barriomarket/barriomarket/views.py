@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.db import connection
 from .forms import MyUserCreationForm
 from django.contrib.admin.views.decorators import staff_member_required, user_passes_test
@@ -690,29 +690,60 @@ class CustomLoginView(LoginView):
         form.fields['password'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Contraseña'})
         return form
 
-@user_passes_test(es_admin, login_url='inicio')
+@user_passes_test(auth, login_url='inicio')
 def Pedidos(request):
-    pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').all()
+    # Admin ve todos los pedidos, usuario normal solo los suyos
+    if request.user.rol.Nombre=="Administrador":
+        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').all()
+    else:
+        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').filter(Usuario=request.user)
+
+    if request.method == 'POST' and request.user.rol.Nombre == "Administrador":
+        pedido_id = request.POST.get('id')
+        pedido = get_object_or_404(RegistroPedido, id=pedido_id)
+
+        if 'aceptar' in request.POST:
+            pedido.Estado = 'atendido'
+            pedido.save()
+        elif 'rechazar' in request.POST:
+            CantidadPedido.objects.filter(RegistroPedido=pedido).delete()
+            pedido.delete()
+
+        return redirect('/Pedidos')
+
     return render(request, 'pedidos/pedidos.html', {'lista_pedidos': pedidos})
 
-@user_passes_test(es_admin, login_url='inicio')
+@user_passes_test(auth, login_url='inicio')
 def pedidos_ajax(request):
     estado = request.GET.get('estado')
-    rango = request.GET.get('rango')
-    pedidos = RegistroPedido.objects.all()
+
+    # Admin ve todos, usuario solo los suyos
+    if request.user.rol.Nombre == "Administrador":
+        pedidos = RegistroPedido.objects.all()
+    else:
+        pedidos = RegistroPedido.objects.filter(Usuario=request.user)
 
     if estado in ['atendido', 'sin_atender']:
         pedidos = pedidos.filter(Estado=estado)
 
-    # Rango de fechas
-    now = timezone.now()
-    if rango == 'hoy':
-        pedidos = pedidos.filter(Fecha=now.date())
-    elif rango == 'semana':
-        start = now - timedelta(days=now.weekday())
-        pedidos = pedidos.filter(Fecha__gte=start.date())
-    elif rango == 'mes':
-        pedidos = pedidos.filter(Fecha__month=now.month, Fecha__year=now.year)
-
     return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
 
+
+@user_passes_test(es_admin, login_url="inicio")
+def AgregarVenta(request, idPedido=None):
+    ProductosTodos = Productos.objects.all()
+    contexto = {'ProductosTodos': ProductosTodos}
+
+    if idPedido:
+        pedido = get_object_or_404(
+            RegistroPedido.objects.prefetch_related('CantidadPedido__Productos'),
+            id=idPedido
+        )
+
+        # Calcula el total por producto
+        for item in pedido.CantidadPedido.all():
+            item.total = item.Productos.ValorVenta * item.Cantidad
+
+        contexto['pedido'] = pedido
+
+    return render(request, 'Ventas/AgregarVentas.html', contexto)

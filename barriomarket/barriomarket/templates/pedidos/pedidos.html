@@ -9,11 +9,21 @@
         --bs-primary: #000000;
         --bs-light: #f8f9fa;
     }
+    
+    .card.border-success {
+        border: 1px solid #28a745 !important;
+        background-color: #f6fff9; /* un fondo verde muy claro */
+    }
+
+    .card.border-stop {
+        border: 1px solid rgb(54, 54, 54) !important;
+        background-color:rgb(247, 247, 247); /* un fondo verde muy claro */
+    }
 
     h1 {
-        font-size: 2.25rem;
-        font-weight: 400;
-        margin-bottom: 0.5rem;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-top: 2rem;
     }
 
     p.subtitle {
@@ -81,12 +91,6 @@
             <button class="btn btn-outline-dark filtro-estado" data-estado="atendido">Atendidos</button>
             <button class="btn btn-outline-dark filtro-estado" data-estado="sin_atender">Sin Atender</button>
         </div>
-
-        <div class="filter-group">
-            <button class="btn btn-outline-dark filtro-fecha" data-rango="hoy">Hoy</button>
-            <button class="btn btn-outline-dark filtro-fecha" data-rango="semana">Semana</button>
-            <button class="btn btn-outline-dark filtro-fecha" data-rango="mes">Mes</button>
-        </div>
     </div>
 </div>
 
@@ -95,8 +99,8 @@
 </div>
 
 <script>
-    function cargarPedidos(estado, rango) {
-        const url = `/pedidos/ajax/?estado=${estado}&rango=${rango}`;
+    function cargarPedidos(estado,) {
+        const url = `/pedidos/ajax/?estado=${estado}`;
         fetch(url)
             .then(response => response.text())
             .then(data => {
@@ -110,21 +114,10 @@
             btn.classList.add('active');
 
             const estado = btn.dataset.estado;
-            const rango = document.querySelector('.filtro-fecha.active')?.dataset.rango || '';
-            cargarPedidos(estado, rango);
+            cargarPedidos(estado);
         });
     });
 
-    document.querySelectorAll('.filtro-fecha').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filtro-fecha').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const rango = btn.dataset.rango;
-            const estado = document.querySelector('.filtro-estado.active')?.dataset.estado || '';
-            cargarPedidos(estado, rango);
-        });
-    });
 </script>
 
 {% include 'inc/footer.html' %}
