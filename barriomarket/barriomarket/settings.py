@@ -115,11 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -142,6 +141,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'barriomarket.Usuario'
 
 LOGIN_REDIRECT_URL = '/inicio'
+
+TIME_ZONE = 'America/Bogota'
+USE_TZ = True
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

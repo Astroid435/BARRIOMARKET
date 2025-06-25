@@ -113,7 +113,7 @@ class ProductosCategoria(models.Model):
 
 
 class RegistroPedido(models.Model):
-    Fecha = models.DateField()
+    Fecha = models.DateTimeField()
     ValorTotal = models.IntegerField()
     Observaciones = models.CharField(max_length=200)
     Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)

@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena, catalogo,Pedidos, Perfil
 from django.contrib.auth.views import LogoutView
-from .views import CustomLoginView, GenerarPedido, pedidos_ajax, AgregarVenta
+from .views import CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,6 +31,7 @@ urlpatterns = [
     path('Perfil', Perfil),
     path('GenerarPedido', GenerarPedido),
     path('registro',register, name="registro"),
+    path('auth/', auth_view, name='auth'),
     path('login', CustomLoginView.as_view(template_name='login.html'), name="login"),
     path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('Productos/AgregarProductos', AgregarProductos),
@@ -38,7 +39,7 @@ urlpatterns = [
     path('Productos/borrar/<str:idProducto>', borrarproductos),
     path('Productos/Actualizar/<str:idProducto>', ActualizarProducto),
     path('productos/', catalogo, name='catalogo'),
-    path('CambioContrasena/Correo', SolicutarCorreo),
+    path('CambioContrasena/Correo', SolicutarCorreo, name='password_reset'),
     path('CambioContrasena/Codigo', SolicitarCodigo),
     path('CambioContrasena/Cambio', SolicitarContrasena),
     path('Pedidos/', Pedidos, name='listado_pedidos'),

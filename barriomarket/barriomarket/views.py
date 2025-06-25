@@ -20,6 +20,7 @@ from django.contrib.auth.views import LoginView
 from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
+from django.contrib.auth import login as auth_login
 
 
 def es_admin(user):
@@ -126,6 +127,37 @@ def send_recovery_email(user_email, code):
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [user_email]
     send_mail(subject, message, email_from, recipient_list, html_message=message)
+
+def auth_view(request):
+    login_form = AuthenticationForm()
+    register_form = MyUserCreationForm()
+
+    # Personalización de campos login
+    login_form.fields['username'].widget.attrs.update({
+        'class': 'form-control', 'placeholder': 'Correo'
+    })
+    login_form.fields['password'].widget.attrs.update({
+        'class': 'form-control', 'placeholder': 'Contraseña'
+    })
+
+    # Si se envió login
+    if 'btn_login' in request.POST:
+        login_form = AuthenticationForm(request, data=request.POST)
+        if login_form.is_valid():
+            auth_login(request, login_form.get_user())
+            return redirect('/inicio')
+
+    # Si se envió registro
+    elif 'btn_register' in request.POST:
+        register_form = MyUserCreationForm(request.POST)
+        if register_form.is_valid():
+            register_form.save()
+            return redirect('/inicio')
+
+    return render(request, 'auth.html', {
+        'login_form': login_form,
+        'register_form': register_form
+    })
 
 def register(request):
     if request.method == 'POST':
@@ -613,6 +645,9 @@ def GenerarPedido(request):
                         Cantidad=carro.Cantidad
                     )
                     Cantidadpedido.save()
+                    producto= Productos.objects.get(id=carro.Productos.id)
+                    producto.Cantidad-= carro.Cantidad
+                    producto.save()
                     carro.delete()
                     
                 return render(request, '/carrito')
@@ -694,9 +729,9 @@ class CustomLoginView(LoginView):
 def Pedidos(request):
     # Admin ve todos los pedidos, usuario normal solo los suyos
     if request.user.rol.Nombre=="Administrador":
-        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').all()
+        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').all().order_by('-Fecha')
     else:
-        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').filter(Usuario=request.user)
+        pedidos = RegistroPedido.objects.prefetch_related('CantidadPedido__Productos').filter(Usuario=request.user).order_by('-Fecha')
 
     if request.method == 'POST' and request.user.rol.Nombre == "Administrador":
         pedido_id = request.POST.get('id')
@@ -719,15 +754,14 @@ def pedidos_ajax(request):
 
     # Admin ve todos, usuario solo los suyos
     if request.user.rol.Nombre == "Administrador":
-        pedidos = RegistroPedido.objects.all()
+        pedidos = RegistroPedido.objects.all().order_by('-Fecha')
     else:
-        pedidos = RegistroPedido.objects.filter(Usuario=request.user)
+        pedidos = RegistroPedido.objects.filter(Usuario=request.user).order_by('-Fecha')
 
     if estado in ['atendido', 'sin_atender']:
         pedidos = pedidos.filter(Estado=estado)
 
     return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
-
 
 @user_passes_test(es_admin, login_url="inicio")
 def AgregarVenta(request, idPedido=None):
