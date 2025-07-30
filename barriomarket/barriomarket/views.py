@@ -22,6 +22,11 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 
+def no_iniciado(user):
+    if user.is_authenticated:
+        return False
+    else:
+        return True
 
 def es_admin(user):
     return user.is_authenticated and user.rol.Nombre == 'Administrador' 
@@ -128,6 +133,7 @@ def send_recovery_email(user_email, code):
     recipient_list = [user_email]
     send_mail(subject, message, email_from, recipient_list, html_message=message)
 
+@user_passes_test(no_iniciado, login_url='inicio')
 def auth_view(request):
     login_form = AuthenticationForm()
     register_form = MyUserCreationForm()
@@ -159,6 +165,7 @@ def auth_view(request):
         'register_form': register_form
     })
 
+@user_passes_test(no_iniciado, login_url='inicio')
 def register(request):
     if request.method == 'POST':
         form = MyUserCreationForm(request.POST)
@@ -171,36 +178,79 @@ def register(request):
 
 def Perfil(request):
     rol = request.user.rol_id
+    
+    if request.method == 'POST':
+
+        correo = request.POST.get('correo')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        telefono = request.POST.get('Telefono')
+        documento = request.POST.get('Documento')
+        
+        if not all([correo, nombre, apellido, telefono, documento]):
+            messages.error(request, "Por favor, completa todos los campos.")
+            return redirect('/Perfil')
+        
+        errors = []
+        
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            errors.append("Ingrese un correo electrónico válido.")
+        
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
+            errors.append("El nombre solo puede contener letras y espacios.")
+        
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', apellido):
+            errors.append("El apellido solo puede contener letras y espacios.")
+            
+        if len(nombre) < 2:
+            errors.append("El nombre debe tener al menos 2 caracteres.")
+            
+        if len(apellido) < 2:
+            errors.append("El apellido debe tener al menos 2 caracteres.")
+        
+        if not telefono.isdigit():
+            errors.append("El teléfono solo puede contener números.")
+            
+        if len(telefono) < 7 or len(telefono) > 15:
+            errors.append("El teléfono debe tener entre 7 y 15 dígitos.")
+        
+        # Validar documento (solo números)
+        if not documento.isdigit():
+            errors.append("El documento solo puede contener números.")
+            
+        if len(documento) < 6:
+            errors.append("El documento debe tener al menos 6 dígitos.")
+        
+        if Usuario.objects.filter(Correo=correo).exclude(id=request.user.id).exists():
+            errors.append("Este correo electrónico ya está registrado por otro usuario.")
+        
+        if Usuario.objects.filter(Documento=documento).exclude(id=request.user.id).exists():
+            errors.append("Este documento ya está registrado por otro usuario.")
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect('/Perfil')
+        
+        try:
+            usuario = Usuario.objects.get(id=request.user.id)
+            usuario.Correo = correo
+            usuario.Primer_nombre = nombre.strip()
+            usuario.Primer_apellido = apellido.strip()
+            usuario.Telefono = telefono
+            usuario.Documento = documento
+            usuario.save()
+            messages.success(request, "Datos actualizados correctamente.")
+        except Exception as e:
+            messages.error(request, f"Error al actualizar los datos: {str(e)}")
+        
+        return redirect('/Perfil')
+    
+    # GET request
     if rol == 2:
-        if request.method == 'POST':
-            if request.POST.get('correo') and request.POST.get('nombre') and request.POST.get('apellido') and request.POST.get('Telefono') and request.POST.get('Documento'):
-                usuario = Usuario.objects.get(id=request.user.id)
-                usuario.Correo = request.POST.get('correo')
-                usuario.Primer_nombre = request.POST.get('nombre')
-                usuario.Primer_apellido = request.POST.get('apellido')
-                usuario.Telefono = request.POST.get('Telefono')
-                usuario.Documento = request.POST.get('Documento')
-                usuario.save()
-                messages.success(request, "Datos actualizados correctamente.")
-            else:
-                messages.error(request, "Por favor, completa todos los campos.")
-            return redirect('/Perfil')
         usuarios = Usuario.objects.all()
-        return render(request, 'Perfil.html', {'usuarios':usuarios})
+        return render(request, 'Perfil.html', {'usuarios': usuarios})
     else:
-        if request.method == 'POST':
-            if request.POST.get('correo') and request.POST.get('nombre') and request.POST.get('apellido') and request.POST.get('Telefono') and request.POST.get('Documento'):
-                usuario = Usuario.objects.get(id=request.user.id)
-                usuario.Correo = request.POST.get('correo')
-                usuario.Primer_nombre = request.POST.get('nombre')
-                usuario.Primer_apellido = request.POST.get('apellido')
-                usuario.Telefono = request.POST.get('Telefono')
-                usuario.Documento = request.POST.get('Documento')
-                usuario.save()
-                messages.success(request, "Datos actualizados correctamente.")
-            else:
-                messages.error(request, "Por favor, completa todos los campos.")
-            return redirect('/Perfil')
         return render(request, 'Perfil.html')
     
 @user_passes_test(es_admin, login_url='inicio')
@@ -382,13 +432,20 @@ def ActualizarProducto(request, idProducto):
         elif request.POST.get('Nombre') and request.POST.get('Cantidad') and request.POST.get('ValorVenta') and request.POST.get('ValorCompra') and request.POST.get('Descripcion'):
             fabricante = request.session.get('fabricante', 0)
             instancia_fabricante=Fabricante.objects.get(id=fabricante)
-            Imagen=""
+
+            archivo_imagen = request.FILES['imagen']
+            extension = archivo_imagen.name.split('.')[-1] 
+            nombre_aleatorio = str(uuid.uuid4()) + '.' + extension
+
+            imagen_storage = FileSystemStorage()
+            imagen_storage.save(nombre_aleatorio, archivo_imagen)
+
             Producto.Nombre=request.POST.get('Nombre')
             Producto.Cantidad=request.POST.get('Cantidad')
             Producto.ValorVenta=request.POST.get('ValorVenta')
             Producto.ValorCompra=request.POST.get('ValorCompra')
             Producto.Descripcion=request.POST.get('Descripcion')
-            Producto.imagen=Imagen
+            Producto.imagen=nombre_aleatorio
             Producto.Fabricante=instancia_fabricante
             Producto.save()
             
@@ -650,7 +707,7 @@ def GenerarPedido(request):
                     producto.save()
                     carro.delete()
                     
-                return render(request, '/carrito')
+                return redirect('/Pedidos/')
 
 def SolicutarCorreo(request):
     if request.method == 'POST':
