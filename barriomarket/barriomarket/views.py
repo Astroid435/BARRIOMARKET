@@ -35,10 +35,13 @@ def auth(user):
     return user.is_authenticated 
 
 def home(request):
-    producto= Productos.objects.all()[:3]
+    producto= Productos.objects.all()
+    producto = producto.filter(Cantidad__gte=1)[:3]
+    categoria= Categoria.objects.all()[:5]
     categorias= Categoria.objects.all()
     context = {
         'productos': producto,
+        'categoria': categoria,
         'categorias': categorias,
     }
     return render(request,'home.html', context)
@@ -517,14 +520,15 @@ def VistaProducto (request, idProducto):
     productosRelacionados = categoria.productos()
 
     for prod in productosRelacionados:
-        if prod.id != producto.id:  # Evita incluir el producto actual
-            listarelacionados.append({
-                'idProducto': prod.id,
-                'Nombre': prod.Nombre,
-                'Descripcion': prod.Descripcion,
-                'ValorVenta': prod.ValorVenta,
-                'Imagen': prod.imagen,
-            })
+        if prod.id != producto.id:
+            if not prod.Cantidad <= 0:  # Evita incluir el producto actual
+                listarelacionados.append({
+                    'idProducto': prod.id,
+                    'Nombre': prod.Nombre,
+                    'Descripcion': prod.Descripcion,
+                    'ValorVenta': prod.ValorVenta,
+                    'Imagen': prod.imagen,
+                })
       
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -587,6 +591,9 @@ def catalogo(request):
     precio_max = request.GET.get('precio_max')
     if precio_max:
         productos = productos.filter(ValorVenta__lte=precio_max)
+
+    if productos:
+        productos = productos.filter(Cantidad__gte=1)
     
     busqueda = request.GET.get('busqueda')
     if busqueda:

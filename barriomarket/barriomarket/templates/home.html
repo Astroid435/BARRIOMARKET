@@ -270,10 +270,10 @@
     <!-- Resumen de Categorías -->
     <div id="categoriasresumen">
         <div class="category-grid">
-            {% for categoria in categorias %}
-            <a href="productos/?categoria={{categoria.id}}">
+            {% for cat in categoria %}
+            <a href="productos/?categoria={{cat.id}}">
                 <div class="category-btn" name="btn_selector">
-                    {{ categoria.Nombre }}
+                    {{ cat.Nombre }}
                 </div>
             </a>
             {% endfor %}
@@ -284,10 +284,12 @@
     <!-- Todas las Categorías -->
     <div id="categoriastodas" style="display: none;">
         <div class="category-grid">
-            {% for fila in listadocategoriasall %}
-            <div class="category-btn" name="btn_selector">
-                {{ fila.1 }}
-            </div>
+            {% for cat in categorias %}
+            <a href="productos/?categoria={{cat.id}}">
+                <div class="category-btn" name="btn_selector">
+                    {{ cat.Nombre }}
+                </div>
+            </a>
             {% endfor %}
         </div>
         <button class="view-more-btn" id="btn_vermenos">Ver menos</button>
