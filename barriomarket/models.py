@@ -200,6 +200,8 @@ class MetodosVenta(models.Model):
 class RegistroEncargo(models.Model):
     Valor = models.IntegerField()
     Fecha = models.DateTimeField()
+    Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='Usuario_id')
+
 
     class Meta:
         db_table = 'registroencargo'

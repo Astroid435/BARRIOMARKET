@@ -894,6 +894,8 @@ def GenerarPedido(request):
                         producto.Cantidad+= carro.Cantidad
                         producto.save()
                         carro.delete()
+                    return redirect('/Compras/')
+    return redirect('/Carrito/')
                     
 def SolicutarCorreo(request):
     if request.method == 'POST':
@@ -1239,7 +1241,7 @@ def cancelar_pedido(request):
 
             # Cambiar estado del pedido a cancelado
             pedido.Estado = "cancelado"
-            pedido.delete()
+            pedido.save()
 
             return JsonResponse({"success": True})
 
