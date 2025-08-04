@@ -180,24 +180,20 @@ def register(request):
     return render(request, 'registro.html', {'form': form})
 
 def Perfil(request):
-    rol = request.user.rol_id
+    rol = request.user.rol.id
     
     if request.method == 'POST':
 
-        correo = request.POST.get('correo')
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
         telefono = request.POST.get('Telefono')
         documento = request.POST.get('Documento')
         
-        if not all([correo, nombre, apellido, telefono, documento]):
+        if not all([nombre, apellido, telefono, documento]):
             messages.error(request, "Por favor, completa todos los campos.")
             return redirect('/Perfil')
         
         errors = []
-        
-        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
-            errors.append("Ingrese un correo electrónico válido.")
         
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
             errors.append("El nombre solo puede contener letras y espacios.")
@@ -237,7 +233,6 @@ def Perfil(request):
         
         try:
             usuario = Usuario.objects.get(id=request.user.id)
-            usuario.Correo = correo
             usuario.Primer_nombre = nombre.strip()
             usuario.Primer_apellido = apellido.strip()
             usuario.Telefono = telefono
