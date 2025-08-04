@@ -180,64 +180,74 @@ def register(request):
     return render(request, 'registro.html', {'form': form})
 
 def Perfil(request):
-    rol = request.user.rol_id
-    
-    if request.method == 'POST':
+    rol = request.user.rol.id
 
-        correo = request.POST.get('correo')
+    if request.method == 'POST':
+        # Verificamos si es un cambio de rol
+        if 'guardar_rol' in request.POST:
+            usuario_id = request.POST.get('usuario_id')
+            nuevo_rol_id = request.POST.get(f'rol_id_{usuario_id}')
+            usuario = get_object_or_404(Usuario, id=usuario_id)
+
+            if request.user.rol.id != 2:
+                messages.error(request, "No tienes permisos para cambiar el rol de un usuario.")
+                return redirect('/Perfil')
+
+            try:
+                usuario.rol_id = nuevo_rol_id
+                usuario.save()
+                messages.success(request, f"Rol actualizado correctamente para {usuario.Primer_nombre}.")
+            except Exception as e:
+                messages.error(request, f"Error al actualizar el rol: {str(e)}")
+
+            return redirect('/Perfil')
+
+        # Lógica para editar datos del perfil
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
         telefono = request.POST.get('Telefono')
         documento = request.POST.get('Documento')
-        
-        if not all([correo, nombre, apellido, telefono, documento]):
+
+        if not all([nombre, apellido, telefono, documento]):
             messages.error(request, "Por favor, completa todos los campos.")
             return redirect('/Perfil')
-        
+
         errors = []
-        
-        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
-            errors.append("Ingrese un correo electrónico válido.")
-        
+
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
             errors.append("El nombre solo puede contener letras y espacios.")
-        
+
         if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', apellido):
             errors.append("El apellido solo puede contener letras y espacios.")
-            
+
         if len(nombre) < 2:
             errors.append("El nombre debe tener al menos 2 caracteres.")
-            
+
         if len(apellido) < 2:
             errors.append("El apellido debe tener al menos 2 caracteres.")
-        
+
         if not telefono.isdigit():
             errors.append("El teléfono solo puede contener números.")
-            
+
         if len(telefono) < 7 or len(telefono) > 15:
             errors.append("El teléfono debe tener entre 7 y 15 dígitos.")
-        
-        # Validar documento (solo números)
+
         if not documento.isdigit():
             errors.append("El documento solo puede contener números.")
-            
+
         if len(documento) < 6:
             errors.append("El documento debe tener al menos 6 dígitos.")
-        
-        if Usuario.objects.filter(Correo=correo).exclude(id=request.user.id).exists():
-            errors.append("Este correo electrónico ya está registrado por otro usuario.")
-        
+
         if Usuario.objects.filter(Documento=documento).exclude(id=request.user.id).exists():
             errors.append("Este documento ya está registrado por otro usuario.")
-        
+
         if errors:
             for error in errors:
                 messages.error(request, error)
             return redirect('/Perfil')
-        
+
         try:
             usuario = Usuario.objects.get(id=request.user.id)
-            usuario.Correo = correo
             usuario.Primer_nombre = nombre.strip()
             usuario.Primer_apellido = apellido.strip()
             usuario.Telefono = telefono
@@ -246,13 +256,14 @@ def Perfil(request):
             messages.success(request, "Datos actualizados correctamente.")
         except Exception as e:
             messages.error(request, f"Error al actualizar los datos: {str(e)}")
-        
+
         return redirect('/Perfil')
-    
+
     # GET request
     if rol == 2:
         usuarios = Usuario.objects.all()
-        return render(request, 'Perfil.html', {'usuarios': usuarios})
+        roles = rol.objects.all()
+        return render(request, 'Perfil.html', {'usuarios': usuarios, 'roles': roles})
     else:
         return render(request, 'Perfil.html')
     
