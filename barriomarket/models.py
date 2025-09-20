@@ -130,6 +130,22 @@ class CantidadPedido(models.Model):
     class Meta:
         db_table = 'cantidadpedido'
 
+class RegistroEncargo(models.Model):
+    Fecha = models.DateTimeField()
+    Valor = models.IntegerField()
+    Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'registroencargo'
+
+class CantidadEncargo(models.Model):
+    Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
+    RegistroEncargo = models.ForeignKey(RegistroEncargo, related_name='CantidadEncargo', on_delete=models.CASCADE)
+    Cantidad = models.SmallIntegerField()
+
+    class Meta:
+        db_table = 'cantidadencargo'
+
 class Carrito(models.Model):
     Cantidad = models.IntegerField()
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
@@ -152,14 +168,6 @@ class RegistroVenta(models.Model):
     class Meta:
         db_table = 'registroventa'
 
-class CantidadEncargo(models.Model):
-    RegistroVenta = models.ForeignKey(RegistroVenta, on_delete=models.CASCADE)
-    Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    Cantidad = models.IntegerField()
-
-    class Meta:
-        db_table = 'cantidadencargo'
-
 class CantidadVenta(models.Model):
     RegistroVenta = models.ForeignKey(RegistroVenta, on_delete=models.CASCADE)
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
@@ -180,13 +188,6 @@ class MetodosVenta(models.Model):
 
     class Meta:
         db_table = 'metodosventa'
-
-class RegistroEncargo(models.Model):
-    Valor = models.IntegerField()
-    Fecha = models.DateTimeField()
-
-    class Meta:
-        db_table = 'registroencargo'
 
 class RegistroFalta(models.Model):
     NombreProducto = models.CharField(max_length=45)

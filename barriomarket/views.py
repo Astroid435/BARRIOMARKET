@@ -17,7 +17,7 @@ from .forms import MyUserCreationForm
 from django.contrib.admin.views.decorators import staff_member_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from .models import CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
+from .models import CantidadEncargo, CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroEncargo, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -532,32 +532,50 @@ def VistaProducto (request, idProducto):
                 producto = Productos.objects.get(id=request.POST.get('Producto'))
                 cantidad = int(request.POST.get('Cantidad'))
                 
+
                 if cantidad > 0:
-                
-                    if cantidad <= producto.Cantidad:
-                        
+                    if request.user.id==1:
+                        if cantidad <= producto.Cantidad:
+                            
+                            # Intentamos obtener el carrito con el producto para este usuario
+                            carrito, created = Carrito.objects.get_or_create(
+                                Usuario=user,
+                                Productos=producto,
+                                defaults={'Cantidad': 0}
+                            )
+
+                            # Si el carrito ya existía, actualizamos la cantidad
+                            if not created:
+                                nueva_cantidad = carrito.Cantidad + cantidad
+                                if nueva_cantidad <= producto.Cantidad:
+                                    carrito.Cantidad = nueva_cantidad
+                                    carrito.save()
+                                    return redirect("/Carrito")
+                                else:
+                                    listaerrores.append("No hay suficiente stock")
+                            else:
+                                carrito.Cantidad = cantidad
+                                carrito.save()
+                                return redirect("/Carrito")
+                        else:
+                            listaerrores.append("No hay suficiente stock")
+                    else:
                         # Intentamos obtener el carrito con el producto para este usuario
                         carrito, created = Carrito.objects.get_or_create(
                             Usuario=user,
                             Productos=producto,
                             defaults={'Cantidad': 0}
                         )
-
                         # Si el carrito ya existía, actualizamos la cantidad
                         if not created:
                             nueva_cantidad = carrito.Cantidad + cantidad
-                            if nueva_cantidad <= producto.Cantidad:
-                                carrito.Cantidad = nueva_cantidad
-                                carrito.save()
-                                return redirect("/Carrito")
-                            else:
-                                listaerrores.append("No hay suficiente stock")
+                            carrito.Cantidad = nueva_cantidad
+                            carrito.save()
+                            return redirect("/Carrito")
                         else:
                             carrito.Cantidad = cantidad
                             carrito.save()
                             return redirect("/Carrito")
-                    else:
-                        listaerrores.append("No hay suficiente stock")
                 else:
                     listaerrores.append("No se puede agregar un producto con cantidad igual o menor a 0")
             
@@ -588,7 +606,8 @@ def catalogo(request):
         productos = productos.filter(ValorVenta__lte=precio_max)
 
     if productos:
-        productos = productos.filter(Cantidad__gte=1)
+        if request.user.id==1:
+            productos = productos.filter(Cantidad__gte=1)
     
     busqueda = request.GET.get('busqueda')
     if busqueda:
@@ -688,29 +707,49 @@ def GenerarPedido(request):
     if request.user.is_authenticated:
         carrito=Carrito.objects.filter(Usuario=request.user)
         if request.method == 'POST':
-            if request.POST.get('Observaciones') and request.POST.get('ValorTotal'):
-                pedido=RegistroPedido(
-                    Fecha=timezone.now(),
-                    Observaciones=request.POST.get('Observaciones'),
-                    ValorTotal=request.POST.get('ValorTotal'),
-                    Usuario=request.user,
-                    Estado="sin_atender"
-                )
-                pedido.save()
-                for carro in carrito:
-                    Cantidadpedido=CantidadPedido(
-                        Productos=carro.Productos,
-                        RegistroPedido=pedido,
-                        Cantidad=carro.Cantidad
+            if request.user.rol.Nombre =="Cliente":
+                if request.POST.get('Observaciones') and request.POST.get('ValorTotal'):
+                    pedido=RegistroPedido(
+                        Fecha=timezone.now(),
+                        Observaciones=request.POST.get('Observaciones'),
+                        ValorTotal=request.POST.get('ValorTotal'),
+                        Usuario=request.user,
+                        Estado="sin_atender"
                     )
-                    Cantidadpedido.save()
-                    producto= Productos.objects.get(id=carro.Productos.id)
-                    producto.Cantidad-= carro.Cantidad
-                    producto.save()
-                    carro.delete()
+                    pedido.save()
+                    for carro in carrito:
+                        Cantidadpedido=CantidadPedido(
+                            Productos=carro.Productos,
+                            RegistroPedido=pedido,
+                            Cantidad=carro.Cantidad
+                        )
+                        Cantidadpedido.save()
+                        producto= Productos.objects.get(id=carro.Productos.id)
+                        producto.Cantidad-= carro.Cantidad
+                        producto.save()
+                        carro.delete()
+                        
+                    return redirect('/Pedidos/')
+            else:
+                if request.POST.get('ValorTotal'):
+                    encargo=RegistroEncargo(
+                        Fecha=timezone.now(),
+                        Valor=request.POST.get('ValorTotal'),
+                        Usuario=request.user,
+                    )
+                    encargo.save()
+                    for carro in carrito:
+                        Cantidadencargo=CantidadEncargo(
+                            Productos=carro.Productos,
+                            RegistroEncargo=encargo,
+                            Cantidad=carro.Cantidad
+                        )
+                        Cantidadencargo.save()
+                        producto= Productos.objects.get(id=carro.Productos.id)
+                        producto.Cantidad+= carro.Cantidad
+                        producto.save()
+                        carro.delete()
                     
-                return redirect('/Pedidos/')
-
 def SolicutarCorreo(request):
     if request.method == 'POST':
         email = request.POST['Correo']
