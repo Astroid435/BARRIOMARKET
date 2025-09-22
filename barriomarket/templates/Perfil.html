@@ -98,46 +98,29 @@
         {% if request.user.rol_id == 2 %}
         <div class="container">
             <h2>Lista de Usuarios</h2>
-            <form method="post" action="">
-                {% csrf_token %}
-                <table class="table-hover">
-                    <thead>
-                        <tr>
-                            <th>Documento</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Telefono</th>
-                            <th>Correo</th>
-                            <th>Rol</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for Usuario in usuarios %}
-                        <tr>
-                            <td>{{ Usuario.Documento }}</td>
-                            <td>{{ Usuario.Primer_nombre }}</td>
-                            <td>{{ Usuario.Primer_apellido }}</td>
-                            <td>{{ Usuario.Telefono }}</td>
-                            <td>{{ Usuario.Correo }}</td>
-                            <td>
-                                <select name="rol_id_{{ Usuario.id }}">
-                                    {% for rol in roles %}
-                                    <option value="{{ rol.id }}" {% if Usuario.rol_id == rol.id %}selected{% endif %}>
-                                        {{ rol.Nombre }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <input type="hidden" name="usuario_id" value="{{ Usuario.id }}">
-                            </td>
-                            <td>
-                                <button type="submit" name="guardar_rol" value="{{ Usuario.id }}" class="btn-primary">Cambiar</button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
+            <table class="table-hover">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Telefono</th>
+                        <th>Correo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for Usuario in usuarios %}
+                    <tr>
+                        <td>{{ Usuario.Documento }}</td>
+                        <td>{{ Usuario.Primer_nombre }}</td>
+                        <td>{{ Usuario.Primer_apellido }}</td>
+                        <td>{{ Usuario.Telefono }}</td>
+                        <td>{{ Usuario.Correo }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         {% endif %}
     </div>

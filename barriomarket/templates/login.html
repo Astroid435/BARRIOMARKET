@@ -2,7 +2,7 @@
 
 <html lang="es">
 <head>
-    <title>Barrio Market - Cambio de contraseña</title>
+    <title>Barrio Market</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
@@ -10,10 +10,8 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <style>
-        /* Repite los estilos del login para mantener coherencia */
-
+        /* Reset y estilos globales */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,6 +34,7 @@
             padding: 20px 0;
         }
 
+        /* Contenedor principal */
         .container-wrapper {
             flex: 1;
             display: flex;
@@ -44,6 +43,7 @@
             width: 100%;
         }
 
+        /* Contenedor del formulario - IDÉNTICO AL REGISTRO */
         .form-content {
             background-color: #fff;
             padding: 2.5rem;
@@ -54,6 +54,7 @@
             margin: 20px 15px;
         }
 
+        /* Encabezados - Mismo estilo que registro */
         .form-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -72,31 +73,7 @@
             font-weight: 300;
         }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
-        input[type="email"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            background-color: #fff;
-            transition: border-color 0.3s;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 300;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #999;
-        }
-
+        /* Botón - IDÉNTICO AL REGISTRO */
         .btn_ingresar {
             width: 100%;
             padding: 0.8rem;
@@ -113,15 +90,15 @@
         }
 
         .btn_ingresar:hover {
-            background-color: #fff;
-            color: #000;
+            background-color: #ffffff;
+            color: #000000;
             border: 1px solid #000;
         }
 
+        /* Enlaces - Mismo estilo que registro */
         .form-footer {
             text-align: center;
             margin-top: 1.5rem;
-            font-weight: 300;
         }
 
         a {
@@ -129,6 +106,7 @@
             color: #000;
             text-decoration: none;
             transition: color 0.3s;
+            font-weight: 300;
         }
 
         a:hover {
@@ -136,7 +114,50 @@
             color: #444;
         }
 
-        /* Responsividad */
+        /* Campos del formulario - Estilo consistente con registro */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background-color: #fff;
+            transition: border-color 0.3s;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        /* Mensajes de error */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            font-weight: 300;
+        }
+
+        /* Responsividad - Adaptado del registro */
         @media (max-width: 768px) {
             body {
                 padding: 10px 0;
@@ -173,35 +194,29 @@
 <body>
     <div class="container-wrapper">
         <div class="form-content">
-            <form method="post" action="">
+            <form action="" method="post">
                 {% csrf_token %}
-
+                
                 <div class="form-header">
-                    <h3>Cambio de contraseña</h3>
-                    <h6>Ingresa el correo al cual se le enviará el código</h6>
+                    <h3>Ingresa</h3>
+                    <h6>Llena todos los campos para continuar</h6>
                 </div>
-
+                
+                <!-- Campos del formulario -->
                 <div class="form-group">
-                    <label for="emailInput">Correo</label>
-                    <input 
-                        type="email" 
-                        id="emailInput" 
-                        name="Correo" 
-                        placeholder="Ej: ejemplo@gmail.com" 
-                        required 
-                        maxlength="150"
-                    >
+                    {{ form.as_p }}
                 </div>
-
-                <button type="submit" class="btn_ingresar" name="CorreoEnviar">Enviar</button>
-
+                
+                <!-- Botón Ingresar -->
+                <button type="submit" class="btn_ingresar" name="btn_ingresar">Ingresar</button>
+                
+                <!-- Enlaces -->
                 <div class="form-footer">
-                    <a href="{% url 'login' %}">Volver al login</a> | 
-                    <a href="{% url 'registro' %}">¿No tienes cuenta? Regístrate</a>
+                    <a href="CambioContrasena/Correo">¿Has olvidado tu contraseña?</a> | 
+                    <a href="/registro">¿No tienes cuenta? Regístrate</a>
                 </div>
             </form>
         </div>
     </div>
 </body>
-
 </html>

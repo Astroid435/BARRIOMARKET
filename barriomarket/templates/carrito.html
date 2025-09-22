@@ -290,10 +290,12 @@
         </div>
         
         <div class="observations">
-            <h4 class="observations-title">Observaciones</h4>
             <form action="/GenerarPedido" method="POST">
                 {% csrf_token %}
-                <textarea class="form-control" name="Observaciones" required maxlength="200" placeholder="Agrega cualquier observación especial para tu pedido"></textarea>
+                {% if request.user.rol_id == 1 %}
+                    <h4 class="observations-title">Observaciones</h4>
+                    <textarea class="form-control" name="Observaciones" required maxlength="200" placeholder="Agrega cualquier observación especial para tu pedido"></textarea>
+                {% endif %}
                 <input type="hidden" name="ValorTotal" value="{{ValorTodo}}">
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Realizar Pedido</button>
             </form>

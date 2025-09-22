@@ -1,0 +1,123 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+<style>
+    :root {
+        --bs-body-bg: #ffffff;
+        --bs-body-color: #000000;
+        --bs-border-color: #e0e0e0;
+        --bs-primary: #000000;
+        --bs-light: #f8f9fa;
+    }
+    
+    .card.border-success {
+        border: 1px solid #28a745 !important;
+        background-color: #f6fff9; /* un fondo verde muy claro */
+    }
+
+    .card.border-stop {
+        border: 1px solid rgb(54, 54, 54) !important;
+        background-color:rgb(247, 247, 247); /* un fondo verde muy claro */
+    }
+
+    h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-top: 2rem;
+    }
+
+    p.subtitle {
+        color: #828282;
+        width: 40%;
+        margin: auto;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+        background-color: #000;
+        color: white;
+    }
+
+    .filters-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-group {
+        background-color: #F5F5F5;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn.active {
+        background-color: #000;
+        color: white;
+        border: 1px solid #000;
+    }
+
+    #contenedor-pedidos {
+        padding: 1rem 2rem 3rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        p.subtitle {
+            width: 90%;
+        }
+    }
+</style>
+
+<div class="text-center">
+    <h1>Pedidos</h1>
+    <p class="subtitle">Esta es una lista donde puedes visualizar los pedidos realizados y los pedidos sin atender</p>
+
+    <div class="filters-wrapper">
+        <div class="filter-group">
+            <button class="btn btn-outline-dark filtro-estado" data-estado="atendido">Atendidos</button>
+            <button class="btn btn-outline-dark filtro-estado" data-estado="sin_atender">Sin Atender</button>
+        </div>
+    </div>
+</div>
+
+<div id="contenedor-pedidos">
+    {% include "pedidos/_parcial_listado.html" with lista_pedidos=lista_pedidos %}
+</div>
+
+<script>
+    function cargarPedidos(estado,) {
+        const url = `/pedidos/ajax/?estado=${estado}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('contenedor-pedidos').innerHTML = data;
+            });
+    }
+
+    document.querySelectorAll('.filtro-estado').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filtro-estado').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const estado = btn.dataset.estado;
+            cargarPedidos(estado);
+        });
+    });
+
+</script>
+
+{% include 'inc/footer.html' %}
