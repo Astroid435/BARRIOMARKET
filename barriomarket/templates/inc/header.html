@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barrio Market</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style/estilos_dashboard.css' %}">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <script src="{% static  'js/jQuery1.9.1.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #333333;
+            --light: #ffffff;
+            --border: #dddddd;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+        }
+        
+        .navbar-custom {
+            background-color: var(--light);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 400;
+            color: var(--primary) !important;
+            font-size: 1.25rem;
+        }
+        
+        .nav-link-custom {
+            color: var(--primary) !important;
+            font-weight: 300;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .nav-link-custom:hover {
+            color: var(--secondary) !important;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Ajustes para móvil */
+        @media (max-width: 768px) {
+            .nav-link-custom {
+                flex-direction: row;
+                justify-content: flex-start;
+                padding: 0.75rem 1rem;
+            }
+            
+            .nav-icon {
+                margin-right: 0.75rem;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/inicio">Barrio Market / SYS Fatima</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    {% if request.user.is_authenticated %}
+                        {% if request.user.rol_id == 1 %}
+                            <!-- Menú para usuarios normales -->
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/inicio">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#home"></use>
+                                    </svg>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/productos">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#grid"></use>
+                                    </svg>
+                                    Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/Carrito">
+                                    <img src="{% static 'image/carrito.png' %}" alt="Carrito" class="nav-icon">
+                                    Carrito
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/Perfil">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#people-circle"></use>
+                                    </svg>
+                                    Perfil
+                                </a>
+                            </li>
+                        {% else %}
+                            <!-- Menú para administradores -->
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/inicio">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#home"></use>
+                                    </svg>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/registros">
+                                    <img src="{% static 'image/carrito.png' %}" alt="Registros" class="nav-icon">
+                                    Registros
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="dashboard.php?mod=productos">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#grid"></use>
+                                    </svg>
+                                    Ventas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="{% url 'compras' %}">
+                                    <img src="{% static 'image/carrito.png' %}" alt="Compras" class="nav-icon">
+                                    Compras
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/Pedidos">
+                                    <img src="{% static 'image/carrito.png' %}" alt="Pedidos" class="nav-icon">
+                                    Pedidos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" href="/Perfil">
+                                    <svg class="nav-icon" viewBox="0 0 16 16">
+                                        <use xlink:href="#people-circle"></use>
+                                    </svg>
+                                    Perfil
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <!-- Menú para usuarios no autenticados -->
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="/inicio">
+                                <svg class="nav-icon" viewBox="0 0 16 16">
+                                    <use xlink:href="#home"></use>
+                                </svg>
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="/login">
+                                Iniciar sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="/registro">
+                                Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SVG icons (los mismos que tenías antes) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="home" viewBox="0 0 16 16">
+            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5z"/>
+        </symbol>
+        <symbol id="grid" viewBox="0 0 16 16">
+            <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
+        </symbol>
+        <symbol id="people-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+        </symbol>
+    </svg>
+    <br>
+    <div class="container">
