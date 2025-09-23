@@ -219,9 +219,7 @@ def Perfil(request):
             
         if len(documento) < 6:
             errors.append("El documento debe tener al menos 6 dígitos.")
-        
-        if Usuario.objects.filter(Correo=correo).exclude(id=request.user.id).exists():
-            errors.append("Este correo electrónico ya está registrado por otro usuario.")
+    
         
         if Usuario.objects.filter(Documento=documento).exclude(id=request.user.id).exists():
             errors.append("Este documento ya está registrado por otro usuario.")
@@ -320,8 +318,28 @@ def borrarproductos(request, idProducto):
 
 @user_passes_test(es_admin, login_url='inicio')
 def AgregarProductos(request):
-    
-    subcategorias=[]
+    errores = []  # lista de errores
+    subcategorias = []
+
+    # 🔹 Estas listas se necesitan tanto para la carga inicial como para cuando hay errores
+    categoriaidsession = request.session.get('categoria', 0)
+    fabricanteidsession = request.session.get('fabricante', 0)
+
+    listadofabricante = Fabricante.objects.all()
+    listadocategoria = Categoria.objects.all()
+    listadosubcategorias = Subcategoria.objects.filter(Categoria=categoriaidsession)
+
+    if fabricanteidsession == 0:
+        Nombrefabricante = 0
+    else:
+        FabricanteSeleccionado = Fabricante.objects.get(id=fabricanteidsession)
+        Nombrefabricante = FabricanteSeleccionado.Nombre
+
+    if categoriaidsession == 0:
+        Nombrecategoria = 0
+    else:
+        CategoriaSeleccionada = Categoria.objects.get(id=categoriaidsession)
+        Nombrecategoria = CategoriaSeleccionada.Nombre
 
     if request.method == 'POST':
         if request.POST.get('CategoriaSeleccionadoId'):
@@ -336,87 +354,111 @@ def AgregarProductos(request):
 
         elif request.POST.get('Nombre_subcategoria'):
             categoria = Categoria.objects.get(id=request.session.get('categoria', '0'))
-            insertar=Subcategoria(
+            insertar = Subcategoria(
                 Nombre=request.POST.get('Nombre_subcategoria'),
                 Categoria=categoria
             )
             insertar.save()
-            
+
         elif request.POST.get('NombreFabricante') and request.POST.get('TelefonoFabricante'):
-            insertar= Fabricante(
+            insertar = Fabricante(
                 Nombre=request.POST.get('NombreFabricante'),
                 Telefono=request.POST.get('TelefonoFabricante')
             )
             insertar.save()
-        
+
         elif request.POST.get('NombreCategoria'):
-            insertar=Categoria(
+            insertar = Categoria(
                 Nombre=request.POST.get('NombreCategoria')
             )
             insertar.save()
-        
-        elif request.POST.get('Nombre') and request.POST.get('Cantidad') and request.POST.get('ValorVenta') and request.POST.get('ValorCompra') and request.POST.get('Descripcion') and request.FILES['imagen']:
-          fabricante = request.session.get('fabricante', 0)
-          instancia_fabricante=Fabricante.objects.get(id=fabricante)
-          archivo_imagen = request.FILES['imagen']
-          extension = archivo_imagen.name.split('.')[-1] 
-          nombre_aleatorio = str(uuid.uuid4()) + '.' + extension
 
-          insertarproducto = Productos(
-              Nombre=request.POST.get('Nombre'),
-              Cantidad=request.POST.get('Cantidad'),
-              ValorVenta=request.POST.get('ValorVenta'),
-              ValorCompra=request.POST.get('ValorCompra'),
-              Descripcion=request.POST.get('Descripcion'),
-              imagen=nombre_aleatorio,
-              Fabricante=instancia_fabricante
-          )
-          
-          imagen_storage = FileSystemStorage()
-          imagen_storage.save(nombre_aleatorio, archivo_imagen)
-          
-          insertarproducto.save()
-          buscarproducto=Productos.objects.get(Nombre=request.POST.get('Nombre'), Fabricante = fabricante)
+        elif (request.POST.get('Nombre') and request.POST.get('Cantidad') and request.POST.get('ValorVenta') and request.POST.get('ValorCompra') and request.POST.get('Descripcion') and request.FILES.get('imagen')):
 
-          subcategorias = request.session.get('subcategorias', '0')
-          for i in subcategorias:
-            buscarsubcategoria=Subcategoria.objects.get(id=i)
-            SubcategoriasProducto=ProductosCategoria(
-                Productos=buscarproducto,
-                Subcategoria=buscarsubcategoria
+            fabricante = request.session.get('fabricante', 0)
+            instancia_fabricante = Fabricante.objects.get(id=fabricante)
+
+            # ✅ Validaciones sencillas
+            if Productos.objects.filter(Nombre=request.POST.get('Nombre'),Fabricante_id=fabricante).exists():
+                errores.append("Ya existe un producto con ese nombre para este fabricante.")
+
+            try:
+                valor_venta = float(request.POST.get('ValorVenta'))
+                valor_compra = float(request.POST.get('ValorCompra'))
+                cantidad = float(request.POST.get('Cantidad'))
+                if valor_compra > valor_venta:
+                    errores.append("El precio de compra no puede ser mayor al de venta.")
+                if valor_compra < 1:
+                    errores.append("El valor de compra no puede ser menor a 0")
+                if valor_venta < 1:
+                    errores.append("El valor de venta no puede ser menor a 0")
+                if cantidad < 0:
+                    errores.append("La cantidad no puede ser menor a 0")
+            except ValueError:
+                errores.append("Los valores de compra, venta y cantidad deben ser numéricos.")
+
+            if errores:
+                return render(request, "Productos/AgregarProductos.html", {
+                    'fabricantes': listadofabricante,
+                    'categorias': listadocategoria,
+                    'subcategorias': listadosubcategorias,
+                    'Seleccionfabricante': Nombrefabricante,
+                    'Seleccioncategoria': Nombrecategoria,
+                    "errores": errores
+                })
+
+            archivo_imagen = request.FILES['imagen']
+            extension = archivo_imagen.name.split('.')[-1]
+            nombre_aleatorio = str(uuid.uuid4()) + '.' + extension
+
+            insertarproducto = Productos(
+                Nombre=request.POST.get('Nombre'),
+                Cantidad=request.POST.get('Cantidad'),
+                ValorVenta=request.POST.get('ValorVenta'),
+                ValorCompra=request.POST.get('ValorCompra'),
+                Descripcion=request.POST.get('Descripcion'),
+                imagen=nombre_aleatorio,
+                Fabricante=instancia_fabricante
             )
-            SubcategoriasProducto.save()
-          return redirect("/registros")     
 
-    categoriaidsession = request.session.get('categoria', 0)
-    fabricanteidsession = request.session.get('fabricante', 0)
-        
-    listadofabricante = Fabricante.objects.all()
-    listadocategoria= Categoria.objects.all()
-    listadosubcategorias = Subcategoria.objects.filter(Categoria=categoriaidsession)
-        
-    if fabricanteidsession == 0:
-        Nombrefabricante = 0
-    else:
-        FabricanteSeleccionado=Fabricante.objects.get(id=fabricanteidsession)
-        Nombrefabricante=FabricanteSeleccionado.Nombre
+            imagen_storage = FileSystemStorage()
+            imagen_storage.save(nombre_aleatorio, archivo_imagen)
 
-    if categoriaidsession == 0:
-        Nombrecategoria = 0
-    else:
-        CategoriaSeleccionada=Categoria.objects.get(id=categoriaidsession)
-        Nombrecategoria=CategoriaSeleccionada.Nombre
-                    
-    return render(request,'Productos/AgregarProductos.html',{'fabricantes':listadofabricante, 'categorias':listadocategoria, 'subcategorias': listadosubcategorias, 'Seleccionfabricante': Nombrefabricante, 'Seleccioncategoria': Nombrecategoria})
+            insertarproducto.save()
+            buscarproducto = Productos.objects.get(
+                Nombre=request.POST.get('Nombre'),
+                Fabricante=fabricante
+            )
+
+            subcategorias = request.session.get('subcategorias', '0')
+            for i in subcategorias:
+                buscarsubcategoria = Subcategoria.objects.get(id=i)
+                SubcategoriasProducto = ProductosCategoria(
+                    Productos=buscarproducto,
+                    Subcategoria=buscarsubcategoria
+                )
+                SubcategoriasProducto.save()
+
+            return redirect("/registros")
+
+    return render(request, 'Productos/AgregarProductos.html', {
+        'fabricantes': listadofabricante,
+        'categorias': listadocategoria,
+        'subcategorias': listadosubcategorias,
+        'Seleccionfabricante': Nombrefabricante,
+        'Seleccioncategoria': Nombrecategoria,
+        "errores": errores
+    })
 
 @user_passes_test(es_admin, login_url='inicio')
 def ActualizarProducto(request, idProducto):
-    
-    Producto=Productos.objects.get(id=idProducto)
-    BuscarProducto=Productos.objects.filter(id=idProducto)
-    
+
+    Producto = Productos.objects.get(id=idProducto)
+    BuscarProducto = Productos.objects.filter(id=idProducto)
+    errores = []   # ← lista de errores
+
     if request.method == 'POST':
-        
+
         if request.POST.get('CategoriaSeleccionadoId'):
             request.session['categoria'] = request.POST.get('CategoriaSeleccionadoId')
 
@@ -426,61 +468,120 @@ def ActualizarProducto(request, idProducto):
         elif request.POST.get('SubcategoriaSeleccionadoId'):
             subcategorias_seleccionadas = json.loads(request.POST['SubcategoriaSeleccionadoId'])
             request.session['subcategorias'] = subcategorias_seleccionadas
-        
-        elif request.POST.get('Nombre') and request.POST.get('Cantidad') and request.POST.get('ValorVenta') and request.POST.get('ValorCompra') and request.POST.get('Descripcion'):
-            fabricante = request.session.get('fabricante', 0)
-            instancia_fabricante=Fabricante.objects.get(id=fabricante)
 
+        elif (request.POST.get('Nombre') and request.POST.get('Cantidad')
+              and request.POST.get('ValorVenta') and request.POST.get('ValorCompra')
+              and request.POST.get('Descripcion')):
+
+            fabricante = request.session.get('fabricante', 0)
+            instancia_fabricante = Fabricante.objects.get(id=fabricante)
+
+            # ✅ Validar que no exista otro producto con el mismo nombre para este fabricante
+            if Productos.objects.filter(
+                Nombre=request.POST.get('Nombre'),
+                Fabricante_id=fabricante
+            ).exclude(id=idProducto).exists():
+                errores.append("Ya existe un producto con ese nombre para este fabricante.")
+
+            # ✅ Validar que el precio de compra no sea mayor al de venta
+            try:
+                valor_venta = float(request.POST.get('ValorVenta'))
+                valor_compra = float(request.POST.get('ValorCompra'))
+                if valor_compra > valor_venta:
+                    errores.append("El precio de compra no puede ser mayor al de venta.")
+            except ValueError:
+                errores.append("Los valores de compra y venta deben ser numéricos.")
+
+            # ⬇️ Si hay errores, se devuelven al template sin actualizar el producto
+            if errores:
+                categoriaidsession = request.session.get('categoria', 0)
+                fabricanteidsession = request.session.get('fabricante', 0)
+                listadofabricante = Fabricante.objects.all()
+                listadocategoria = Categoria.objects.all()
+                listadosubcategorias = Subcategoria.objects.filter(Categoria=categoriaidsession)
+
+                if fabricanteidsession == 0:
+                    Nombrefabricante = 0
+                else:
+                    FabricanteSeleccionado = Fabricante.objects.get(id=fabricanteidsession)
+                    Nombrefabricante = FabricanteSeleccionado.Nombre
+
+                if categoriaidsession == 0:
+                    Nombrecategoria = 0
+                else:
+                    CategoriaSeleccionada = Categoria.objects.get(id=categoriaidsession)
+                    Nombrecategoria = CategoriaSeleccionada.Nombre
+
+                return render(request, 'Productos/ActualizarProducto.html', {
+                    'fabricantes': listadofabricante,
+                    'categorias': listadocategoria,
+                    'subcategorias': listadosubcategorias,
+                    'Seleccionfabricante': Nombrefabricante,
+                    'Seleccioncategoria': Nombrecategoria,
+                    'Producto': BuscarProducto,
+                    "errores": errores
+                })
+
+            # ✅ Si no hay errores, se procede a actualizar
             archivo_imagen = request.FILES['imagen']
-            extension = archivo_imagen.name.split('.')[-1] 
+            extension = archivo_imagen.name.split('.')[-1]
             nombre_aleatorio = str(uuid.uuid4()) + '.' + extension
 
             imagen_storage = FileSystemStorage()
             imagen_storage.save(nombre_aleatorio, archivo_imagen)
 
-            Producto.Nombre=request.POST.get('Nombre')
-            Producto.Cantidad=request.POST.get('Cantidad')
-            Producto.ValorVenta=request.POST.get('ValorVenta')
-            Producto.ValorCompra=request.POST.get('ValorCompra')
-            Producto.Descripcion=request.POST.get('Descripcion')
-            Producto.imagen=nombre_aleatorio
-            Producto.Fabricante=instancia_fabricante
+            Producto.Nombre = request.POST.get('Nombre')
+            Producto.Cantidad = request.POST.get('Cantidad')
+            Producto.ValorVenta = request.POST.get('ValorVenta')
+            Producto.ValorCompra = request.POST.get('ValorCompra')
+            Producto.Descripcion = request.POST.get('Descripcion')
+            Producto.imagen = nombre_aleatorio
+            Producto.Fabricante = instancia_fabricante
             Producto.save()
-            
+
             subcategorias = request.session.get('subcategorias', 0)
             if subcategorias != 0:
-                BuscarSubcategorias=ProductosCategoria.objects.filter(Productos=Producto.id)
+                BuscarSubcategorias = ProductosCategoria.objects.filter(Productos=Producto.id)
                 BuscarSubcategorias.delete()
-                
+
                 for i in subcategorias:
-                    buscarsubcategoria=Subcategoria.objects.get(id=i)
-                    AgregarSubcategoriasProducto=ProductosCategoria(
+                    buscarsubcategoria = Subcategoria.objects.get(id=i)
+                    AgregarSubcategoriasProducto = ProductosCategoria(
                         Productos=Producto,
                         Subcategoria=buscarsubcategoria
                     )
                     AgregarSubcategoriasProducto.save()
-      
-            return redirect("/registros")   
 
+            return redirect("/registros")
+
+    # 🔹 Carga inicial de datos (sin POST o después de procesar)
     categoriaidsession = request.session.get('categoria', 0)
     fabricanteidsession = request.session.get('fabricante', 0)
     listadofabricante = Fabricante.objects.all()
-    listadocategoria= Categoria.objects.all()
+    listadocategoria = Categoria.objects.all()
     listadosubcategorias = Subcategoria.objects.filter(Categoria=categoriaidsession)
-        
+
     if fabricanteidsession == 0:
         Nombrefabricante = 0
     else:
-        FabricanteSeleccionado=Fabricante.objects.get(id=fabricanteidsession)
-        Nombrefabricante=FabricanteSeleccionado.Nombre
+        FabricanteSeleccionado = Fabricante.objects.get(id=fabricanteidsession)
+        Nombrefabricante = FabricanteSeleccionado.Nombre
 
     if categoriaidsession == 0:
         Nombrecategoria = 0
     else:
-        CategoriaSeleccionada=Categoria.objects.get(id=categoriaidsession)
-        Nombrecategoria=CategoriaSeleccionada.Nombre
-    
-    return render(request,'Productos/ActualizarProducto.html',{'fabricantes':listadofabricante, 'categorias':listadocategoria, 'subcategorias': listadosubcategorias, 'Seleccionfabricante': Nombrefabricante, 'Seleccioncategoria': Nombrecategoria, 'Producto': BuscarProducto})
+        CategoriaSeleccionada = Categoria.objects.get(id=categoriaidsession)
+        Nombrecategoria = CategoriaSeleccionada.Nombre
+
+    return render(request, 'Productos/ActualizarProducto.html', {
+        'fabricantes': listadofabricante,
+        'categorias': listadocategoria,
+        'subcategorias': listadosubcategorias,
+        'Seleccionfabricante': Nombrefabricante,
+        'Seleccioncategoria': Nombrecategoria,
+        'Producto': BuscarProducto,
+        "errores": errores
+    })
 
 def VistaProducto (request, idProducto):
 
