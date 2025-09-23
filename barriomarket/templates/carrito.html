@@ -254,8 +254,8 @@
 
 <div class="cart-page">
     <div class="page-header">
-        <h1 class="page-title">Carrito de compras</h1>
-        <p class="page-subtitle">En esta sección se muestran los productos seleccionados para realizar el pedido</p>
+        <h1 class="page-title">Carrito de compras{% if request.user.rol_id == 2 %} de administrador {% endif %} </h1>
+        <p class="page-subtitle">En esta sección se muestran los productos seleccionados para realizar {% if request.user.rol_id == 2 %}la compra{% else %}el pedido {% endif %} </p>
     </div>
     
     {% if listadocarrito %}
@@ -311,6 +311,14 @@
 
 <script>
     function actualizarCantidad(id, tipo, precioUnitario) {
+        const cantidadActual = parseInt(document.getElementById('cantidad-' + id).textContent);
+
+        // Verificación especial: si es "menos" y la cantidad es 1
+        if (tipo === 'menos' && cantidadActual === 1) {
+            const confirmar = window.confirm('La cantidad es 1. ¿Deseas eliminar este producto del carrito?');
+            if (!confirmar) return; // Si cancela, no hace nada
+        }
+
         fetch("{% url 'carrito' %}", {
             method: 'POST',
             headers: {
@@ -329,15 +337,11 @@
                 const nuevaCantidad = data.cantidad;
                 document.getElementById('cantidad-' + id).textContent = nuevaCantidad;
                 const nuevoTotal = nuevaCantidad * precioUnitario;
-                // Actualiza total parcial con id correcto
                 document.getElementById('total-' + id).textContent = 'Total: $' + nuevoTotal.toFixed(2);
-    
                 recalcularTotalGeneral();
             } else if (data.status === 'deleted') {
                 document.getElementById('producto-' + id).remove();
                 recalcularTotalGeneral();
-        
-                // Aquí revisa si quedan productos
                 if (document.querySelectorAll('.cart-card').length === 0) {
                     document.getElementById('contenedor-carrito').style.display = 'none';
                     document.getElementById('carrito-vacio').style.display = 'block';
@@ -377,6 +381,11 @@
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.id;
+
+            // Ventana de confirmación
+            const confirmar = window.confirm('¿Estás seguro que deseas eliminar este producto del carrito?');
+            if (!confirmar) return; // Si el usuario cancela, no hace nada
+
             fetch("{% url 'carrito' %}", {
                 method: 'POST',
                 headers: {
@@ -394,7 +403,6 @@
                 if (data.status === 'deleted') {
                     document.getElementById('producto-' + id).remove();
                     recalcularTotalGeneral();
-
                 }
                 if (document.querySelectorAll('.cart-card').length === 0) {
                     document.getElementById('contenedor-carrito').style.display = 'none';
