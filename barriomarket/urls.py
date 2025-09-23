@@ -18,19 +18,19 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena, catalogo,Pedidos, Perfil
+from barriomarket.views import (home, registros, AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil)
 from django.contrib.auth.views import LogoutView
-from .views import CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta,compras
+from .views import (CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta, compras, compras_ajax)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',home),
-    path('inicio',home, name='inicio'),
+    path('', home),
+    path('inicio', home, name='inicio'),
     path('registros', registros),
     path('Carrito', Vistacarrito, name="carrito"),
     path('Perfil', Perfil),
     path('GenerarPedido', GenerarPedido),
-    path('registro',register, name="registro"),
+    path('registro', register, name="registro"),
     path('auth/', auth_view, name='auth'),
     path('login', CustomLoginView.as_view(template_name='login.html'), name="login"),
     path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
@@ -46,8 +46,8 @@ urlpatterns = [
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
     path('Ventas/AgregarVenta/', AgregarVenta, name="AgregarVenta"),
     path('Ventas/AgregarVenta/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
-    path('compras/', compras, name='compras'),
-
-
-
+    
+    # Compras
+    path('Compras/', compras, name='compras'),  # Vista principal de compras
+    path('Compras/ajax/', compras_ajax, name='ajax_compras'),  # Endpoint AJAX para filtrar por fecha
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

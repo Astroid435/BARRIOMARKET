@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'barriomarket',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': '34.171.140.24',
         'PORT': '3306',
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
     }

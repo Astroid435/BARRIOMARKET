@@ -1,0 +1,28 @@
+{% load static %}
+
+<div class="orders-grid">
+    {% for compra in lista_compras %}
+    <div class="order-card">
+        <p class="order-date">{{ compra.Fecha|date:"d/m/Y H:i" }}</p>
+        <p class="order-price">${{ compra.Valor }}</p>
+        <p class="order-products">{{ compra.CantidadEncargo.count }} Productos</p>
+
+        <div class="order-details">
+            <ul>
+                {% for detalle in compra.CantidadEncargo.all %}
+                <li>{{ detalle.Cantidad }} {{ detalle.Productos.Nombre }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a href="" class="btn-open">Abrir</a>
+    </div>
+    {% empty %}
+    <p>No hay compras registradas.</p>
+    {% endfor %}
+</div>
+
+<!-- Ver más -->
+<div class="load-more">
+    <button class="btn-more">Ver más</button>
+</div>

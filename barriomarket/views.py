@@ -1,5 +1,5 @@
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime, time
 import json
 import uuid
 import random
@@ -744,10 +744,6 @@ def catalogo(request):
     }
     return render(request, 'catalogo.html', context)
 
-def compras(request):
-    compras = RegistroEncargo.objects.filter(Usuario=request.user).order_by('-Fecha')
-    return render(request, 'compras/compras.html', {'compras': compras})
-
 @user_passes_test(auth, login_url='inicio')
 def Vistacarrito(request):
     listadocarrito = []
@@ -965,6 +961,43 @@ def pedidos_ajax(request):
         pedidos = pedidos.filter(Estado=estado)
 
     return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
+
+def compras(request):
+    # Mostrar compras del usuario logueado, ordenadas por fecha descendente
+    compras = RegistroEncargo.objects.all().order_by('-Fecha')
+    return render(request, 'compras/compras.html', {'lista_compras': compras})
+
+def compras_ajax(request):
+    fecha = request.GET.get('fecha')
+    usuario = request.user
+    compras = RegistroEncargo.objects.all().order_by('-Fecha')
+
+    hoy = timezone.localdate()  # Fecha actual según la zona local
+
+    if fecha == 'hoy':
+        inicio = datetime.combine(hoy, time.min)  # 00:00:00
+        fin = datetime.combine(hoy, time.max)    # 23:59:59
+        compras = compras.filter(Fecha__range=(inicio, fin))
+
+    elif fecha == 'semana':
+        inicio_semana = hoy - timedelta(days=hoy.weekday())  # lunes
+        fin_semana = hoy
+        inicio = datetime.combine(inicio_semana, time.min)
+        fin = datetime.combine(fin_semana, time.max)
+        compras = compras.filter(Fecha__range=(inicio, fin))
+
+    elif fecha == 'mes':
+        inicio_mes = hoy.replace(day=1)
+        fin_mes = hoy
+        inicio = datetime.combine(inicio_mes, time.min)
+        fin = datetime.combine(fin_mes, time.max)
+        compras = compras.filter(Fecha__range=(inicio, fin))
+
+    elif fecha == 'otro':
+        # Aquí podrías usar un rango dinámico enviado por GET
+        pass
+
+    return render(request, 'compras/_parcial_listado.html', {'lista_compras': compras})
 
 @user_passes_test(es_admin, login_url="inicio")
 def AgregarVenta(request, idPedido=None):
