@@ -26,11 +26,11 @@ SECRET_KEY = 'django-insecure-9+yutmi0zq5x#r+zj1crb%-&*lh(82h8+1_z%=-&-zh)n2v8@0
 DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://barriomarket.onrender.com"
+    "https://barriomarket-yx7p.onrender.com"
 ]
 
 ALLOWED_HOSTS = [
-    'barriomarket.onrender.com',
+    'barriomarket-yx7p.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
