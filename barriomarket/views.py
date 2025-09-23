@@ -643,6 +643,10 @@ def catalogo(request):
     }
     return render(request, 'catalogo.html', context)
 
+def compras(request):
+    compras = RegistroEncargo.objects.filter(Usuario=request.user).order_by('-Fecha')
+    return render(request, 'compras/compras.html', {'compras': compras})
+
 @user_passes_test(auth, login_url='inicio')
 def Vistacarrito(request):
     listadocarrito = []
