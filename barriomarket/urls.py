@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from barriomarket.views import (home, registros, AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil)
 from django.contrib.auth.views import LogoutView
-from .views import (CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta, compras, compras_ajax)
+from .views import (AgregarProductoAVenta, CustomLoginView, GenerarPedido, Añadirproducto, auth_view, pedidos_ajax, AgregarVenta, compras, compras_ajax)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -44,10 +44,10 @@ urlpatterns = [
     path('CambioContrasena/Cambio', SolicitarContrasena),
     path('Pedidos/', Pedidos, name='listado_pedidos'),
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
-    path('Ventas/AgregarVenta/', AgregarVenta, name="AgregarVenta"),
-    path('Ventas/AgregarVenta/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
-    
-    # Compras
-    path('Compras/', compras, name='compras'),  # Vista principal de compras
-    path('Compras/ajax/', compras_ajax, name='ajax_compras'),  # Endpoint AJAX para filtrar por fecha
+    path('Ventas/AgregarVentas/i<int:idPedido>', AgregarVenta, name="AgregarVenta"),
+    path('Ventas/AgregarVentas/<int:idPedido>', AgregarVenta, name="AgregarVentaLink"),
+    path('Ventas/añadirproducto/<int:idPedido>/', Añadirproducto, name="añadirproducto"),
+    path('Ventas/AgregarVenta/<int:idPedido>/Producto/<int:idProducto>/', AgregarProductoAVenta, name="AgregarProductoAVenta"),
+    path('Compras/', compras, name='compras'),
+    path('Compras/ajax/', compras_ajax, name='ajax_compras'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
