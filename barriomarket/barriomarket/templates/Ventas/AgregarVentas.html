@@ -9,27 +9,28 @@
 
   <!-- Productos seleccionados -->
   <div class="row justify-content-center g-4">
-    {% for item in pedido.cantidadpedido.all %}
+    {% for item in pedido.CantidadPedido.all %}
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
       <div class="product-card">
-
-        <!-- Imagen -->
-        <img src="{% static 'image/Productos/' %}{{ item.Productos.imagen }}" alt="{{ item.Productos.Nombre }}"
-          class="rounded mb-3" width="120" height="120">
-
-        <!-- Info -->
         <p class="text-muted mb-1">{{ item.Productos.Fabricante.Nombre }}</p>
-        <p><strong>Cantidad:</strong> {{ item.Cantidad }} unidades</p>
         <h5>{{ item.Productos.Nombre }}</h5>
-        <p><strong>Precio unitario:</strong> ${{ item.Productos.ValorVenta }}</p>
-        <p class="fw-bold text-success">Subtotal: ${{ item.Cantidad|floatformat:0|add:"0"|mul:item.Productos.ValorVenta
-          }}</p>
+        <p class="fw-bold">${{ item.total }}</p>
+        <form method="post" action="">
+          <p style="font-size: large; margin-bottom: -5px;">Unidades:</p>
+          {% csrf_token %}
+          <input type="hidden" name="producto_id" value="{{ item.id }}">
+          <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+            <button type="submit" name="action" value="restar" ><img src="{% static 'image/resta.png' %}" width="20px" alt=""></button>
+            <strong><span class="px-3" style="font-size: 1.2rem;">{{ item.Cantidad }}</span></strong>
+            <button type="submit" name="action" value="sumar" ><img src="{% static 'image/suma.png' %}" width="20px" alt=""></button>
+          </div>
+        </form>
 
         <!-- Botón eliminar -->
         <form method="post" action="">
           {% csrf_token %}
-          <input type="hidden" name="producto_id" value="{{ item.Productos.id }}">
-          <button type="submit">Eliminar</button>
+          <input type="hidden" name="producto_id" value="{{ item.id }}">
+          <button type="submit" name="eliminar" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
         </form>
       </div>
     </div>
@@ -44,17 +45,17 @@
 
     <div class="row g-3 mb-3">
       <div class="col-md-4">
-        <strong><label for="precio_neto">Precio Neto</label></strong>
+        <strong><label for="">Precio Neto</label></strong>
         <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto"
           disabled>
       </div>
       <div class="col-md-4">
-        <strong><label for="precio_final">Precio Final</label></strong>
+        <strong><label for="">Precio Final</label></strong>
         <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final"
           disabled>
       </div>
       <div class="col-md-4">
-        <strong><label for="descuento">Descuento</label></strong>
+        <strong><label for="">Descuento</label></strong>
         <input type="text" class="form-control text-center" value="10%" placeholder="Descuento" disabled>
       </div>
     </div>
@@ -136,6 +137,10 @@
     font-weight: bold;
   }
 
+  label {
+    font-weight: 600;
+  }
+
   .btn-register {
     background-color: #000;
     color: white;
@@ -149,10 +154,6 @@
 
   .btn-register:hover {
     background-color: #333;
-  }
-
-  label {
-    font-weight: 600;
   }
 </style>
 

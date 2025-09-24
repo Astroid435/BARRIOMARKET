@@ -848,12 +848,36 @@ def AgregarVenta(request, idPedido=None):
             RegistroPedido.objects.prefetch_related('CantidadPedido__Productos'),
             id=idPedido
         )
-
-        # Calcula el total por producto
         for item in pedido.CantidadPedido.all():
             item.total = item.Productos.ValorVenta * item.Cantidad
 
         contexto['pedido'] = pedido
+
+    # if request.method == 'POST':
+    #     producto_id = request.POST.get("producto_id")   # <- capturamos el producto
+    #     action = request.POST.get("action")
+
+    #     if producto_id and idPedido:
+    #         item = get_object_or_404(
+    #             CantidadPedido,
+    #             id=producto_id,
+    #             RegistroPedido=pedido
+    #         )
+
+    #         if action == "sumar":
+    #             item.Cantidad += 1
+    #             item.save()
+    #         elif action == "restar":
+    #             item.Cantidad -= 1
+    #             if item.Cantidad <= 0:
+    #                 item.delete()
+    #             else:
+    #                 item.save()
+    #         elif action == "eliminar":
+    #             item.delete()
+
+    #     # Redirigimos para evitar reenvíos de formulario
+    #     return redirect("AgregarVenta", idPedido=pedido.id)
 
     return render(request, 'Ventas/AgregarVentas.html', contexto)
 
