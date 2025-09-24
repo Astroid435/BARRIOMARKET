@@ -44,10 +44,6 @@ urlpatterns = [
     path('CambioContrasena/Cambio', SolicitarContrasena),
     path('Pedidos/', Pedidos, name='listado_pedidos'),
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
-    path('Ventas/AgregarVentas/i<int:idPedido>', AgregarVenta, name="AgregarVenta"),
-    path('Ventas/AgregarVentas/<int:idPedido>', AgregarVenta, name="AgregarVentaLink"),
-    path('Ventas/añadirproducto/<int:idPedido>/', Añadirproducto, name="añadirproducto"),
-    path('Ventas/AgregarVenta/<int:idPedido>/Producto/<int:idProducto>/', AgregarProductoAVenta, name="AgregarProductoAVenta"),
     path('Compras/', compras, name='compras'),
     path('Compras/ajax/', compras_ajax, name='ajax_compras'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
