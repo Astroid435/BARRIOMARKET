@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena, catalogo,Pedidos, Perfil, Añadirproducto
 from django.contrib.auth.views import LogoutView
-from .views import AgregarProductoAVenta, CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta
+from .views import CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta, AgregarProductoAVenta
 
 urlpatterns = [
     path('admin/', admin.site.urls),
