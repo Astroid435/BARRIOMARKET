@@ -70,7 +70,7 @@
                 <div class="product-grid">
                     {% for producto in productos %}
                     <div class="product-card">
-                        <a href="Productos/VistaProducto/{{ producto.id }}">
+                        <a href="{% url 'AgregarProductoAVenta' pedido.id producto.id %}">
                             <img src="{% static 'image/Productos/' %}{{ producto.imagen }}" class="product-image">
                         </a>
                         <div class="product-info">

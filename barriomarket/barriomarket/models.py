@@ -106,18 +106,19 @@ class ProductosCategoria(models.Model):
 # -----------------------------------
 
 class RegistroPedido(models.Model):
-    Fecha = models.DateField()
-    ValorTotal = models.IntegerField()
-    Observaciones = models.CharField(max_length=200)
+    Fecha = models.DateTimeField()
+    Observaciones = models.TextField()
+    ValorTotal = models.DecimalField(max_digits=10, decimal_places=2)
     Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    Estado = models.CharField(max_length=20, default='sin_atender')  # <-- agrega esta línea
 
     class Meta:
         db_table = 'registropedido'
 
 class CantidadPedido(models.Model):
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    RegistroPedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE)
-    Cantidad = models.SmallIntegerField()
+    RegistroPedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE, related_name='cantidadpedido')
+    Cantidad = models.PositiveIntegerField()
 
     class Meta:
         db_table = 'cantidadpedido'

@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena, catalogo,Pedidos, Perfil, Añadirproducto
 from django.contrib.auth.views import LogoutView
-from .views import CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta
+from .views import AgregarProductoAVenta, CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,7 +46,7 @@ urlpatterns = [
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
     path('Ventas/AgregarVentas/', AgregarVenta, name="AgregarVenta"),
     path('Ventas/AgregarVentas/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
-    path('Ventas/añadirproducto', Añadirproducto, name="añadirproducto"),
-
+    path('Ventas/añadirproducto/<int:idPedido>/', Añadirproducto, name="añadirproducto"),
+    path('Ventas/AgregarVenta/<int:idPedido>/Producto/<int:idProducto>/', AgregarProductoAVenta, name="AgregarProductoAVenta"),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

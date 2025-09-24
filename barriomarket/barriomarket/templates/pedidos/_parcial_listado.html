@@ -46,7 +46,7 @@
                     <div class="modal-footer d-flex justify-content-between">
                     {% if request.user.rol.Nombre == "Administrador" %}
                         {% if pedido.Estado == "atendido" %}
-                            <a href="/Ventas/AgregarVenta/{{ pedido.id }}" >
+                            <a href="{% url 'AgregarVentaLink' pedido.id %}">
                                 <button type="submit" name="Finalizar" class="btn btn-success">Finalizar</button>
                             </a>
                         {% else %}

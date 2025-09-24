@@ -9,52 +9,69 @@
 
   <!-- Productos seleccionados -->
   <div class="row justify-content-center g-4">
-  {% for item in pedido.CantidadPedido.all %}
+    {% for item in pedido.cantidadpedido_set.all %}
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
       <div class="product-card">
+
+        <!-- Imagen -->
+        <img src="{% static 'image/Productos/' %}{{ item.Productos.imagen }}" alt="{{ item.Productos.Nombre }}"
+          class="rounded mb-3" width="120" height="120">
+
+        <!-- Info -->
         <p class="text-muted mb-1">{{ item.Productos.Fabricante.Nombre }}</p>
-        <p>{{ item.Cantidad }} Unidades</p>
+        <p><strong>Cantidad:</strong> {{ item.Cantidad }} unidades</p>
         <h5>{{ item.Productos.Nombre }}</h5>
-        <p class="fw-bold">${{ item.total }}</p>        
+        <p><strong>Precio unitario:</strong> ${{ item.Productos.ValorVenta }}</p>
+        <p class="fw-bold text-success">Subtotal: ${{ item.Cantidad|floatformat:0|add:"0"|mul:item.Productos.ValorVenta
+          }}</p>
+
+        <!-- Botón eliminar -->
         <form method="post" action="">
           {% csrf_token %}
+          <input type="hidden" name="producto_id" value="{{ item.Productos.id }}">
           <button type="submit">Eliminar</button>
         </form>
       </div>
     </div>
-  {% empty %}
+    {% empty %}
     <p class="text-center text-muted">No hay productos añadidos</p>
-  {% endfor %}
+    {% endfor %}
   </div>
 
   <!-- Formulario de registro -->
   <div class="form-section text-center mt-5">
-    <a href="{% url 'añadirproducto' %}" class="btn btn-outline-dark mb-4 w-100">Añadir Producto</a>
+    <a href="{% url 'añadirproducto' pedido.id %}" class="btn btn-outline-dark mb-4 w-100">Añadir Producto</a>
 
     <div class="row g-3 mb-3">
       <div class="col-md-4">
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto" disabled>
+        <strong><label for="precio_neto">Precio Neto</label></strong>
+        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto"
+          disabled>
       </div>
       <div class="col-md-4">
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final" disabled>
+        <strong><label for="precio_final">Precio Final</label></strong>
+        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final"
+          disabled>
       </div>
       <div class="col-md-4">
+        <strong><label for="descuento">Descuento</label></strong>
         <input type="text" class="form-control text-center" value="10%" placeholder="Descuento" disabled>
       </div>
     </div>
 
     <form method="post" action="" class="mt-3">
       {% csrf_token %}
-      <input type="text" name="documento" class="form-control mb-3 text-center" placeholder="Ej: 1011397031" value="{{pedido.Usuario.Documento}}" required>
+      <input type="text" name="documento" class="form-control mb-3 text-center" placeholder="Ej: 1011397031"
+        value="{{pedido.Usuario.Documento}}" required>
 
       <a href="#" class="btn btn-outline-dark mb-3 w-100">Añadir método de pago</a>
 
       {% comment %} <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
         {% for metodo in metodos_pago %}
-          <div class="pill-btn">
-            {{ metodo.nombre }}
-            <a href="#" class="text-danger ms-2">&times;</a>
-          </div>
+        <div class="pill-btn">
+          {{ metodo.nombre }}
+          <a href="#" class="text-danger ms-2">&times;</a>
+        </div>
         {% endfor %}
       </div> {% endcomment %}
 
@@ -132,6 +149,10 @@
 
   .btn-register:hover {
     background-color: #333;
+  }
+
+  label {
+    font-weight: 600;
   }
 </style>
 
