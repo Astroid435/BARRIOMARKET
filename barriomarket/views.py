@@ -617,7 +617,7 @@ def VistaProducto (request, idProducto):
 
     for prod in productosRelacionados:
         if prod.id != producto.id:
-            if not prod.Cantidad <= 0:  # Evita incluir el producto actual
+            if not prod.Cantidad <= 0:  
                 listarelacionados.append({
                     'idProducto': prod.id,
                     'Nombre': prod.Nombre,
@@ -999,70 +999,3 @@ def compras_ajax(request):
 
     return render(request, 'compras/_parcial_listado.html', {'lista_compras': compras})
 
-
-@user_passes_test(es_admin, login_url="inicio")
-def AgregarVenta(request, idPedido=None):
-    ProductosTodos = Productos.objects.all()
-    contexto = {'ProductosTodos': ProductosTodos}
-
-    if idPedido:
-        pedido = get_object_or_404(
-            RegistroPedido.objects.prefetch_related('CantidadPedido__Productos'),
-            id=idPedido
-        )
-        for item in pedido.CantidadPedido.all():
-            item.total = item.Productos.ValorVenta * item.Cantidad
-
-        contexto['pedido'] = pedido
-
-    # if request.method == 'POST':
-    #     producto_id = request.POST.get("producto_id")   # <- capturamos el producto
-    #     action = request.POST.get("action")
-
-    #     if producto_id and idPedido:
-    #         item = get_object_or_404(
-    #             CantidadPedido,
-    #             id=producto_id,
-    #             RegistroPedido=pedido
-    #         )
-
-    #         if action == "sumar":
-    #             item.Cantidad += 1
-    #             item.save()
-    #         elif action == "restar":
-    #             item.Cantidad -= 1
-    #             if item.Cantidad <= 0:
-    #                 item.delete()
-    #             else:
-    #                 item.save()
-    #         elif action == "eliminar":
-    #             item.delete()
-
-    #     # Redirigimos para evitar reenvíos de formulario
-    #     return redirect("AgregarVenta", idPedido=pedido.id)
-
-    return render(request, 'Ventas/AgregarVentas.html', contexto)
-
-def Añadirproducto(request, idPedido):
-    productos = Productos.objects.all()
-    pedido = get_object_or_404(RegistroPedido, id=idPedido)
-    contexto = {'productos': productos, 'pedido': pedido}
-
-    return render(request, 'Ventas/AñadirProducto.html', contexto)
-
-def AgregarProductoAVenta(request, idPedido, idProducto):
-    pedido = get_object_or_404(RegistroPedido, id=idPedido)
-    producto = get_object_or_404(Productos, id=idProducto)
-
-    # Si ya existe el producto en el pedido, aumentar cantidad
-    item, created = CantidadPedido.objects.get_or_create(
-        RegistroPedido=pedido,
-        Productos=producto,
-        defaults={'Cantidad': 1}
-    )
-
-    if not created:
-        item.Cantidad += 1
-        item.save()
-
-    return redirect('AgregarVentaLink', idPedido=pedido.id)
