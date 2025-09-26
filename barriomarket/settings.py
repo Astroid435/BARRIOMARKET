@@ -25,11 +25,16 @@ SECRET_KEY = 'django-insecure-9+yutmi0zq5x#r+zj1crb%-&*lh(82h8+1_z%=-&-zh)n2v8@0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://barriomarket-yx7p.onrender.com"
+]
+
 ALLOWED_HOSTS = [
-    'barriomarket.onrender.com',
+    'barriomarket-yx7p.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
+
 
 # Application definition
 
@@ -85,14 +90,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'barriomarket',
-        'USER': 'root',          # tu usuario de MySQL
-        'PASSWORD': '',          # tu contraseña de MySQL (si no tienes, deja vacío)
-        'HOST': 'localhost',     # o 'localhost'
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
         'PORT': '3306',
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -151,5 +156,5 @@ USE_TZ = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+EMAIL_HOST_USER = os.getenv('EMAIL_USER'),
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD'),

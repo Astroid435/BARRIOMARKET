@@ -1,0 +1,51 @@
+{% load static %}
+
+<div class="orders-grid">
+    {% for compra in lista_compras %}
+    <div class="order-card">
+        <p class="order-date">{{ compra.Fecha|date:"d/m/Y H:i" }}</p>
+        <p class="order-price"><span class="fw-semibold">Total:</span> ${{ compra.Valor }}</p>
+        <p class="order-products"><span class="fw-semibold">{{ compra.CantidadEncargo.count }}</span> productos</p>
+
+        <!-- Botón para abrir modal -->
+        <button class="btn-open" data-bs-toggle="modal" data-bs-target="#modalCompra{{ compra.id }}">
+            Abrir
+        </button>
+    </div>
+
+    <!-- Modal Detalles de la Compra -->
+    <div class="modal fade" id="modalCompra{{ compra.id }}" tabindex="-1" aria-labelledby="modalLabel{{ compra.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel{{ compra.id }}">Compra #{{ compra.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p><span class="fw-semibold">Administrador:</span> {{ compra.Usuario.Primer_nombre }} {{ compra.Usuario.Primer_apellido }}</p>
+                    <p><span class="fw-semibold">Correo:</span> {{ compra.Usuario.Correo }}</p>
+                    <p><span class="fw-semibold">Fecha:</span> {{ compra.Fecha|date:"d/m/Y H:i" }}</p>
+                    <p><span class="fw-semibold">Total:</span> ${{ compra.Valor }}</p>
+                    <hr>
+                    <h6 class="fw-semibold">Productos:</h6>
+                    <ul>
+                        {% for detalle in compra.CantidadEncargo.all %}
+                            <li>
+                                <span class="fw-semibold">{{ detalle.Productos.Nombre }}</span><br>
+                                <em>{{ detalle.Productos.Descripcion }}</em><br>
+                                Valor unitario: ${{ detalle.Productos.ValorVenta }}  
+                                (Cantidad: {{ detalle.Cantidad }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No hay compras registradas.</p>
+    {% endfor %}
+</div>

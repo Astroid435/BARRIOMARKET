@@ -617,7 +617,7 @@ def VistaProducto (request, idProducto):
 
     for prod in productosRelacionados:
         if prod.id != producto.id:
-            if not prod.Cantidad <= 0:  # Evita incluir el producto actual
+            if not prod.Cantidad <= 0:  
                 listarelacionados.append({
                     'idProducto': prod.id,
                     'Nombre': prod.Nombre,
@@ -1017,3 +1017,27 @@ def AgregarVenta(request, idPedido=None):
         contexto['pedido'] = pedido
 
     return render(request, 'Ventas/AgregarVentas.html', contexto)
+
+def Añadirproducto(request, idPedido):
+    productos = Productos.objects.all()
+    pedido = get_object_or_404(RegistroPedido, id=idPedido)
+    contexto = {'productos': productos, 'pedido': pedido}
+
+    return render(request, 'Ventas/AñadirProducto.html', contexto)
+
+def AgregarProductoAVenta(request, idPedido, idProducto):
+    pedido = get_object_or_404(RegistroPedido, id=idPedido)
+    producto = get_object_or_404(Productos, id=idProducto)
+
+    # Si ya existe el producto en el pedido, aumentar cantidad
+    item, created = CantidadPedido.objects.get_or_create(
+        RegistroPedido=pedido,
+        Productos=producto,
+        defaults={'Cantidad': 1}
+    )
+
+    if not created:
+        item.Cantidad += 1
+        item.save()
+
+    return redirect('AgregarVentaLink', idPedido=pedido.id)

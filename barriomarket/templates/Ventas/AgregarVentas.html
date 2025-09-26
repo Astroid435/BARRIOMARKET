@@ -9,52 +9,71 @@
 
   <!-- Productos seleccionados -->
   <div class="row justify-content-center g-4">
-  {% for item in pedido.CantidadPedido.all %}
+    {% for item in pedido.CantidadPedido.all %}
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
       <div class="product-card">
         <p class="text-muted mb-1">{{ item.Productos.Fabricante.Nombre }}</p>
-        <p>{{ item.Cantidad }} Unidades</p>
         <h5>{{ item.Productos.Nombre }}</h5>
-        <p class="fw-bold">${{ item.total }}</p>        
+        <p class="fw-bold">${{ item.total }}</p>
+        <form method="post" action="">
+          <p style="font-size: large; margin-bottom: -5px;">Unidades:</p>
+          {% csrf_token %}
+          <input type="hidden" name="producto_id" value="{{ item.id }}">
+          <div class="quantity-control">
+            <button class="quantity-btn minus-btn" data-id="{{item.id}}" data-precio="{{item.Productos.ValorUnitario}}">-</button>
+            <span class="quantity-value" id="cantidad-{{item.id}}">{{item.Cantidad}}</span>
+            <button class="quantity-btn plus-btn" data-id="{{item.id}}"
+              data-precio="{{item.Productos.ValorUnitario}}">+</button>
+          </div>
+        </form>
+
+        <!-- Botón eliminar -->
         <form method="post" action="">
           {% csrf_token %}
-          <button type="submit">Eliminar</button>
+          <input type="hidden" name="producto_id" value="{{ item.id }}">
+          <button type="submit" name="eliminar" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
         </form>
       </div>
     </div>
-  {% empty %}
+    {% empty %}
     <p class="text-center text-muted">No hay productos añadidos</p>
-  {% endfor %}
+    {% endfor %}
   </div>
 
   <!-- Formulario de registro -->
   <div class="form-section text-center mt-5">
-    <a href="#" class="btn btn-outline-dark mb-4 w-100">Añadir Producto</a>
+    <a href="{% url 'añadirproducto' pedido.id %}" class="btn btn-outline-dark mb-4 w-100">Añadir Producto</a>
 
     <div class="row g-3 mb-3">
       <div class="col-md-4">
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto" disabled>
+        <strong><label for="">Precio Neto</label></strong>
+        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto"
+          disabled>
       </div>
       <div class="col-md-4">
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final" disabled>
+        <strong><label for="">Precio Final</label></strong>
+        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final"
+          disabled>
       </div>
       <div class="col-md-4">
+        <strong><label for="">Descuento</label></strong>
         <input type="text" class="form-control text-center" value="10%" placeholder="Descuento" disabled>
       </div>
     </div>
 
     <form method="post" action="" class="mt-3">
       {% csrf_token %}
-      <input type="text" name="documento" class="form-control mb-3 text-center" placeholder="Ej: 1011397031" value="{{pedido.Usuario.Documento}}" required>
+      <input type="text" name="documento" class="form-control mb-3 text-center" placeholder="Ej: 1011397031"
+        value="{{pedido.Usuario.Documento}}" required>
 
       <a href="#" class="btn btn-outline-dark mb-3 w-100">Añadir método de pago</a>
 
       {% comment %} <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
         {% for metodo in metodos_pago %}
-          <div class="pill-btn">
-            {{ metodo.nombre }}
-            <a href="#" class="text-danger ms-2">&times;</a>
-          </div>
+        <div class="pill-btn">
+          {{ metodo.nombre }}
+          <a href="#" class="text-danger ms-2">&times;</a>
+        </div>
         {% endfor %}
       </div> {% endcomment %}
 
@@ -117,6 +136,10 @@
   .pill-btn a {
     text-decoration: none;
     font-weight: bold;
+  }
+
+  label {
+    font-weight: 600;
   }
 
   .btn-register {
