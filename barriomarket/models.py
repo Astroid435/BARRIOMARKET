@@ -122,6 +122,20 @@ class RegistroPedido(models.Model):
     class Meta:
         db_table = 'registropedido'
 
+class Devolucion(models.Model):
+    id_devolucion = models.AutoField(primary_key=True)
+    pedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE, related_name="devoluciones")
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # quién canceló
+    motivo = models.TextField()
+    fecha_cancelacion = models.DateTimeField(auto_now_add=True)
+    valor = models.IntegerField()  # copia del valor del pedido cancelado
+
+    class Meta:
+        db_table = "devoluciones"
+
+    def __str__(self):
+        return f"Devolución Pedido {self.pedido.id} - {self.usuario.Correo}"
+
 class CantidadPedido(models.Model):
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
     RegistroPedido = models.ForeignKey(RegistroPedido, related_name='CantidadPedido', on_delete=models.CASCADE)
@@ -143,6 +157,7 @@ class Carrito(models.Model):
 # -----------------------------------
 
 class RegistroVenta(models.Model):
+    id_ventas = models.AutoField(primary_key=True)  # clave primaria real
     Valor = models.IntegerField()
     ValorTotal = models.IntegerField()
     Fecha = models.DateTimeField()
@@ -161,6 +176,7 @@ class CantidadEncargo(models.Model):
         db_table = 'cantidadencargo'
 
 class CantidadVenta(models.Model):
+    id_cantidadventa = models.AutoField(primary_key=True)
     RegistroVenta = models.ForeignKey(RegistroVenta, on_delete=models.CASCADE)
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
     Cantidad = models.IntegerField()

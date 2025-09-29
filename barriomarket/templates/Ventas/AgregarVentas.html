@@ -7,82 +7,71 @@
     <p class="text-muted">Llene todos los campos para continuar</p>
   </div>
 
-  <!-- Productos seleccionados -->
-  <div class="row justify-content-center g-4">
+  <div class="row justify-content-center g-4" id="productos-container">
     {% for item in pedido.CantidadPedido.all %}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3" id="card-{{ item.id }}">
       <div class="product-card">
         <p class="text-muted mb-1">{{ item.Productos.Fabricante.Nombre }}</p>
         <h5>{{ item.Productos.Nombre }}</h5>
-        <p class="fw-bold">${{ item.total }}</p>
-        <form method="post" action="">
-          <p style="font-size: large; margin-bottom: -5px;">Unidades:</p>
-          {% csrf_token %}
-          <input type="hidden" name="producto_id" value="{{ item.id }}">
-          <div class="quantity-control">
-            <button class="quantity-btn minus-btn" data-id="{{item.id}}" data-precio="{{item.Productos.ValorUnitario}}">-</button>
-            <span class="quantity-value" id="cantidad-{{item.id}}">{{item.Cantidad}}</span>
-            <button class="quantity-btn plus-btn" data-id="{{item.id}}"
-              data-precio="{{item.Productos.ValorUnitario}}">+</button>
-          </div>
-        </form>
 
-        <!-- Botón eliminar -->
-        <form method="post" action="">
+        <p class="fw-bold" id="subtotal-{{ item.id }}">Subtotal: ${{ item.total|floatformat:0 }}</p>
+
+        <p style="font-size: large; margin-bottom: -5px;">Unidades:</p>
+        <div class="quantity-control">
+          <button type="button" class="quantity-btn minus-btn" data-id="{{ item.id }}"
+            data-precio="{{ item.Productos.ValorVenta }}">-</button>
+          <span class="quantity-value" id="cantidad-{{ item.id }}">{{ item.Cantidad }}</span>
+          <button type="button" class="quantity-btn plus-btn" data-id="{{ item.id }}"
+            data-precio="{{ item.Productos.ValorVenta }}">+</button>
+        </div>
+
+        <form method="post" action="" style="margin-top:8px;" class="form-eliminar">
           {% csrf_token %}
           <input type="hidden" name="producto_id" value="{{ item.id }}">
-          <button type="submit" name="eliminar" value="eliminar" class="btn btn-sm btn-danger">Eliminar</button>
+          <button type="submit" name="eliminar" value="eliminar" class="btn btn-sm btn-danger delete-btn"
+            data-id="{{ item.id }}">Eliminar</button>
         </form>
       </div>
     </div>
-    {% empty %}
-    <p class="text-center text-muted">No hay productos añadidos</p>
     {% endfor %}
+
   </div>
 
-  <!-- Formulario de registro -->
   <div class="form-section text-center mt-5">
-    <a href="{% url 'añadirproducto' pedido.id %}" class="btn btn-outline-dark mb-4 w-100">Añadir Producto</a>
-
-    <div class="row g-3 mb-3">
-      <div class="col-md-4">
-        <strong><label for="">Precio Neto</label></strong>
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Neto"
-          disabled>
-      </div>
-      <div class="col-md-4">
-        <strong><label for="">Precio Final</label></strong>
-        <input type="text" class="form-control text-center" value="${{ pedido.ValorTotal }}" placeholder="Precio Final"
-          disabled>
-      </div>
-      <div class="col-md-4">
-        <strong><label for="">Descuento</label></strong>
-        <input type="text" class="form-control text-center" value="10%" placeholder="Descuento" disabled>
-      </div>
-    </div>
-
+    <a href="{% url 'añadirproducto' pedido.id %}" class="btn btn-outline-dark mb-4" style="width: 40%;">Añadir
+      Producto</a>
+<hr>
     <form method="post" action="" class="mt-3">
       {% csrf_token %}
-      <input type="text" name="documento" class="form-control mb-3 text-center" placeholder="Ej: 1011397031"
+      <div class="row justify-content-center">
+        <div class="col-md-6 ">
+          <strong><label for="" style="font-size: x-large; font-weight: 800; color: #000;">Descripción de la
+              venta</label></strong>
+          <input type="text" class="form-control text-center" id="observación" name="observación"
+            value="{{ pedido.Observaciones }}"
+            style="font-weight: 600; font-size: medium; color: #000; margin-bottom: 29px;" disabled>
+        </div>
+      </div>
+      <strong><label for="" style="font-size: x-large; font-weight: 800; color: #000;">Documento
+          cliente</label></strong><br>
+      <input type="text" name="DocumentoCliente" class="justify-content-center text-center m-4 w-50 pad" placeholder="Ej: 1011397031"
         value="{{pedido.Usuario.Documento}}" required>
 
-      <a href="#" class="btn btn-outline-dark mb-3 w-100">Añadir método de pago</a>
-
-      {% comment %} <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-        {% for metodo in metodos_pago %}
-        <div class="pill-btn">
-          {{ metodo.nombre }}
-          <a href="#" class="text-danger ms-2">&times;</a>
+      <div class="row justify-content-center">
+        <div class="col-md-6 ">
+          <strong><label for="" style="font-size: xx-large; font-weight: 800; color: #000;">Precio
+              Final</label></strong>
+          <input type="text" class="form-control text-center" id="precio-final" value="{{ ValorTotal|floatformat:0 }}"
+            style="font-weight: 600; font-size: medium; color: #000;" disabled>
         </div>
-        {% endfor %}
-      </div> {% endcomment %}
+      </div>
 
-      <button type="submit" class="btn-register">Registrar venta</button>
+
+      <button type="submit" class="btn-register" style="width: 40%; margin-top: 32px;">Registrar venta</button>
     </form>
   </div>
 </div>
 
-<!-- Estilos visuales -->
 <style>
   body {
     background-color: #f9f9f9;
@@ -105,41 +94,9 @@
     font-size: 1.1rem;
   }
 
-  .product-card button {
-    margin-top: 0.8rem;
-    background-color: #000;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 20px;
-    transition: background-color 0.3s ease;
-  }
-
-  .product-card button:hover {
-    background-color: #333;
-  }
-
   .form-section input,
   .form-section a {
     font-size: 14px;
-  }
-
-  .pill-btn {
-    background-color: #f1f1f1;
-    border-radius: 20px;
-    padding: 6px 16px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-  }
-
-  .pill-btn a {
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  label {
-    font-weight: 600;
   }
 
   .btn-register {
@@ -156,6 +113,238 @@
   .btn-register:hover {
     background-color: #333;
   }
+
+  /* === Estilos de botones + y - (tomados del carrito) === */
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .quantity-btn {
+    width: 36px;
+    height: 36px;
+    background-color: white;
+    color: #000;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+  }
+
+  .quantity-btn:hover {
+    background-color: #f8f8f8;
+  }
+
+  .minus-btn {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+  }
+
+  .plus-btn {
+    border-radius: 0 4px 4px 0;
+    border-left: none;
+  }
+
+  .quantity-value {
+    width: 40px;
+    height: 36px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-left: none;
+    border-right: none;
+    line-height: 36px;
+  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+    const precioFinalInput = document.getElementById('precio-final');
+
+    function getPrecioFinalValue() {
+      return parseFloat(precioFinalInput.value.replace(/[^\d-]/g, '')) || 0;
+    }
+
+    function formatPrecio(value) {
+      const integerValue = Math.round(parseFloat(value));
+      return integerValue.toLocaleString('es-ES', { maximumFractionDigits: 0 });
+    }
+
+    function formatSubtotal(amount) {
+      const integerAmount = Math.round(parseFloat(amount));
+      return "$" + integerAmount.toLocaleString('es-ES', { maximumFractionDigits: 0 });
+    }
+    function inicializarSubtotales() {
+    let total = 0;
+    document.querySelectorAll('[id^="cantidad-"]').forEach(span => {
+      const id = span.id.replace("cantidad-", "");
+      const cantidad = parseInt(span.textContent);
+      const precio = parseFloat(document.querySelector(`.plus-btn[data-id="${id}"]`).getAttribute("data-precio"));
+      const subtotal = cantidad * precio;
+      document.getElementById(`subtotal-${id}`).textContent = formatSubtotal(subtotal);
+      total += subtotal;
+    });
+    precioFinalInput.value = formatPrecio(total);
+  }
+
+  // 🔥 Ejecutamos apenas se cargue la página
+  inicializarSubtotales();
+
+    async function sendAjaxRequest(id, action) {
+      const body = action === 'borrar' ? `id=${id}&borrar=1` : `id=${id}&${action}=1`;
+
+      const response = await fetch("{% url 'AgregarVentaAjax' pedido.id %}", {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": csrfToken
+        },
+        body: body
+      });
+      return response.json();
+    }
+
+    document.querySelectorAll('.plus-btn').forEach(button => {
+      button.addEventListener('click', async function () {
+        const id = this.getAttribute('data-id');
+        const precio = parseFloat(this.getAttribute('data-precio'));
+        const cantidadSpan = document.getElementById(`cantidad-${id}`);
+        const subtotalElement = document.getElementById(`subtotal-${id}`);
+
+        let cantidadInicial = parseInt(cantidadSpan.textContent);
+        let precioFinalInicial = getPrecioFinalValue();
+        let subtotalInicial = cantidadInicial * precio;
+
+        let nuevaCantidad = cantidadInicial + 1;
+        let nuevoSubtotal = nuevaCantidad * precio;
+        let nuevoPrecioFinal = precioFinalInicial + precio;
+
+        cantidadSpan.textContent = nuevaCantidad;
+        subtotalElement.textContent = formatSubtotal(nuevoSubtotal);
+        precioFinalInput.value = formatPrecio(nuevoPrecioFinal);
+
+        try {
+          const data = await sendAjaxRequest(id, "mas");
+
+          if (data.status === "limit") {
+            // 3. **REVERSIÓN (Si el stock falló):**
+            alert("Cantidad máxima alcanzada. No se pudo agregar más stock.");
+
+            // Revertir a valores iniciales
+            cantidadSpan.textContent = cantidadInicial;
+            subtotalElement.textContent = formatSubtotal(subtotalInicial);
+            precioFinalInput.value = formatPrecio(precioFinalInicial);
+          }
+          // Nota: Si es status="updated", no hacemos nada, ya se actualizó localmente.
+
+        } catch (error) {
+          console.error("Error AJAX:", error);
+          alert("Error de conexión al servidor. Revirtiendo cambios.");
+
+          // Revertir a valores iniciales en caso de error de red
+          cantidadSpan.textContent = cantidadInicial;
+          subtotalElement.textContent = formatSubtotal(subtotalInicial);
+          precioFinalInput.value = formatPrecio(precioFinalInicial);
+        }
+      });
+    });
+
+    document.querySelectorAll('.minus-btn').forEach(button => {
+      button.addEventListener('click', async function () {
+        const id = this.getAttribute('data-id');
+        const precio = parseFloat(this.getAttribute('data-precio'));
+        const cantidadSpan = document.getElementById(`cantidad-${id}`);
+        const subtotalElement = document.getElementById(`subtotal-${id}`);
+
+        let cantidadInicial = parseInt(cantidadSpan.textContent);
+
+        if (cantidadInicial === 1) {
+          const confirmar = window.confirm('La cantidad es 1. ¿Deseas eliminar este producto?');
+          if (!confirmar) return;
+
+          await handleDeletion(id, precio, cantidadInicial);
+
+        } else if (cantidadInicial > 1) {
+
+          let precioFinalInicial = getPrecioFinalValue();
+
+          let nuevaCantidad = cantidadInicial - 1;
+          let nuevoSubtotal = nuevaCantidad * precio;
+          let nuevoPrecioFinal = precioFinalInicial - precio;
+
+          cantidadSpan.textContent = nuevaCantidad;
+          subtotalElement.textContent = formatSubtotal(nuevoSubtotal);
+          precioFinalInput.value = formatPrecio(nuevoPrecioFinal);
+
+          try {
+            await sendAjaxRequest(id, "menos");
+          } catch (error) {
+            console.error("Error AJAX:", error);
+            alert("Error de conexión al servidor. Revirtiendo cambios.");
+
+            cantidadSpan.textContent = cantidadInicial;
+            subtotalElement.textContent = formatSubtotal(cantidadInicial * precio);
+            precioFinalInput.value = formatPrecio(precioFinalInicial);
+          }
+        }
+      });
+    });
+
+
+    async function handleDeletion(id, precio, cantidad) {
+      const cardElement = document.getElementById(`card-${id}`);
+      const precioFinalInicial = getPrecioFinalValue();
+      const valorTotalEliminar = cantidad * precio;
+
+      const nuevoPrecioFinal = precioFinalInicial - valorTotalEliminar;
+      precioFinalInput.value = formatPrecio(nuevoPrecioFinal);
+      cardElement.style.display = 'none';
+      try {
+        const data = await sendAjaxRequest(id, "borrar");
+
+        if (data.status === 'deleted') {
+          cardElement.remove();
+          if (document.querySelectorAll('[id^="card-"]').length === 0) {
+            document.getElementById("productos-container").innerHTML =
+              "<p class='text-center text-muted'>No hay productos añadidos</p>";
+          }
+        } else {
+          alert("Error: El producto no pudo ser eliminado del pedido en el servidor.");
+
+          precioFinalInput.value = formatPrecio(precioFinalInicial);
+          cardElement.style.display = '';
+        }
+      } catch (error) {
+        console.error("Error AJAX:", error);
+        alert("Error de conexión al servidor. Revirtiendo eliminación.");
+
+        precioFinalInput.value = formatPrecio(precioFinalInicial);
+        cardElement.style.display = '';
+      }
+    }
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        const confirmar = window.confirm('¿Estás seguro que deseas eliminar este producto?');
+        if (!confirmar) return;
+
+        const id = this.getAttribute('data-id');
+        const card = document.getElementById(`card-${id}`);
+        const cantidad = parseInt(document.getElementById(`cantidad-${id}`).textContent);
+        const precio = parseFloat(this.getAttribute('data-precio'));
+
+        handleDeletion(id, precio, cantidad);
+      });
+    });
+  });
+</script>
 
 {% include 'inc/footer.html' %}

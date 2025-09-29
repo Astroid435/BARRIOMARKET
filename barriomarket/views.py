@@ -17,10 +17,13 @@ from .forms import MyUserCreationForm
 from django.contrib.admin.views.decorators import staff_member_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from .models import CantidadEncargo, CantidadPedido, Productos,Categoria,ProductosCategoria, RegistroEncargo, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario
+from .models import CantidadEncargo, CantidadPedido, Devolucion, Productos,Categoria,ProductosCategoria, RegistroEncargo, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario,CantidadVenta,RegistroVenta
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
+from django.db import transaction
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 def no_iniciado(user):
     if user.is_authenticated:
@@ -963,7 +966,6 @@ def pedidos_ajax(request):
     return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
 
 def compras(request):
-    # Mostrar compras del usuario logueado, ordenadas por fecha descendente
     compras = RegistroEncargo.objects.all().order_by('-Fecha')
     return render(request, 'compras/compras.html', {'lista_compras': compras})
 
@@ -980,7 +982,7 @@ def compras_ajax(request):
         compras = compras.filter(Fecha__range=(inicio, fin))
 
     elif fecha == 'semana':
-        inicio_semana = hoy - timedelta(days=hoy.weekday())  # lunes
+        inicio_semana = hoy - timedelta(days=hoy.weekday())
         fin_semana = hoy
         inicio = datetime.combine(inicio_semana, time.min)
         fin = datetime.combine(fin_semana, time.max)
@@ -994,13 +996,67 @@ def compras_ajax(request):
         compras = compras.filter(Fecha__range=(inicio, fin))
 
     elif fecha == 'otro':
-        # Aquí podrías usar un rango dinámico enviado por GET
         pass
 
     return render(request, 'compras/_parcial_listado.html', {'lista_compras': compras})
 
+from django.http import JsonResponse
+
+@require_POST
 @user_passes_test(es_admin, login_url="inicio")
-def AgregarVenta(request, idPedido=None):
+def AgregarVentaAjax(request, idPedido):
+    pedido = get_object_or_404(
+        RegistroPedido.objects.prefetch_related('CantidadPedido__Productos'),
+        id=idPedido
+    )
+    detalle_id = request.POST.get('id')
+
+    try:
+        detalle = pedido.CantidadPedido.get(id=detalle_id)
+    except CantidadPedido.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Item no encontrado'}, status=404)
+
+    action_status = None
+    if request.POST.get('menos'):
+        if detalle.Cantidad <= 1:
+            detalle.delete()
+            action_status = 'deleted'
+        else:
+            detalle.Cantidad -= 1
+            detalle.save()
+            action_status = 'updated'
+    elif request.POST.get('mas'):
+        if detalle.Cantidad < detalle.Productos.Cantidad:
+            detalle.Cantidad += 1
+            detalle.save()
+            action_status = 'updated'
+        else:
+            return JsonResponse({'status': 'limit', 'message': 'Cantidad máxima alcanzada'})
+    elif request.POST.get('borrar'):
+        detalle.delete()
+        action_status = 'deleted'
+
+    nuevos_items = pedido.CantidadPedido.all()
+    total = sum([i.Productos.ValorVenta * i.Cantidad for i in nuevos_items])
+
+    if action_status == 'updated':
+        subtotal = detalle.Cantidad * detalle.Productos.ValorVenta
+        return JsonResponse({
+            'status': 'updated',
+            'cantidad': detalle.Cantidad,
+            'subtotal': int(round(subtotal)),
+            'total_pedido': int(round(total))
+        })
+    elif action_status == 'deleted':
+        return JsonResponse({
+            'status': 'deleted',
+            'total_pedido': int(round(total))
+        })
+
+    return JsonResponse({'status': 'error'})
+
+@user_passes_test(es_admin, login_url="inicio")
+def AgregarVenta(request, idPedido):
     ProductosTodos = Productos.objects.all()
     contexto = {'ProductosTodos': ProductosTodos}
 
@@ -1010,13 +1066,49 @@ def AgregarVenta(request, idPedido=None):
             id=idPedido
         )
 
-        # Calcula el total por producto
-        for item in pedido.CantidadPedido.all():
-            item.total = item.Productos.ValorVenta * item.Cantidad
+        if request.method == 'POST' and not request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            documento_cliente_post = request.POST.get('DocumentoCliente', pedido.Usuario.Documento)
+            
+            try:
+                documento_cliente_int = int(documento_cliente_post)
+                ValorTotalFinal = sum([item.Productos.ValorVenta * item.Cantidad for item in pedido.CantidadPedido.all()])
 
+                with transaction.atomic():
+                    nueva_venta = RegistroVenta.objects.create(
+                        Valor=int(round(ValorTotalFinal)),
+                        ValorTotal=int(round(ValorTotalFinal)),
+                        Fecha=timezone.now(),
+                        Usuario_DocumentoAdministrador=request.user,
+                        DocumentoCliente=documento_cliente_int
+                    )
+
+                    for item_pedido in pedido.CantidadPedido.all():
+                        CantidadVenta.objects.create(
+                            RegistroVenta=nueva_venta,
+                            Productos=item_pedido.Productos,
+                            Cantidad=item_pedido.Cantidad,
+                        )
+
+                        producto_stock = item_pedido.Productos
+                        producto_stock.Cantidad -= item_pedido.Cantidad
+                        producto_stock.save()
+
+                    pedido.Estado = 'VENDIDO'
+                    pedido.save()
+
+                    messages.success(request, "¡Venta registrada exitosamente!")
+                    return redirect('ListadoVenta')
+
+            except Exception as e:
+                messages.error(request, f"Error al registrar la venta: {e}")
+                return redirect('AgregarVentaLink', idPedido=idPedido)
+
+        ValorTotal = sum([item.Productos.ValorVenta * item.Cantidad for item in pedido.CantidadPedido.all()])
         contexto['pedido'] = pedido
+        contexto['ValorTotal'] = int(round(ValorTotal))
 
     return render(request, 'Ventas/AgregarVentas.html', contexto)
+
 
 def Añadirproducto(request, idPedido):
     productos = Productos.objects.all()
@@ -1041,3 +1133,53 @@ def AgregarProductoAVenta(request, idPedido, idProducto):
         item.save()
 
     return redirect('AgregarVentaLink', idPedido=pedido.id)
+
+def ListadoVenta(request):
+    ventas = RegistroVenta.objects.all().order_by('-Fecha')
+    devoluciones = Devolucion.objects.select_related('pedido', 'usuario').order_by('-fecha_cancelacion')
+
+    contexto = {
+        'ventas': ventas,
+        'devoluciones': devoluciones,
+    }
+
+    return render(request, 'Ventas/ListadoVentas.html', contexto)
+
+
+@csrf_exempt
+def cancelar_pedido(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            pedido_id = data.get("id")
+            motivo = data.get("motivo")
+
+            pedido = RegistroPedido.objects.get(id=pedido_id)
+
+            # Crear registro en devoluciones
+            Devolucion.objects.create(
+                pedido=pedido,
+                usuario=request.user,   # el que canceló
+                motivo=motivo,
+                valor=pedido.ValorTotal
+            )
+
+            # Cambiar estado del pedido a cancelado
+            pedido.Estado = "cancelado"
+            pedido.save()
+
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Método no permitido"})
+
+@user_passes_test(auth, login_url='inicio')
+def DetalleVenta(request, idVenta):
+    venta = get_object_or_404(
+        RegistroVenta.objects.prefetch_related('cantidadventa_set__Productos'),
+        id_ventas=idVenta
+    )
+    return render(request, 'Ventas/DetalleVenta.html', {'venta': venta})

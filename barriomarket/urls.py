@@ -14,13 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django import views
 from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from barriomarket.views import (home, registros, AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, AgregarVenta, Añadirproducto, AgregarProductoAVenta)
+from barriomarket.views import (home, registros, cancelar_pedido,AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, AgregarVenta, Añadirproducto, AgregarProductoAVenta, ListadoVenta, DetalleVenta)
 from django.contrib.auth.views import LogoutView
-from .views import ( CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, compras, compras_ajax)
+from .views import ( AgregarVentaAjax, CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, compras, compras_ajax)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,9 +47,14 @@ urlpatterns = [
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
     path('Compras/', compras, name='compras'),
     path('Compras/ajax/', compras_ajax, name='ajax_compras'), 
-    path('Ventas/AgregarVentas/', AgregarVenta, name="AgregarVenta"),
+    path('Ventas/AgregarVentas/<int:idPedido>', AgregarVenta, name="AgregarVenta"),
+    path('Ventas/AgregarVentas/<int:idPedido>/ajax', AgregarVentaAjax, name="AgregarVentaAjax"),
     path('Ventas/AgregarVentas/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
     path('Ventas/añadirproducto/<int:idPedido>/', Añadirproducto, name="añadirproducto"),
     path('Ventas/AgregarVenta/<int:idPedido>/Producto/<int:idProducto>/', AgregarProductoAVenta, name="AgregarProductoAVenta"),
+    path('Ventas/ListadoVentas/', ListadoVenta, name="ListadoVenta"),
+    path("cancelar_pedido/", cancelar_pedido, name="cancelar_pedido"),
+    path("Ventas/Detalle/<int:idVenta>/", DetalleVenta, name="DetalleVenta"),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
