@@ -186,11 +186,10 @@
                             <button class="btn btn-edit button col-12">Agregar Producto</button>
                         </a>
                     </div>
-                    <div class="row justify-content-evenly">
-                        <a href="" class="col-4">
-                            <button class="btn btn-edit button col-12">Productos faltantes</button>
-                        </a>
+                    <div class="col-4">
+                        <button id="btn-faltante" type="button" class="btn btn-edit button col-12">Productos faltantes</button>
                     </div>
+
                 </div>
             {% else %}
                     <center>
@@ -296,6 +295,40 @@
                 <label for="exampleInputEmail1">Telefono</label>
                 <input type="text" class="form-control" name="TelefonoFabricante" placeholder="Ej: 3242974388">
                 <button type="submit" class="btn btn_consulta col-md-12 btn-fcsm" name="btn_fabricante">Crear</button>
+            </form>
+        </center>
+    </div>
+</div>
+
+<div id="VentanaFaltantes" class="modal">
+    <div class="modal-content">
+        <div class="container-fluid">
+            <div class="row">
+                <span class="close closeVF col-1" style="position: absolute; cursor:pointer;">&times;</span>
+                <center>
+                    <h1 class="titulo">Productos Faltantes</h1>
+                </center>
+            </div>
+        </div>
+
+        <center>
+            <table id="tablaFaltantes" class="table table-striped col-md-8">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Veces Faltante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+
+            <form id="formFaltante" method="post" class="col-md-4 mt-3">
+                {% csrf_token %}
+                <label>Nombre del Producto</label>
+                <input type="text" id="nombreFaltante" class="form-control" name="NombreProducto" placeholder="Ej: Cartuchera">
+                <button type="submit" class="btn btn_consulta col-md-12 mt-2">Registrar</button>
             </form>
         </center>
     </div>
@@ -419,5 +452,106 @@
           });
       });
   });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const formFaltante = document.getElementById("formFaltante");
+    const modalFaltante = document.getElementById("VentanaFaltantes");
+    const cerrarModal = document.querySelector(".closeVF");
+    const btnAbrirModal = document.getElementById("btn-faltante");
+
+    // ✅ Abrir modal
+    btnAbrirModal.addEventListener("click", function() {
+        modalFaltante.style.display = "flex";
+        cargarFaltantes(); 
+    });
+
+    // ✅ Cerrar modal
+    cerrarModal.addEventListener("click", function() {
+        modalFaltante.style.display = "none";
+    });
+
+    // ✅ Cerrar si se hace clic fuera del modal
+    window.addEventListener("click", function(e) {
+        if (e.target === modalFaltante) {
+            modalFaltante.style.display = "none";
+        }
+    });
+
+    // ✅ Enviar formulario
+    formFaltante.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById("nombreFaltante").value.trim();
+        if (!nombre) {
+            alert("Por favor, ingresa un nombre de producto.");
+            return;
+        }
+
+        fetch("{% url 'registrar_faltante' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ nombre_producto: nombre }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(` ${data.mensaje} `);
+                document.getElementById("nombreFaltante").value = "";
+                cargarFaltantes();
+            } else {
+                alert("❌ Error: " + (data.error || "No se pudo registrar el producto."));
+            }
+        })
+        .catch(err => {
+            console.error("Error:", err);
+            alert("Ocurrió un error al registrar el producto.");
+        });
+    });
+
+    // ✅ Cargar la tabla de faltantes
+    function cargarFaltantes() {
+        fetch("{% url 'lista_faltantes' %}")
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector("#tablaFaltantes tbody");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="text-muted">No hay productos faltantes</td></tr>`;
+                return;
+            }
+
+            data.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${f.NombreProducto}</td>
+                        <td>${f.Contador}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(err => console.error("Error cargando faltantes:", err));
+    }
+
+    // ✅ Obtener CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
 </script>
 {% include 'inc/footer.html' %}

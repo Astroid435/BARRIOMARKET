@@ -1,5 +1,6 @@
 from django.utils import timezone
 from datetime import timedelta, datetime, time
+from django.utils import timezone
 import json
 import uuid
 import random
@@ -17,13 +18,14 @@ from .forms import MyUserCreationForm
 from django.contrib.admin.views.decorators import staff_member_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from .models import CantidadEncargo, CantidadPedido, Devolucion, Productos,Categoria,ProductosCategoria, RegistroEncargo, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario,CantidadVenta,RegistroVenta
+from .models import CantidadEncargo, CantidadPedido, Devolucion, RegistroFalta, Productos,Categoria,ProductosCategoria, RegistroEncargo, RegistroPedido,Subcategoria,Fabricante,Carrito,Usuario,CantidadVenta,RegistroVenta
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Sum
 
 def no_iniciado(user):
     if user.is_authenticated:
@@ -747,6 +749,45 @@ def catalogo(request):
     }
     return render(request, 'catalogo.html', context)
 
+def registrar_faltante(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            nombre = data.get('nombre_producto', '').strip()
+
+            if not nombre:
+                return JsonResponse({'success': False, 'error': 'El nombre del producto es obligatorio.'})
+
+            faltante, creado = RegistroFalta.objects.get_or_create(
+                NombreProducto=nombre,
+                defaults={'Contador': 1}
+            )
+
+            if not creado:
+                faltante.Contador += 1
+                faltante.save()
+
+            return JsonResponse({
+                'success': True,
+                'nombre': faltante.NombreProducto,
+                'contador': faltante.Contador,
+                'mensaje': 'Contador actualizado' if not creado else 'Producto registrado'
+            })
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+# @user_passes_test(auth, login_url='inicio')
+
+def lista_faltantes(request):
+    faltantes = RegistroFalta.objects.all().order_by('-Contador')
+    data = [
+        {"NombreProducto": f.NombreProducto, "Contador": f.Contador}
+        for f in faltantes
+    ]
+    return JsonResponse(data, safe=False)
+
 @user_passes_test(auth, login_url='inicio')
 def Vistacarrito(request):
     listadocarrito = []
@@ -966,19 +1007,18 @@ def pedidos_ajax(request):
     return render(request, 'pedidos/_parcial_listado.html', {'lista_pedidos': pedidos})
 
 def compras(request):
+    # Mostrar compras del usuario logueado, ordenadas por fecha descendente
     compras = RegistroEncargo.objects.all().order_by('-Fecha')
     return render(request, 'compras/compras.html', {'lista_compras': compras})
 
 def compras_ajax(request):
     fecha = request.GET.get('fecha')
-    usuario = request.user
     compras = RegistroEncargo.objects.all().order_by('-Fecha')
-
-    hoy = timezone.localdate()  # Fecha actual según la zona local
+    hoy = timezone.localdate()
 
     if fecha == 'hoy':
-        inicio = datetime.combine(hoy, time.min)  # 00:00:00
-        fin = datetime.combine(hoy, time.max)    # 23:59:59
+        inicio = datetime.combine(hoy, time.min)
+        fin = datetime.combine(hoy, time.max)
         compras = compras.filter(Fecha__range=(inicio, fin))
 
     elif fecha == 'semana':
@@ -995,10 +1035,25 @@ def compras_ajax(request):
         fin = datetime.combine(fin_mes, time.max)
         compras = compras.filter(Fecha__range=(inicio, fin))
 
-    elif fecha == 'otro':
-        pass
+  
+    total_general = compras.aggregate(total=Sum('Valor'))['total'] or 0
 
-    return render(request, 'compras/_parcial_listado.html', {'lista_compras': compras})
+    # estadísticas de productos (más y menos comprados)
+    productos_data = CantidadEncargo.objects.filter(
+    RegistroVenta__in=compras).values('Productos__Nombre').annotate(
+    total_cantidad=Sum('Cantidad')
+).order_by('-total_cantidad')
+
+    mas_comprado = productos_data.first() if productos_data else None
+    menos_comprado = productos_data.last() if productos_data else None
+
+    contexto = {
+        'lista_compras': compras,
+        'total_general': total_general,
+        'mas_comprado': mas_comprado,
+        'menos_comprado': menos_comprado,
+    }
+    return render(request, 'compras/_parcial_listado.html', contexto)
 
 from django.http import JsonResponse
 
@@ -1094,7 +1149,7 @@ def AgregarVenta(request, idPedido):
                         producto_stock.save()
 
                     pedido.Estado = 'VENDIDO'
-                    pedido.save()
+                    pedido.delete()
 
                     messages.success(request, "¡Venta registrada exitosamente!")
                     return redirect('ListadoVenta')

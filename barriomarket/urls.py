@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from barriomarket.views import (home, registros, cancelar_pedido,AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, AgregarVenta, Añadirproducto, AgregarProductoAVenta, ListadoVenta, DetalleVenta)
+from barriomarket.views import (home, registros, registrar_faltante, lista_faltantes, cancelar_pedido,AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, AgregarVenta, Añadirproducto, AgregarProductoAVenta, ListadoVenta, DetalleVenta)
 from django.contrib.auth.views import LogoutView
 from .views import ( AgregarVentaAjax, CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, compras, compras_ajax)
 
@@ -45,8 +45,10 @@ urlpatterns = [
     path('CambioContrasena/Cambio', SolicitarContrasena),
     path('Pedidos/', Pedidos, name='listado_pedidos'),
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
-    path('Compras/', compras, name='compras'),
+    path('Compras/', compras, name='compras'), 
     path('Compras/ajax/', compras_ajax, name='ajax_compras'), 
+    path('registrar_faltante/', registrar_faltante, name='registrar_faltante'),
+    path('lista_faltantes/', lista_faltantes, name='lista_faltantes'),
     path('Ventas/AgregarVentas/<int:idPedido>', AgregarVenta, name="AgregarVenta"),
     path('Ventas/AgregarVentas/<int:idPedido>/ajax', AgregarVentaAjax, name="AgregarVentaAjax"),
     path('Ventas/AgregarVentas/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),

@@ -7,9 +7,12 @@
         <p class="order-price"><span class="fw-semibold">Total:</span> ${{ compra.Valor }}</p>
         <p class="order-products"><span class="fw-semibold">{{ compra.CantidadEncargo.count }}</span> productos</p>
 
-        <!-- Botón para abrir modal -->
-        <button class="btn-open" data-bs-toggle="modal" data-bs-target="#modalCompra{{ compra.id }}">
+        <!-- Botones -->
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalCompra{{ compra.id }}">
             Abrir
+        </button>
+        <button class="btn btn-danger delete-btn" data-id="{{ compra.id }}">
+            Eliminar
         </button>
     </div>
 
@@ -30,7 +33,9 @@
                     <h6 class="fw-semibold">Productos:</h6>
                     <ul>
                         {% for detalle in compra.CantidadEncargo.all %}
-                            <li>
+                            <li class="detalle-producto"
+                                data-nombre="{{ detalle.Productos.Nombre }}"
+                                data-cantidad="{{ detalle.Cantidad }}">
                                 <span class="fw-semibold">{{ detalle.Productos.Nombre }}</span><br>
                                 <em>{{ detalle.Productos.Descripcion }}</em><br>
                                 Valor unitario: ${{ detalle.Productos.ValorVenta }}  
@@ -49,3 +54,95 @@
     <p>No hay compras registradas.</p>
     {% endfor %}
 </div>
+
+<!-- Total general -->
+<div class="mt-3 text-end">
+    <h5>Total General: <span id="total-general">${{ total_general|floatformat:2 }}</span></h5>
+</div>
+
+<!-- Estadísticas -->
+<div class="mt-4">
+    <h6 class="fw-semibold"> Estadísticas:</h6>
+    {% if mas_comprado and menos_comprado %}
+        <p><span class="fw-semibold">Producto más comprado:</span> 
+           {{ mas_comprado.Productos__Nombre }} ({{ mas_comprado.total_cantidad }})</p>
+        <p><span class="fw-semibold">Producto menos comprado:</span> 
+           {{ menos_comprado.Productos__Nombre }} ({{ menos_comprado.total_cantidad }})</p>
+    {% else %}
+        <p>No hay datos suficientes para mostrar estadísticas.</p>
+    {% endif %}
+</div>
+<!-- Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 🔹 Calcular total general
+    function recalcularTotalGeneral() {
+    let total = 0;
+    document.querySelectorAll('.order-price').forEach(el => {
+        const match = el.textContent.match(/\$([\d,\.]+)/);
+        if (match) {
+            const valor = parseFloat(match[1].replace(/,/g, ''));
+            if (!isNaN(valor)) {
+                total += valor;
+            }
+        }
+    });
+    document.getElementById('total-general').textContent = '$' + total.toLocaleString('es-CO');
+
+    
+}
+
+
+    recalcularTotalGeneral();
+
+    // 🔹 Eliminar compra con confirmación
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            if (confirm("¿Seguro que deseas eliminar esta compra?")) {
+                const card = btn.closest('.order-card');
+                if (card) {
+                    card.remove();
+                    recalcularTotalGeneral();
+                }
+                // Aquí podrías hacer fetch/axios al backend para borrar en DB
+            }
+        });
+    });
+
+    // 🔹 Calcular producto más y menos comprado
+    let productos = {};
+
+    document.querySelectorAll('.detalle-producto').forEach(el => {
+        const nombre = el.dataset.nombre;
+        const cantidad = parseInt(el.dataset.cantidad);
+        if (!productos[nombre]) {
+            productos[nombre] = 0;
+        }
+        productos[nombre] += cantidad;
+    });
+
+    let masComprado = null;
+    let menosComprado = null;
+    let maxCantidad = -Infinity;
+    let minCantidad = Infinity;
+
+    for (const [nombre, cantidad] of Object.entries(productos)) {
+        if (cantidad > maxCantidad) {
+            maxCantidad = cantidad;
+            masComprado = { nombre, cantidad };
+        }
+        if (cantidad < minCantidad) {
+            minCantidad = cantidad;
+            menosComprado = { nombre, cantidad };
+        }
+    }
+
+    if (masComprado && menosComprado) {
+        document.getElementById('producto-mas').textContent = `${masComprado.nombre} (${masComprado.cantidad})`;
+        document.getElementById('producto-menos').textContent = `${menosComprado.nombre} (${menosComprado.cantidad})`;
+    }
+
+});
+</script>
