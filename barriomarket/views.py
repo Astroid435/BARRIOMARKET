@@ -1167,7 +1167,7 @@ def cancelar_pedido(request):
 
             # Cambiar estado del pedido a cancelado
             pedido.Estado = "cancelado"
-            pedido.save()
+            pedido.delete()
 
             return JsonResponse({"success": True})
 
