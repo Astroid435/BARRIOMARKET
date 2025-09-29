@@ -1,0 +1,35 @@
+{% load static %}
+{% include 'inc/header.html' %}
+
+<div class="container mt-4">
+    <h2>Detalle de Venta #{{ venta.id_ventas }}</h2>
+    <p><strong>Fecha:</strong> {{ venta.Fecha|date:"d/m/Y H:i" }}</p>
+    <p><strong>Cliente:</strong> {{ venta.DocumentoCliente }}</p>
+    <p><strong>Administrador:</strong> 
+        {{ venta.Usuario_DocumentoAdministrador.Primer_nombre }} 
+        {{ venta.Usuario_DocumentoAdministrador.Primer_apellido }}
+    </p>
+    <p><strong>Total:</strong> ${{ venta.ValorTotal|floatformat:0 }}</p>
+
+    <h4 class="mt-3">Productos Vendidos</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in venta.cantidadventa_set.all %}
+            <tr>
+                <td>{{ item.Productos.Nombre }}</td>
+                <td>{{ item.Cantidad }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'ListadoVenta' %}" class="btn btn-secondary mt-3">Volver al Listado</a>
+</div>
+
+{% include 'inc/footer.html' %}

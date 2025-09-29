@@ -1,0 +1,216 @@
+<<<<<<< Updated upstream
+=======
+{% load static %}
+{% include 'inc/header.html' %}
+
+<style>
+    :root {
+        --primary-color: #000000;
+        --gray-text: #828282;
+        --border-color: #e0e0e0;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #fff;
+        color: var(--primary-color);
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        color: var(--gray-text);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .filters {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-filter {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .btn-filter.active {
+        background: black;
+        color: white;
+    }
+
+    .search-bar {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .search-input {
+        width: 280px;
+        max-width: 90%;
+        padding: 0.6rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95rem;
+    }
+
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .orders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .order-card {
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1.5rem;
+        background: #fff;
+        transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .order-date {
+        font-size: 0.85rem;
+        color: var(--gray-text);
+        margin-bottom: 0.8rem;
+    }
+
+    .order-price {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+    }
+
+    .order-products {
+        font-size: 0.9rem;
+        color: var(--gray-text);
+        margin-bottom: 0.8rem;
+    }
+
+    .order-details {
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-open {
+        background: black;
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+
+    .btn-open:hover {
+        background: white;
+        color: black;
+        border: 1px solid black;
+    }
+
+    .load-more {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .btn-more {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        background: black;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .btn-more:hover {
+        background: white;
+        color: black;
+        border: 1px solid black;
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        .search-input {
+            width: 100%;
+        }
+    } 
+    
+</style>
+
+
+<div class="orders-page">
+    <!-- Encabezado -->
+    <div class="page-header">
+        <h1 class="page-title">Compras</h1>
+        <p class="page-subtitle">Aquí puedes visualizar las compras registradas</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <button class="btn-filter active" data-fecha="hoy">Hoy</button>
+        <button class="btn-filter" data-fecha="semana">Semana</button>
+        <button class="btn-filter" data-fecha="mes">Mes</button>
+        <button class="btn-filter" data-fecha="otro">Otro</button>
+    </div>
+
+    <!-- Listado de compras -->
+    <div class="orders-container" id="contenedor-pedidos">
+        {% include "compras/_parcial_listado.html" with lista_compras=lista_compras %}
+    </div>
+</div>
+
+<script>
+    function cargarPedidos(filtroFecha) {
+        let url = `/Compras/ajax/?fecha=${filtroFecha}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('contenedor-pedidos').innerHTML = data;
+            });
+    }
+
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Quitar active de todos y agregar al clickeado
+            document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Tomar el filtro de fecha
+            const filtroFecha = btn.dataset.fecha;
+            cargarPedidos(filtroFecha);
+        });
+    });
+</script>
+{% include 'inc/footer.html' %}
+>>>>>>> Stashed changes

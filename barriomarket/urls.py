@@ -18,7 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+<<<<<<< Updated upstream
 from barriomarket.views import home,registros,AgregarProductos,borrarproductos,register,ActualizarProducto,VistaProducto,Vistacarrito,SolicutarCorreo, SolicitarCodigo,SolicitarContrasena, catalogo,Pedidos, Perfil
+=======
+from barriomarket.views import (home, registros, AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, registrar_faltante,lista_faltantes)
+>>>>>>> Stashed changes
 from django.contrib.auth.views import LogoutView
 from .views import CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, AgregarVenta,Compras
 
@@ -46,8 +50,18 @@ urlpatterns = [
     path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
     path('Ventas/AgregarVenta/', AgregarVenta, name="AgregarVenta"),
     path('Ventas/AgregarVenta/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
+<<<<<<< Updated upstream
     path('compras/', ompras, name='compras'),
 
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+=======
+    path('Compras/', compras, name='compras'), 
+    path('Compras/ajax/', compras_ajax, name='ajax_compras'), 
+    path('registrar_faltante/', registrar_faltante, name='registrar_faltante'),
+    path('lista_faltantes/', lista_faltantes, name='lista_faltantes'),
+    
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> Stashed changes

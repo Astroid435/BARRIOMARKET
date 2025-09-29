@@ -95,6 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                 </center>
+                {% if errores %}
+                    <ul>
+                    {% for e in errores %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
                 <center>
                     <div class="container-fluid">
                         <div class="row">
