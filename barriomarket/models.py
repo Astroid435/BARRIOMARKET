@@ -168,9 +168,9 @@ class RegistroVenta(models.Model):
         db_table = 'registroventa'
 
 class CantidadEncargo(models.Model):
-    RegistroVenta = models.ForeignKey(RegistroVenta, on_delete=models.CASCADE)
     Productos = models.ForeignKey(Productos, on_delete=models.CASCADE)
-    Cantidad = models.IntegerField()
+    RegistroEncargo = models.ForeignKey('RegistroEncargo', related_name='CantidadEncargo', on_delete=models.CASCADE)
+    Cantidad = models.SmallIntegerField()
 
     class Meta:
         db_table = 'cantidadencargo'

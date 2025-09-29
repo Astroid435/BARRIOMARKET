@@ -1040,9 +1040,9 @@ def compras_ajax(request):
 
     # estadísticas de productos (más y menos comprados)
     productos_data = CantidadEncargo.objects.filter(
-    RegistroVenta__in=compras).values('Productos__Nombre').annotate(
-    total_cantidad=Sum('Cantidad')
-).order_by('-total_cantidad')
+    RegistroEncargo__in=compras
+    ).values('Productos__Nombre').annotate(
+    total_cantidad=Sum('Cantidad')).order_by('-total_cantidad')
 
     mas_comprado = productos_data.first() if productos_data else None
     menos_comprado = productos_data.last() if productos_data else None
@@ -1120,13 +1120,22 @@ def AgregarVenta(request, idPedido):
             RegistroPedido.objects.prefetch_related('CantidadPedido__Productos'),
             id=idPedido
         )
+        ValorTotal = sum([
+            getattr(item.Productos, "ValorVenta", 0) * item.Cantidad
+            for item in pedido.CantidadPedido.all()
+            if getattr(item, "Productos_id", None)
+        ])
 
         if request.method == 'POST' and not request.headers.get('x-requested-with') == 'XMLHttpRequest':
             documento_cliente_post = request.POST.get('DocumentoCliente', pedido.Usuario.Documento)
             
             try:
                 documento_cliente_int = int(documento_cliente_post)
-                ValorTotalFinal = sum([item.Productos.ValorVenta * item.Cantidad for item in pedido.CantidadPedido.all()])
+                ValorTotalFinal = sum([
+                    item.Productos.ValorVenta * item.Cantidad
+                    for item in pedido.CantidadPedido.all()
+                    if item.Productos  # solo contar si tiene producto
+                ])
 
                 with transaction.atomic():
                     nueva_venta = RegistroVenta.objects.create(
@@ -1138,6 +1147,9 @@ def AgregarVenta(request, idPedido):
                     )
 
                     for item_pedido in pedido.CantidadPedido.all():
+                        if not item_pedido.Productos:
+                            continue  # 🚨 saltar items huérfanos
+
                         CantidadVenta.objects.create(
                             RegistroVenta=nueva_venta,
                             Productos=item_pedido.Productos,
@@ -1148,7 +1160,7 @@ def AgregarVenta(request, idPedido):
                         producto_stock.Cantidad -= item_pedido.Cantidad
                         producto_stock.save()
 
-                    pedido.Estado = 'VENDIDO'
+                    # 🚨 eliminar pedido de la tabla una vez hecha la venta
                     pedido.delete()
 
                     messages.success(request, "¡Venta registrada exitosamente!")
@@ -1158,11 +1170,16 @@ def AgregarVenta(request, idPedido):
                 messages.error(request, f"Error al registrar la venta: {e}")
                 return redirect('AgregarVentaLink', idPedido=idPedido)
 
-        ValorTotal = sum([item.Productos.ValorVenta * item.Cantidad for item in pedido.CantidadPedido.all()])
+        ValorTotalFinal = sum([
+            getattr(item.Productos, "ValorVenta", 0) * item.Cantidad
+            for item in pedido.CantidadPedido.all()
+            if getattr(item, "Productos_id", None)  # solo si hay FK
+            ])
         contexto['pedido'] = pedido
         contexto['ValorTotal'] = int(round(ValorTotal))
 
     return render(request, 'Ventas/AgregarVentas.html', contexto)
+
 
 
 def Añadirproducto(request, idPedido):
