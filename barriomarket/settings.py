@@ -31,7 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 ALLOWED_HOSTS = [
     'barriomarket-yx7p.onrender.com',
-    'localhost',
+    '34.171.140.24',
     '127.0.0.1'
 ]
 
@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'barriomarket',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': '34.171.140.24',
         'PORT': '3306',
         'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
     }
