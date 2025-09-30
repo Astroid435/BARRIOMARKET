@@ -89,12 +89,12 @@ WSGI_APPLICATION = 'barriomarket.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'barriomarket',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '34.171.140.24',
-        'PORT': '3306',
-        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
+        'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
