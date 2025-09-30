@@ -124,8 +124,8 @@ class RegistroPedido(models.Model):
 
 class Devolucion(models.Model):
     id_devolucion = models.AutoField(primary_key=True)
-    pedido = models.ForeignKey(RegistroPedido, on_delete=models.CASCADE, related_name="devoluciones")
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)  # quién canceló
+    pedido = models.ForeignKey(RegistroPedido, on_delete=models.SET_NULL, null=True, blank=True, db_column='pedido_id')
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, db_column='usuario_id')  # quién canceló
     motivo = models.TextField()
     fecha_cancelacion = models.DateTimeField(auto_now_add=True)
     valor = models.IntegerField()  # copia del valor del pedido cancelado

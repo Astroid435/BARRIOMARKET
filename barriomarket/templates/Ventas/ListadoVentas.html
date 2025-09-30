@@ -59,7 +59,6 @@
                     <th>Motivo</th>
                     <th>Fecha de Cancelación</th>
                     <th>Usuario que canceló</th>
-                    <th>Pedido asociado</th>
                     <th>Valor de Devolución</th>
                 </tr>
             </thead>
@@ -69,7 +68,6 @@
                     <td>{{ devolucion.motivo }}</td>
                     <td>{{ devolucion.fecha_cancelacion|date:"Y-m-d H:i:s" }}</td>
                     <td>{{ devolucion.usuario.Primer_nombre }} {{ devolucion.usuario.Primer_apellido }}</td>
-                    <td>#{{ devolucion.pedido.id }}</td>
                     <td>${{ devolucion.valor }}</td>
                 </tr>
                 {% empty %}

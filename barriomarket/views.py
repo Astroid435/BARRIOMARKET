@@ -1210,7 +1210,7 @@ def AgregarProductoAVenta(request, idPedido, idProducto):
 
 def ListadoVenta(request):
     ventas = RegistroVenta.objects.all().order_by('-Fecha')
-    devoluciones = Devolucion.objects.select_related('pedido', 'usuario').order_by('-fecha_cancelacion')
+    devoluciones = Devolucion.objects.all().order_by('-fecha_cancelacion')
 
     contexto = {
         'ventas': ventas,
@@ -1218,7 +1218,6 @@ def ListadoVenta(request):
     }
 
     return render(request, 'Ventas/ListadoVentas.html', contexto)
-
 
 @csrf_exempt
 def cancelar_pedido(request):
@@ -1240,8 +1239,7 @@ def cancelar_pedido(request):
             )
 
             # Cambiar estado del pedido a cancelado
-            pedido.Estado = "cancelado"
-            pedido.save()
+            pedido.delete()
 
             return JsonResponse({"success": True})
 
@@ -1249,6 +1247,7 @@ def cancelar_pedido(request):
             return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Método no permitido"})
+
 
 @user_passes_test(auth, login_url='inicio')
 def DetalleVenta(request, idVenta):
