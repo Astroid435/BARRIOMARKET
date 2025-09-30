@@ -8,7 +8,6 @@ import re
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.utils.timezone import now
-from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
@@ -850,51 +849,59 @@ def Vistacarrito(request):
 @user_passes_test(auth, login_url='inicio')
 def GenerarPedido(request):
     if request.user.is_authenticated:
-        carrito=Carrito.objects.filter(Usuario=request.user)
+        carrito = Carrito.objects.filter(Usuario=request.user)
         if request.method == 'POST':
-            if request.user.rol.Nombre =="Cliente":
+            if request.user.rol.Nombre == "Cliente":
                 if request.POST.get('Observaciones') and request.POST.get('ValorTotal'):
-                    pedido=RegistroPedido(
+                    pedido = RegistroPedido(
                         Fecha=timezone.now(),
                         Observaciones=request.POST.get('Observaciones'),
                         ValorTotal=request.POST.get('ValorTotal'),
-                        Usuario=request.user,
+                        Usuario=request.user,  # 👈 ahora sí será tu modelo Usuario
                         Estado="sin_atender"
                     )
                     pedido.save()
                     for carro in carrito:
-                        Cantidadpedido=CantidadPedido(
+                        Cantidadpedido = CantidadPedido(
                             Productos=carro.Productos,
                             RegistroPedido=pedido,
                             Cantidad=carro.Cantidad
                         )
                         Cantidadpedido.save()
-                        producto= Productos.objects.get(id=carro.Productos.id)
-                        producto.Cantidad-= carro.Cantidad
+                        producto = Productos.objects.get(id=carro.Productos.id)
+                        producto.Cantidad -= carro.Cantidad
                         producto.save()
                         carro.delete()
-                        
+
                     return redirect('/Pedidos/')
+
             else:
                 if request.POST.get('ValorTotal'):
-                    encargo=RegistroEncargo(
+                    encargo = RegistroEncargo(
                         Fecha=timezone.now(),
                         Valor=request.POST.get('ValorTotal'),
-                        Usuario=request.user,
+                        # ⚠️ Solo si en tu modelo RegistroEncargo agregaste el campo Usuario
+                        # Usuario=request.user,
                     )
                     encargo.save()
                     for carro in carrito:
-                        Cantidadencargo=CantidadEncargo(
+                        Cantidadencargo = CantidadEncargo(
                             Productos=carro.Productos,
                             RegistroEncargo=encargo,
                             Cantidad=carro.Cantidad
                         )
                         Cantidadencargo.save()
-                        producto= Productos.objects.get(id=carro.Productos.id)
-                        producto.Cantidad+= carro.Cantidad
+                        producto = Productos.objects.get(id=carro.Productos.id)
+                        producto.Cantidad += carro.Cantidad
                         producto.save()
                         carro.delete()
-                    
+
+                    return redirect('/Pedidos/')
+
+    return redirect('inicio')
+
+
+
 def SolicutarCorreo(request):
     if request.method == 'POST':
         email = request.POST['Correo']
@@ -1229,15 +1236,15 @@ def cancelar_pedido(request):
 
             pedido = RegistroPedido.objects.get(id=pedido_id)
 
-            # Crear registro en devoluciones
+            # Crear registro en devoluciones (copia del pedido)
             Devolucion.objects.create(
-                pedido=pedido,
-                usuario=request.user,   # el que canceló
+                pedido_id=pedido,   # guardamos solo el ID del pedido
+                usuario=request.user,  # el que canceló
                 motivo=motivo,
                 valor=pedido.ValorTotal
             )
 
-            # Cambiar estado del pedido a cancelado
+            # Cambiar estado del pedido a cancelado y luego eliminar
             pedido.Estado = "cancelado"
             pedido.delete()
 
@@ -1247,6 +1254,7 @@ def cancelar_pedido(request):
             return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Método no permitido"})
+
 
 @user_passes_test(auth, login_url='inicio')
 def DetalleVenta(request, idVenta):
