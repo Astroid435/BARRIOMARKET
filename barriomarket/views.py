@@ -1256,3 +1256,6 @@ def DetalleVenta(request, idVenta):
         id_ventas=idVenta
     )
     return render(request, 'Ventas/DetalleVenta.html', {'venta': venta})
+
+def funcion():
+    return print("Esta es una función de ejemplo en views.py de barriomaket")
