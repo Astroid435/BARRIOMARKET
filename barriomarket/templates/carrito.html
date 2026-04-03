@@ -254,8 +254,8 @@
 
 <div class="cart-page">
     <div class="page-header">
-        <h1 class="page-title">Carrito de compras{% if request.user.rol_id == 2 %} de administrador {% endif %} </h1>
-        <p class="page-subtitle">En esta sección se muestran los productos seleccionados para realizar {% if request.user.rol_id == 2 %}la compra{% else %}el pedido {% endif %} </p>
+        <h1 class="page-title">Carrito de compras{% if request.user.es_administrador %} de administrador {% endif %} </h1>
+        <p class="page-subtitle">En esta sección se muestran los productos seleccionados para realizar {% if request.user.es_administrador %}la compra{% else %}el pedido {% endif %} </p>
     </div>
     
     {% if listadocarrito %}
@@ -292,7 +292,7 @@
         <div class="observations">
             <form action="/GenerarPedido" method="POST">
                 {% csrf_token %}
-                {% if request.user.rol_id == 1 %}
+                {% if request.user.es_cliente %}
                     <h4 class="observations-title">Observaciones</h4>
                     <textarea class="form-control" name="Observaciones" required maxlength="200" placeholder="Agrega cualquier observación especial para tu pedido"></textarea>
                 {% endif %}

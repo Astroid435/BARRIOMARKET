@@ -3,60 +3,23 @@ URL configuration for barriomarket project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django import views
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from barriomarket.views import (home, registros, registrar_faltante, lista_faltantes, cancelar_pedido,AgregarProductos, borrarproductos, register, ActualizarProducto,VistaProducto, Vistacarrito, SolicutarCorreo, SolicitarCodigo, SolicitarContrasena,catalogo, Pedidos, Perfil, AgregarVenta, Añadirproducto, AgregarProductoAVenta, ListadoVenta, DetalleVenta)
-from django.contrib.auth.views import LogoutView
-from .views import ( AgregarVentaAjax, CustomLoginView, GenerarPedido, auth_view, pedidos_ajax, compras, compras_ajax)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
-    path('inicio', home, name='inicio'),
-    path('registros', registros),
-    path('Carrito', Vistacarrito, name="carrito"),
-    path('Perfil', Perfil),
-    path('GenerarPedido', GenerarPedido),
-    path('registro', register, name="registro"),
-    path('auth/', auth_view, name='auth'),
-    path('login', CustomLoginView.as_view(template_name='login.html'), name="login"),
-    path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
-    path('Productos/AgregarProductos', AgregarProductos),
-    path('Productos/VistaProducto/<str:idProducto>', VistaProducto, name='detalle_producto'),
-    path('Productos/borrar/<str:idProducto>', borrarproductos),
-    path('Productos/Actualizar/<str:idProducto>', ActualizarProducto),
-    path('productos/', catalogo, name='catalogo'),
-    path('CambioContrasena/Correo', SolicutarCorreo, name='password_reset'),
-    path('CambioContrasena/Codigo', SolicitarCodigo),
-    path('CambioContrasena/Cambio', SolicitarContrasena),
-    path('Pedidos/', Pedidos, name='listado_pedidos'),
-    path('pedidos/ajax/', pedidos_ajax, name='ajax_pedidos'),
-    path('Compras/', compras, name='compras'), 
-    path('Compras/ajax/', compras_ajax, name='ajax_compras'), 
-    path('registrar_faltante/', registrar_faltante, name='registrar_faltante'),
-    path('lista_faltantes/', lista_faltantes, name='lista_faltantes'),
-    path('Ventas/AgregarVentas/<int:idPedido>', AgregarVenta, name="AgregarVenta"),
-    path('Ventas/AgregarVentas/<int:idPedido>/ajax', AgregarVentaAjax, name="AgregarVentaAjax"),
-    path('Ventas/AgregarVentas/<str:idPedido>', AgregarVenta, name="AgregarVentaLink"),
-    path('Ventas/añadirproducto/<int:idPedido>/', Añadirproducto, name="añadirproducto"),
-    path('Ventas/AgregarVenta/<int:idPedido>/Producto/<int:idProducto>/', AgregarProductoAVenta, name="AgregarProductoAVenta"),
-    path('Ventas/ListadoVentas/', ListadoVenta, name="ListadoVenta"),
-    path("cancelar_pedido/", cancelar_pedido, name="cancelar_pedido"),
-    path("Ventas/Detalle/<int:idVenta>/", DetalleVenta, name="DetalleVenta"),
-
-
+    path('', include('apps.productos.urls')),
+    path('', include('apps.usuarios.urls')),
+    path('', include('apps.pedidos.urls')),
+    path('', include('apps.ventas.urls')),
+    path('', include('apps.compras.urls')),
+    path('', include('apps.faltantes.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler400 = 'barriomarket.error_views.bad_request'
+handler403 = 'barriomarket.error_views.permission_denied'
+handler404 = 'barriomarket.error_views.page_not_found'
+handler500 = 'barriomarket.error_views.server_error'

@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barrio Market - Error del servidor</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #333333;
+            --light: #ffffff;
+            --border: #dddddd;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            background-color: var(--light);
+            color: var(--primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+            color: #666;
+            max-width: 480px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .error-actions a {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: var(--primary);
+            color: var(--light);
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .error-actions a:hover {
+            background-color: var(--secondary);
+        }
+
+        .error-divider {
+            width: 60px;
+            height: 2px;
+            background-color: var(--border);
+            margin: 1.5rem auto;
+        }
+
+        @media (max-width: 576px) {
+            .error-code { font-size: 5rem; }
+            .error-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-code">500</div>
+    <div class="error-divider"></div>
+    <h1 class="error-title">Error del servidor</h1>
+    <p class="error-message">
+        Algo salió mal en nuestro servidor. Estamos trabajando para solucionarlo. Por favor, inténtalo más tarde.
+    </p>
+    <div class="error-actions">
+        <a href="/">Volver al inicio</a>
+    </div>
+</body>
+
+</html>

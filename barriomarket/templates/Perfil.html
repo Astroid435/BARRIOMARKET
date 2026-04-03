@@ -95,7 +95,7 @@
             </form>
 
         </div>
-        {% if request.user.rol_id == 2 %}
+        {% if request.user.es_administrador %}
         <div class="container">
             <h2>Lista de Usuarios</h2>
             <table class="table-hover">

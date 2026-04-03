@@ -88,7 +88,7 @@
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     {% if request.user.is_authenticated %}
-                    {% if request.user.rol_id == 1 %}
+                    {% if request.user.es_cliente %}
                     <!-- Menú para usuarios normales -->
                     <li class="nav-item">
                         <a class="nav-link nav-link-custom" href="/inicio">
